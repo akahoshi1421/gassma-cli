@@ -11,4 +11,6 @@ program
 
 program.parse();
 
-console.log(program.args);
+const [doing, fileName] = program.args;
+
+console.log(doing, fileName);
