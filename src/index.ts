@@ -1,4 +1,6 @@
 import { Command } from "commander";
+import { ArgumentError } from "./error";
+import { generate } from "./generate/generate";
 
 const program = new Command();
 
@@ -13,4 +15,10 @@ program.parse();
 
 const [doing, fileName] = program.args;
 
-console.log(doing, fileName);
+switch (doing) {
+  case "generate":
+    generate(fileName);
+    break;
+  default:
+    throw new ArgumentError();
+}
