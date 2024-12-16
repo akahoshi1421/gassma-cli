@@ -13,7 +13,7 @@ const getOneGassmaAnyUse = (
         ? `${getOneColumnType(columnTypes[0])}`
         : `${getManyColumnType(columnTypes)}`;
 
-    return `${pre}  "${columName}": ${now};\n`;
+    return `${pre}  ${columName}: ${now};\n`;
   }, `\nexport type Gassma${sheetName}Use = {\n`);
 
   return `${oneAnyUse}};\n`;

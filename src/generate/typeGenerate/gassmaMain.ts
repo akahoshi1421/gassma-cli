@@ -1,6 +1,5 @@
 const getGassmaMain = () => {
-  const mainTypeDeclare = `
-export declare namespace Gassma {
+  const mainTypeDeclare = `export declare namespace Gassma {
   class GassmaClient {
     constructor(id?: string);
 

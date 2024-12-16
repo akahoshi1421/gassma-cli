@@ -7,11 +7,11 @@ const getOneColumnType = (columType: unknown) => {
       case "boolean":
         return columType;
       case "{{number}}":
-        return "number";
+        return `"number"`;
       case "{{Date}}":
-        return "Date";
+        return `"Date"`;
       case "{{boolean}}":
-        return "boolean";
+        return `"boolean"`;
       default:
         return `"${columType}"`;
     }
