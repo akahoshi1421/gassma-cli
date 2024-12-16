@@ -13,7 +13,15 @@ const getOneGassmaAnyUse = (
         ? `${getOneColumnType(columnTypes[0])}`
         : `${getManyColumnType(columnTypes)}`;
 
-    return `${pre}  ${columName}: ${now};\n`;
+    const isQuestionMark = columName.at(-1) === "?";
+    const removedQuestionMark = isQuestionMark
+      ? columName.substring(0, columName.length - 1)
+      : columName;
+    const insertColumnName = isQuestionMark
+      ? `"${removedQuestionMark}"?`
+      : `"${removedQuestionMark}"`;
+
+    return `${pre}  ${insertColumnName}: ${now};\n`;
   }, `\nexport type Gassma${sheetName}Use = {\n`);
 
   return `${oneAnyUse}};\n`;
