@@ -1,10 +1,12 @@
 import { generater } from "./generator";
 import { yamlReader } from "./read/yamlReader";
+import { writer } from "./writer";
 
 function generate(fileName?: string) {
-  const jsonConverted = yamlReader(fileName || "schema.yml");
+  const openFileName = fileName || "schema.yml";
+  const jsonConverted = yamlReader(openFileName);
   const resultString = generater(jsonConverted);
-  console.log(resultString);
+  writer(resultString);
 }
 
 export { generate };
