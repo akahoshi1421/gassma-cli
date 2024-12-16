@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { ArgumentError } from "./error";
+import { ArgumentError } from "./error/mainError";
 import { generate } from "./generate/generate";
 
 const program = new Command();
