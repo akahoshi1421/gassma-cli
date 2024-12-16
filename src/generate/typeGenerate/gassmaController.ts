@@ -9,7 +9,7 @@ const getGassmaController = (sheetNames: string[]) => {
     return pre + getOneGassmaController(removeedSpaceCurrentSheetName);
   }, "");
 
-  return controllerTypeDeclare + "\n";
+  return controllerTypeDeclare;
 };
 
 export { getGassmaController };
