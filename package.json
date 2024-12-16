@@ -3,19 +3,35 @@
   "version": "2.0.0",
   "description": "GASsma is Google Apps Script(GAS) of SpreadSheet library that can be used like prisma.",
   "types": "src/index.d.ts",
+  "bin": {
+    "gassma": "bin/index.js"
+  },
   "scripts": {
-    "build": "webpack",
-    "push": "npm run build && clasp push"
+    "build": "tsc"
   },
   "author": "akahoshi1421",
   "license": "MIT",
   "dependencies": {
-    "commander": "^12.1.0"
+    "@types/node": "^22.10.2",
+    "commander": "^12.1.0",
+    "js-yaml": "^4.1.0"
   },
   "keywords": [
     "Google Apps Script",
     "TypeScript",
     "JavaScript",
-    "GASsma"
-  ]
+    "GASsma",
+    "CLI tools"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/js-yaml": "^4.0.9",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.13.0",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.18.0"
+  }
 }
