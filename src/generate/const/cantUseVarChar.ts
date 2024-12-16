@@ -29,6 +29,8 @@ const CANT_USE_VAR_CHAR = [
   "|",
   "\\",
   "~",
+  " ",
+  "　",
 ];
 
 export { CANT_USE_VAR_CHAR };
