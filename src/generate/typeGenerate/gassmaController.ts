@@ -3,10 +3,10 @@ import { getOneGassmaController } from "./gassmaController/oneGassmaController";
 
 const getGassmaController = (sheetNames: string[]) => {
   const controllerTypeDeclare = sheetNames.reduce((pre, currentSheetName) => {
-    const removeedSpaceCurrentSheetName =
+    const removedSpaceCurrentSheetName =
       getRemovedCantUseVarChar(currentSheetName);
 
-    return pre + getOneGassmaController(removeedSpaceCurrentSheetName);
+    return pre + getOneGassmaController(removedSpaceCurrentSheetName);
   }, "");
 
   return controllerTypeDeclare;

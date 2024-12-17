@@ -3,10 +3,10 @@ import { getOneGassmaCreate } from "./gassmaCreate/oneGassmaCreate";
 
 const getGassmaCreate = (sheetNames: string[]) => {
   const createTypeDeclare = sheetNames.reduce((pre, currentSheetName) => {
-    const removeedSpaceCurrentSheetName =
+    const removedSpaceCurrentSheetName =
       getRemovedCantUseVarChar(currentSheetName);
 
-    return pre + getOneGassmaCreate(removeedSpaceCurrentSheetName);
+    return pre + getOneGassmaCreate(removedSpaceCurrentSheetName);
   }, "");
 
   return createTypeDeclare;

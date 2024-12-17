@@ -7,14 +7,14 @@ const getGassmaFilterCoditions = (
   const filterConditionsDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
       const sheetContent = dictYaml[currentSheetName];
-      const removeedSpaceCurrentSheetName =
+      const removedSpaceCurrentSheetName =
         getRemovedCantUseVarChar(currentSheetName);
 
       return (
         pre +
         getOneSheetGassmaFilterConditions(
           sheetContent,
-          removeedSpaceCurrentSheetName
+          removedSpaceCurrentSheetName
         )
       );
     },
