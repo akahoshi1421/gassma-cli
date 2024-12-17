@@ -1,10 +1,10 @@
-import { getRemovedSpaceSheetNames } from "../util/getRemovedSpaceSheetName";
+import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaCreateMany } from "./gassmaCreateMany/oneGassmaCreateMany";
 
 const getGassmaCreateMany = (sheetNames: string[]) => {
   const createManyTypeDeclare = sheetNames.reduce((pre, currentSheetName) => {
     const removeedSpaceCurrentSheetName =
-      getRemovedSpaceSheetNames(currentSheetName);
+      getRemovedCantUseVarChar(currentSheetName);
 
     return pre + getOneGassmaCreateMany(removeedSpaceCurrentSheetName);
   }, "");

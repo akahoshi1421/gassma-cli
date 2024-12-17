@@ -1,4 +1,4 @@
-import { getRemovedSpaceSheetNames } from "../util/getRemovedSpaceSheetName";
+import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneSheetGassmaFilterConditions } from "./gassmaFilterConditions/oneSheetGassmaFilterConditions";
 
 const getGassmaFilterCoditions = (
@@ -8,7 +8,7 @@ const getGassmaFilterCoditions = (
     (pre, currentSheetName) => {
       const sheetContent = dictYaml[currentSheetName];
       const removeedSpaceCurrentSheetName =
-        getRemovedSpaceSheetNames(currentSheetName);
+        getRemovedCantUseVarChar(currentSheetName);
 
       return (
         pre +

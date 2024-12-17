@@ -1,3 +1,4 @@
+import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
 import { getColumnType } from "../../util/getColumnType";
 
 const getOneSheetGassmaFilterConditions = (
@@ -5,13 +6,16 @@ const getOneSheetGassmaFilterConditions = (
   sheetName: string
 ) => {
   const oneFilterConditions = Object.keys(sheetContent).reduce(
-    (pre, columName) => {
-      const columnTypes = sheetContent[columName];
+    (pre, columnName) => {
+      const columnTypes = sheetContent[columnName];
       const now = getColumnType(columnTypes);
+      const removedSpaceCurrentColumnName =
+        getRemovedCantUseVarChar(columnName);
+
       const isOneType = columnTypes.length === 1;
 
       const oneFilterConditionsType = `
-export type Gassma${sheetName}FilterConditions = {
+export type Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions = {
   equals?: ${now};
   not?: ${now};
   in?: ${isOneType ? `${now}[]` : `(${now})[]`};
