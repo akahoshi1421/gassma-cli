@@ -1,6 +1,6 @@
 import { CANT_USE_VAR_CHAR } from "../const/cantUseVarChar";
 
-const getRemovedSpaceSheetNames = (sheetName: string) => {
+const getRemovedCantUseVarChar = (sheetName: string) => {
   let nowSheetName = sheetName;
 
   CANT_USE_VAR_CHAR.forEach((char) => {
@@ -10,4 +10,4 @@ const getRemovedSpaceSheetNames = (sheetName: string) => {
   return nowSheetName;
 };
 
-export { getRemovedSpaceSheetNames };
+export { getRemovedCantUseVarChar };

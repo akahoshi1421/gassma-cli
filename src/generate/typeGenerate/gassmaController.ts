@@ -1,12 +1,12 @@
-import { getRemovedSpaceSheetNames } from "../util/getRemovedSpaceSheetName";
+import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaController } from "./gassmaController/oneGassmaController";
 
 const getGassmaController = (sheetNames: string[]) => {
   const controllerTypeDeclare = sheetNames.reduce((pre, currentSheetName) => {
-    const removeedSpaceCurrentSheetName =
-      getRemovedSpaceSheetNames(currentSheetName);
+    const removedSpaceCurrentSheetName =
+      getRemovedCantUseVarChar(currentSheetName);
 
-    return pre + getOneGassmaController(removeedSpaceCurrentSheetName);
+    return pre + getOneGassmaController(removedSpaceCurrentSheetName);
   }, "");
 
   return controllerTypeDeclare;

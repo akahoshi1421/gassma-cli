@@ -1,23 +1,23 @@
 import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
-import { getOneGassmaAnyUse } from "./gassmaAnyUse/oneGassmaAnyUse";
+import { getOneGassmaOrderBy } from "./gassmaOrderBy/oneGassmaOrderBy";
 
-const getGassmaAnyUse = (
+const getGassmaOrderBy = (
   dictYaml: Record<string, Record<string, unknown[]>>
 ) => {
-  const anyUseTypeDeclare = Object.keys(dictYaml).reduce(
+  const orderByDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
       const sheetContent = dictYaml[currentSheetName];
       const removedSpaceCurrentSheetName =
         getRemovedCantUseVarChar(currentSheetName);
 
       return (
-        pre + getOneGassmaAnyUse(sheetContent, removedSpaceCurrentSheetName)
+        pre + getOneGassmaOrderBy(sheetContent, removedSpaceCurrentSheetName)
       );
     },
     ""
   );
 
-  return anyUseTypeDeclare;
+  return orderByDeclare;
 };
 
-export { getGassmaAnyUse };
+export { getGassmaOrderBy };

@@ -12,9 +12,9 @@ export class Gassma${sheetName}Controller {
   create(createdData: Gassma${sheetName}CreateData): void;
   findFirst(findData: Gassma${sheetName}FindData): Gassma${sheetName}FindResult;
   findMany(findData: Gassma${sheetName}FindManyData): Gassma${sheetName}FindResult[];
-  updateMany(updateData: Gassma${sheetName}UpdateManyData): void;
+  updateMany(updateData: Gassma${sheetName}UpdateData): void;
   upsert(upsertData: Gassma${sheetName}UpsertData): void;
-  deleteMany(deleteData: Gassma${sheetName}DeleteManyData): void;
+  deleteMany(deleteData: Gassma${sheetName}DeleteData): void;
   aggregate(aggregateData: Gassma${sheetName}AggregateData): Gassma${sheetName}AggregateResult;
   count(coutData: Gassma${sheetName}CountData): number;
   groupBy(groupByData: Gassma${sheetName}GroupByData): Gassma${sheetName}GroupByResult[];
