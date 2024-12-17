@@ -1,4 +1,4 @@
-const getOneGassmaUpdateManyData = (sheetName: string) => {
+const getOneGassmaUpdateData = (sheetName: string) => {
   return `
 export type Gassma${sheetName}UpdateManyData = {
   where?: Gassma${sheetName}WhereUse;
@@ -7,4 +7,4 @@ export type Gassma${sheetName}UpdateManyData = {
 `;
 };
 
-export { getOneGassmaUpdateManyData };
+export { getOneGassmaUpdateData };

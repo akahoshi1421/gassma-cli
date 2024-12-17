@@ -1,15 +1,15 @@
 import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
-import { getOneGassmaUpdateManyData } from "./gassmaUpdateManyData/oneGassmaUpdateManyData";
+import { getOneGassmaUpdateData } from "./gassmaUpdateData/oneGassmaUpdateData";
 
-const getGassmaUpdateManyData = (sheetNames: string[]) => {
+const getGassmaUpdateData = (sheetNames: string[]) => {
   const updateDataDeclare = sheetNames.reduce((pre, currentSheetName) => {
     const removedSpaceCurrentSheetName =
       getRemovedCantUseVarChar(currentSheetName);
 
-    return pre + getOneGassmaUpdateManyData(removedSpaceCurrentSheetName);
+    return pre + getOneGassmaUpdateData(removedSpaceCurrentSheetName);
   }, "");
 
   return updateDataDeclare;
 };
 
-export { getGassmaUpdateManyData };
+export { getGassmaUpdateData };
