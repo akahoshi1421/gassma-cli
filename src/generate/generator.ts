@@ -6,6 +6,7 @@ import { getGassmaFilterCoditions } from "./typeGenerate/gassmaFilterConditions"
 import { getGassmaMain } from "./typeGenerate/gassmaMain";
 import { getGassmaSheet } from "./typeGenerate/gassmaSheet";
 import { getGassmaUpdateManyData } from "./typeGenerate/gassmaUpdateManyData";
+import { getGassmaUpsertData } from "./typeGenerate/gassmaUpsertData";
 import { getGassmaWhereUse } from "./typeGenerate/gassmaWhereUse";
 
 const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
@@ -20,6 +21,7 @@ const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
   result += getGassmaFilterCoditions(dictYaml);
   result += getGassmaWhereUse(dictYaml);
   result += getGassmaUpdateManyData(sheetNames);
+  result += getGassmaUpsertData(sheetNames);
 
   return result;
 };
