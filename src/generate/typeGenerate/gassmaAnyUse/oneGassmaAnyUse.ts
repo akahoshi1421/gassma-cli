@@ -1,5 +1,4 @@
-import { getManyColumnType } from "./oneGassmaAnyUse/getManyColumType";
-import { getOneColumnType } from "./oneGassmaAnyUse/getOneColumnType";
+import { getColumnType } from "../../util/getColumnType";
 
 const getOneGassmaAnyUse = (
   sheetContent: Record<string, unknown[]>,
@@ -8,10 +7,7 @@ const getOneGassmaAnyUse = (
   const oneAnyUse = Object.keys(sheetContent).reduce((pre, columName) => {
     const columnTypes = sheetContent[columName];
 
-    const now =
-      columnTypes.length === 1
-        ? `${getOneColumnType(columnTypes[0])}`
-        : `${getManyColumnType(columnTypes)}`;
+    const now = getColumnType(columnTypes);
 
     const isQuestionMark = columName.at(-1) === "?";
     const removedQuestionMark = isQuestionMark
