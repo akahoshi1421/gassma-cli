@@ -192,6 +192,54 @@ export type Gassmaシート2WhereUse = {
   NOT?: Gassmaシート2WhereUse[] | Gassmaシート2WhereUse;
 };
 
+export type Gassmaシート1idHavingCore = {
+  _avg?: Gassmaシート1idFilterConditions;
+  _count?: Gassmaシート1idFilterConditions;
+  _max?: Gassmaシート1idFilterConditions;
+  _min?: Gassmaシート1idFilterConditions;
+  _sum?: Gassmaシート1idFilterConditions;
+} & Gassmaシート1idFilterConditions;
+
+export type Gassmaシート1nameHavingCore = {
+  _avg?: Gassmaシート1nameFilterConditions;
+  _count?: Gassmaシート1nameFilterConditions;
+  _max?: Gassmaシート1nameFilterConditions;
+  _min?: Gassmaシート1nameFilterConditions;
+  _sum?: Gassmaシート1nameFilterConditions;
+} & Gassmaシート1nameFilterConditions;
+
+export type Gassmaシート1hogeHavingCore = {
+  _avg?: Gassmaシート1hogeFilterConditions;
+  _count?: Gassmaシート1hogeFilterConditions;
+  _max?: Gassmaシート1hogeFilterConditions;
+  _min?: Gassmaシート1hogeFilterConditions;
+  _sum?: Gassmaシート1hogeFilterConditions;
+} & Gassmaシート1hogeFilterConditions;
+
+export type Gassmaシート2addressHavingCore = {
+  _avg?: Gassmaシート2addressFilterConditions;
+  _count?: Gassmaシート2addressFilterConditions;
+  _max?: Gassmaシート2addressFilterConditions;
+  _min?: Gassmaシート2addressFilterConditions;
+  _sum?: Gassmaシート2addressFilterConditions;
+} & Gassmaシート2addressFilterConditions;
+
+export type Gassmaシート2created_atHavingCore = {
+  _avg?: Gassmaシート2created_atFilterConditions;
+  _count?: Gassmaシート2created_atFilterConditions;
+  _max?: Gassmaシート2created_atFilterConditions;
+  _min?: Gassmaシート2created_atFilterConditions;
+  _sum?: Gassmaシート2created_atFilterConditions;
+} & Gassmaシート2created_atFilterConditions;
+
+export type Gassmaシート2isHavingCore = {
+  _avg?: Gassmaシート2isFilterConditions;
+  _count?: Gassmaシート2isFilterConditions;
+  _max?: Gassmaシート2isFilterConditions;
+  _min?: Gassmaシート2isFilterConditions;
+  _sum?: Gassmaシート2isFilterConditions;
+} & Gassmaシート2isFilterConditions;
+
 export type Gassmaシート1FindData = {
   where?: Gassmaシート1WhereUse;
   select?: Gassmaシート1Select;
