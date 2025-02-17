@@ -210,6 +210,10 @@ export type Gassmaシート2FindData = {
   distinct?: "address" | "created_at" | "is" | ("address" | "created_at" | "is")[]
 };
 
+export type Gassmaシート1FindManyData = Gassmaシート1FindData;    
+
+export type Gassmaシート2FindManyData = Gassmaシート2FindData;    
+
 export type Gassmaシート1UpdateData = {
   where?: Gassmaシート1WhereUse;
   data: Gassmaシート1Use;
