@@ -240,6 +240,26 @@ export type Gassmaシート2isHavingCore = {
   _sum?: Gassmaシート2isFilterConditions;
 } & Gassmaシート2isFilterConditions;
 
+export type Gassmaシート1HavingUse = {
+  "id"?: number | Gassmaシート1idHavingCore;
+  "name"?: "abc" | "def" | "hij" | Gassmaシート1nameHavingCore;
+  "hoge"?: 1 | 2 | Gassmaシート1hogeHavingCore;
+
+  AND?: Gassmaシート1HavingUse[] | Gassmaシート1HavingUse;
+  OR?: Gassmaシート1HavingUse[];
+  NOT?: Gassmaシート1HavingUse[] | Gassmaシート1HavingUse;
+};
+
+export type Gassmaシート2HavingUse = {
+  "address"?: string | Gassmaシート2addressHavingCore;
+  "created_at"?: Date | Gassmaシート2created_atHavingCore;
+  "is"?: boolean | Gassmaシート2isHavingCore;
+
+  AND?: Gassmaシート2HavingUse[] | Gassmaシート2HavingUse;
+  OR?: Gassmaシート2HavingUse[];
+  NOT?: Gassmaシート2HavingUse[] | Gassmaシート2HavingUse;
+};
+
 export type Gassmaシート1FindData = {
   where?: Gassmaシート1WhereUse;
   select?: Gassmaシート1Select;
