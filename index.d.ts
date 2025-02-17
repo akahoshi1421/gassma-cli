@@ -249,13 +249,13 @@ export type Gassmaシート2CountData = {
 }
 
 export type Gassmaシート1CreateReturn = {
- id: number;
- name: "abc" | "def" | "hij";
- hoge: 1 | 2;
+ "id": number;
+ "name": "abc" | "def" | "hij";
+ "hoge": 1 | 2;
 };
 
 export type Gassmaシート2CreateReturn = {
- address: string;
- created_at: Date;
- is: boolean;
+ "address": string;
+ "created_at": Date;
+ "is": boolean;
 };
