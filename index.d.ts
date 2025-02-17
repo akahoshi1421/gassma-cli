@@ -11,15 +11,6 @@ export type GassmaSheet = {
   "シート2": Gassmaシート2Controller;
 };
 
-type ManyReturn = {
-  count: number;
-};
-
-export type CreateManyReturn = ManyReturn;
-export type UpdateManyReturn = ManyReturn;
-export type DeleteManyReturn = ManyReturn;
-export type UpsertManyReturn = ManyReturn;
-
 export class Gassmaシート1Controller {
   constructor(sheetName: string, id?: string);
 
@@ -29,7 +20,7 @@ export class Gassmaシート1Controller {
     endColumnNumber: number
   ): void;
   createMany(createdData: Gassmaシート1CreateManyData): CreateManyReturn;
-  create(createdData: Gassmaシート1CreateData): void;
+  create(createdData: Gassmaシート1CreateData): Gassmaシート1CreateReturn;
   findFirst(findData: Gassmaシート1FindData): Gassmaシート1FindResult;
   findMany(findData: Gassmaシート1FindManyData): Gassmaシート1FindResult[];
   updateMany(updateData: Gassmaシート1UpdateData): UpdateManyReturn;
@@ -49,7 +40,7 @@ export class Gassmaシート2Controller {
     endColumnNumber: number
   ): void;
   createMany(createdData: Gassmaシート2CreateManyData): CreateManyReturn;
-  create(createdData: Gassmaシート2CreateData): void;
+  create(createdData: Gassmaシート2CreateData): Gassmaシート2CreateReturn;
   findFirst(findData: Gassmaシート2FindData): Gassmaシート2FindResult;
   findMany(findData: Gassmaシート2FindManyData): Gassmaシート2FindResult[];
   updateMany(updateData: Gassmaシート2UpdateData): UpdateManyReturn;
@@ -59,6 +50,15 @@ export class Gassmaシート2Controller {
   count(coutData: Gassmaシート2CountData): number;
   groupBy(groupByData: Gassmaシート2GroupByData): Gassmaシート2GroupByResult[];
 }
+
+type ManyReturn = {
+  count: number;
+};
+
+export type CreateManyReturn = ManyReturn;
+export type UpdateManyReturn = ManyReturn;
+export type DeleteManyReturn = ManyReturn;
+export type UpsertManyReturn = ManyReturn;
 
 export type Gassmaシート1Use = {
   "id"?: number;
@@ -247,3 +247,15 @@ export type Gassmaシート2CountData = {
   take?: number;
   skip?: number;
 }
+
+export type Gassmaシート1CreateReturn = {
+ id: number;
+ name: "abc" | "def" | "hij";
+ hoge: 1 | 2;
+};
+
+export type Gassmaシート2CreateReturn = {
+ address: string;
+ created_at: Date;
+ is: boolean;
+};

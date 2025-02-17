@@ -9,7 +9,7 @@ export class Gassma${sheetName}Controller {
     endColumnNumber: number
   ): void;
   createMany(createdData: Gassma${sheetName}CreateManyData): CreateManyReturn;
-  create(createdData: Gassma${sheetName}CreateData): void;
+  create(createdData: Gassma${sheetName}CreateData): Gassma${sheetName}CreateReturn;
   findFirst(findData: Gassma${sheetName}FindData): Gassma${sheetName}FindResult;
   findMany(findData: Gassma${sheetName}FindManyData): Gassma${sheetName}FindResult[];
   updateMany(updateData: Gassma${sheetName}UpdateData): UpdateManyReturn;
