@@ -1,4 +1,4 @@
-const getOneGassmaFind = (
+const getOneGassmaSelect = (
   sheetContent: Record<string, unknown[]>,
   sheetName: string
 ) => {
@@ -14,4 +14,4 @@ const getOneGassmaFind = (
   return `${oneFind}};\n`;
 };
 
-export { getOneGassmaFind };
+export { getOneGassmaSelect };

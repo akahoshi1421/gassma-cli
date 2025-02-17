@@ -1,5 +1,5 @@
 import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
-import { getOneGassmaFind } from "./gassmaFind/oneGassmaFind";
+import { getOneGassmaSelect } from "./gassmaSelect/oneGassmaSelect";
 
 const getGassmaSelect = (
   dictYaml: Record<string, Record<string, unknown[]>>
@@ -10,7 +10,9 @@ const getGassmaSelect = (
       const removedSpaceCurrentSheetName =
         getRemovedCantUseVarChar(currentSheetName);
 
-      return pre + getOneGassmaFind(sheetContent, removedSpaceCurrentSheetName);
+      return (
+        pre + getOneGassmaSelect(sheetContent, removedSpaceCurrentSheetName)
+      );
     },
     ""
   );
