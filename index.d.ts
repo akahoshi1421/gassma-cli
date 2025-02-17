@@ -192,6 +192,24 @@ export type Gassmaシート2WhereUse = {
   NOT?: Gassmaシート2WhereUse[] | Gassmaシート2WhereUse;
 };
 
+export type Gassmaシート1FindData = {
+  where?: Gassmaシート1WhereUse;
+  select?: Gassmaシート1Select;
+  orderBy?: Gassmaシート1OrderBy;
+  take?: number;
+  skip?: number;
+  distinct?: "id" | "name" | "hoge" | ("id" | "name" | "hoge")[]
+};
+
+export type Gassmaシート2FindData = {
+  where?: Gassmaシート2WhereUse;
+  select?: Gassmaシート2Select;
+  orderBy?: Gassmaシート2OrderBy;
+  take?: number;
+  skip?: number;
+  distinct?: "address" | "created_at" | "is" | ("address" | "created_at" | "is")[]
+};
+
 export type Gassmaシート1UpdateData = {
   where?: Gassmaシート1WhereUse;
   data: Gassmaシート1Use;
