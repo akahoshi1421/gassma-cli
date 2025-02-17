@@ -8,13 +8,13 @@ export class Gassma${sheetName}Controller {
     startColumnNumber: number,
     endColumnNumber: number
   ): void;
-  createMany(createdData: Gassma${sheetName}CreateManyData): void;
+  createMany(createdData: Gassma${sheetName}CreateManyData): CreateManyReturn;
   create(createdData: Gassma${sheetName}CreateData): void;
   findFirst(findData: Gassma${sheetName}FindData): Gassma${sheetName}FindResult;
   findMany(findData: Gassma${sheetName}FindManyData): Gassma${sheetName}FindResult[];
-  updateMany(updateData: Gassma${sheetName}UpdateData): void;
-  upsert(upsertData: Gassma${sheetName}UpsertData): void;
-  deleteMany(deleteData: Gassma${sheetName}DeleteData): void;
+  updateMany(updateData: Gassma${sheetName}UpdateData): UpdateManyReturn;
+  upsert(upsertData: Gassma${sheetName}UpsertData): UpsertManyReturn;
+  deleteMany(deleteData: Gassma${sheetName}DeleteData): DeleteManyReturn;
   aggregate(aggregateData: Gassma${sheetName}AggregateData): Gassma${sheetName}AggregateResult;
   count(coutData: Gassma${sheetName}CountData): number;
   groupBy(groupByData: Gassma${sheetName}GroupByData): Gassma${sheetName}GroupByResult[];
