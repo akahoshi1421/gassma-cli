@@ -9,6 +9,7 @@ import { getGassmaFilterCoditions } from "./typeGenerate/gassmaFilterConditions"
 import { getGassmaMain } from "./typeGenerate/gassmaMain";
 import { getGassmaManyCount } from "./typeGenerate/gassmaManyCount";
 import { getGassmaOrderBy } from "./typeGenerate/gassmaOrderBy";
+import { getGassmaSelect } from "./typeGenerate/gassmaSelect";
 import { getGassmaSheet } from "./typeGenerate/gassmaSheet";
 import { getGassmaUpdateData } from "./typeGenerate/gassmaUpdateData";
 import { getGassmaUpsertData } from "./typeGenerate/gassmaUpsertData";
@@ -30,6 +31,7 @@ const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
   result += getGassmaUpsertData(sheetNames);
   result += getGassmaDeleteData(sheetNames);
   result += getGassmaOrderBy(dictYaml);
+  result += getGassmaSelect(dictYaml);
   result += getGassmaCountData(sheetNames);
   result += getGassmaCreateReturn(dictYaml);
 

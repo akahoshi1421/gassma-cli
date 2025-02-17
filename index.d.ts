@@ -234,6 +234,18 @@ export type Gassmaシート2OrderBy = {
   "is"?: "asc" | "desc";
 };
 
+export type Gassmaシート1Select = {
+  "id"?: true;
+  "name"?: true;
+  "hoge"?: true;
+};
+
+export type Gassmaシート2Select = {
+  "address"?: true;
+  "created_at"?: true;
+  "is"?: true;
+};
+
 export type Gassmaシート1CountData = {
   where?: Gassmaシート1WhereUse;
   orderBy?: Gassmaシート1OrderBy;
