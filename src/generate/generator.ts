@@ -1,3 +1,4 @@
+import { getGassmaAggregateData } from "./typeGenerate/gassmaAggregateData";
 import { getGassmaAnyUse } from "./typeGenerate/gassmaAnyUse";
 import { getGassmaController } from "./typeGenerate/gassmaController";
 import { getGassmaCountData } from "./typeGenerate/gassmaCountData";
@@ -34,6 +35,7 @@ const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
   result += getGassmaUpdateData(sheetNames);
   result += getGassmaUpsertData(sheetNames);
   result += getGassmaDeleteData(sheetNames);
+  result += getGassmaAggregateData(sheetNames);
   result += getGassmaOrderBy(dictYaml);
   result += getGassmaSelect(dictYaml);
   result += getGassmaCountData(sheetNames);

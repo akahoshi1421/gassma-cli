@@ -244,6 +244,30 @@ export type Gassmaシート2DeleteData = {
   where: Gassmaシート2WhereUse;
 }
 
+export type Gassmaシート1AggregateData = {
+  where?: Gassmaシート1WhereUse;
+  orderBy?: Gassmaシート1OrderBy;
+  take?: number;
+  skip?: number;
+  _avg: Gassmaシート1Select;
+  _count: Gassmaシート1Select;
+  _max: Gassmaシート1Select;
+  _min: Gassmaシート1Select;
+  _sum: Gassmaシート1Select;
+};
+
+export type Gassmaシート2AggregateData = {
+  where?: Gassmaシート2WhereUse;
+  orderBy?: Gassmaシート2OrderBy;
+  take?: number;
+  skip?: number;
+  _avg: Gassmaシート2Select;
+  _count: Gassmaシート2Select;
+  _max: Gassmaシート2Select;
+  _min: Gassmaシート2Select;
+  _sum: Gassmaシート2Select;
+};
+
 export type Gassmaシート1OrderBy = {
   "id"?: "asc" | "desc";
   "name"?: "asc" | "desc";
