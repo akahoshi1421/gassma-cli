@@ -336,6 +336,16 @@ export type Gassmaシート2AggregateData = {
   _sum: Gassmaシート2Select;
 };
 
+export type Gassmaシート1GroupByData = {
+  by: "id" | "name" | "hoge" | ("id" | "name" | "hoge")[];
+  having?: Gassmaシート1HavingUse;
+};
+
+export type Gassmaシート2GroupByData = {
+  by: "address" | "created_at" | "is" | ("address" | "created_at" | "is")[];
+  having?: Gassmaシート2HavingUse;
+};
+
 export type Gassmaシート1OrderBy = {
   "id"?: "asc" | "desc";
   "name"?: "asc" | "desc";
