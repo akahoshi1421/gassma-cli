@@ -21,8 +21,8 @@ export class Gassmaシート1Controller {
   ): void;
   createMany(createdData: Gassmaシート1CreateManyData): CreateManyReturn;
   create(createdData: Gassmaシート1CreateData): Gassmaシート1CreateReturn;
-  findFirst(findData: Gassmaシート1FindData): Gassmaシート1FindResult;
-  findMany(findData: Gassmaシート1FindManyData): Gassmaシート1FindResult[];
+  findFirst<T extends Gassmaシート1FindData>(findData: T): Gassmaシート1FindResult<T["select"]>;
+  findMany<T extends Gassmaシート1FindManyData>(findData: T): Gassmaシート1FindResult<T["select"]>[];
   updateMany(updateData: Gassmaシート1UpdateData): UpdateManyReturn;
   upsert(upsertData: Gassmaシート1UpsertData): UpsertManyReturn;
   deleteMany(deleteData: Gassmaシート1DeleteData): DeleteManyReturn;
@@ -41,8 +41,8 @@ export class Gassmaシート2Controller {
   ): void;
   createMany(createdData: Gassmaシート2CreateManyData): CreateManyReturn;
   create(createdData: Gassmaシート2CreateData): Gassmaシート2CreateReturn;
-  findFirst(findData: Gassmaシート2FindData): Gassmaシート2FindResult;
-  findMany(findData: Gassmaシート2FindManyData): Gassmaシート2FindResult[];
+  findFirst<T extends Gassmaシート2FindData>(findData: T): Gassmaシート2FindResult<T["select"]>;
+  findMany<T extends Gassmaシート2FindManyData>(findData: T): Gassmaシート2FindResult<T["select"]>[];
   updateMany(updateData: Gassmaシート2UpdateData): UpdateManyReturn;
   upsert(upsertData: Gassmaシート2UpsertData): UpsertManyReturn;
   deleteMany(deleteData: Gassmaシート2DeleteData): DeleteManyReturn;
