@@ -385,13 +385,13 @@ export type Gassmaシート2CountData = {
 }
 
 export type Gassmaシート1CreateReturn = {
- "id": number;
- "name": "abc" | "def" | "hij";
+ "id": number | null;
+ "name": "abc" | "def" | "hij" | null;
  "hoge": 1 | 2;
 };
 
 export type Gassmaシート2CreateReturn = {
  "address": string;
  "created_at": Date;
- "is": boolean;
+ "is": boolean | null;
 };
