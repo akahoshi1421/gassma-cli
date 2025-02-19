@@ -5,6 +5,7 @@ import { getGassmaCountData } from "./typeGenerate/gassmaCountData";
 import { getGassmaCreate } from "./typeGenerate/gassmaCreate";
 import { getGassmaCreateMany } from "./typeGenerate/gassmaCreateMany";
 import { getGassmaCreateReturn } from "./typeGenerate/gassmaCreateReturn";
+import { getGassmaDefaultFindResult } from "./typeGenerate/gassmaDefaultFindResult";
 import { getGassmaDeleteData } from "./typeGenerate/gassmaDeleteData";
 import { getGassmaFilterCoditions } from "./typeGenerate/gassmaFilterConditions";
 import { getGassmaFindData } from "./typeGenerate/gassmaFindData";
@@ -46,6 +47,7 @@ const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
   result += getGassmaSelect(dictYaml);
   result += getGassmaCountData(sheetNames);
   result += getGassmaCreateReturn(dictYaml);
+  result += getGassmaDefaultFindResult(sheetNames);
 
   return result;
 };

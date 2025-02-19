@@ -395,3 +395,7 @@ export type Gassmaシート2CreateReturn = {
  "created_at": Date;
  "is": boolean | null;
 };
+
+export type Gassmaシート1DefaultFindResult = Gassmaシート1CreateReturn;
+
+export type Gassmaシート2DefaultFindResult = Gassmaシート2CreateReturn;
