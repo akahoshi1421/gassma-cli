@@ -399,3 +399,23 @@ export type Gassmaシート2CreateReturn = {
 export type Gassmaシート1DefaultFindResult = Gassmaシート1CreateReturn;
 
 export type Gassmaシート2DefaultFindResult = Gassmaシート2CreateReturn;
+
+export type Gassmaシート1FindResult<T> = T extends undefined
+  ? Gassmaシート1DefaultFindResult
+  : T extends Gassmaシート1Select
+    ? {
+        [K in keyof T as T[K] extends true
+          ? K & keyof Gassmaシート1DefaultFindResult
+          : never]: Gassmaシート1DefaultFindResult[K & keyof Gassmaシート1DefaultFindResult];
+      }
+    : Gassmaシート1DefaultFindResult;
+
+export type Gassmaシート2FindResult<T> = T extends undefined
+  ? Gassmaシート2DefaultFindResult
+  : T extends Gassmaシート2Select
+    ? {
+        [K in keyof T as T[K] extends true
+          ? K & keyof Gassmaシート2DefaultFindResult
+          : never]: Gassmaシート2DefaultFindResult[K & keyof Gassmaシート2DefaultFindResult];
+      }
+    : Gassmaシート2DefaultFindResult;
