@@ -431,3 +431,23 @@ export type Gassmaシート2AggregateBaseReturn = {
   "created_at": Date
   "is": boolean
 };
+
+export type Gassmaシート1AggregateField<T, K extends string> = T extends undefined
+  ? never
+  : K extends "_count"
+    ? { [P in keyof T as T[P] extends true ? P : never]: number }
+    : {
+        [P in keyof T as T[P] extends true
+          ? P & keyof Gassmaシート1AggregateBaseReturn
+          : never]: Gassmaシート1AggregateBaseReturn[P & keyof Gassmaシート1AggregateBaseReturn];
+      };
+
+export type Gassmaシート2AggregateField<T, K extends string> = T extends undefined
+  ? never
+  : K extends "_count"
+    ? { [P in keyof T as T[P] extends true ? P : never]: number }
+    : {
+        [P in keyof T as T[P] extends true
+          ? P & keyof Gassmaシート2AggregateBaseReturn
+          : never]: Gassmaシート2AggregateBaseReturn[P & keyof Gassmaシート2AggregateBaseReturn];
+      };
