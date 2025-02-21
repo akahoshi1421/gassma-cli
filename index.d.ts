@@ -419,3 +419,15 @@ export type Gassmaシート2FindResult<T> = T extends undefined
           : never]: Gassmaシート2DefaultFindResult[K & keyof Gassmaシート2DefaultFindResult];
       }
     : Gassmaシート2DefaultFindResult;
+
+export type Gassmaシート1AggregateBaseReturn = {
+  "id": number
+  "name": string
+  "hoge": number
+};
+
+export type Gassmaシート2AggregateBaseReturn = {
+  "address": string
+  "created_at": Date
+  "is": boolean
+};
