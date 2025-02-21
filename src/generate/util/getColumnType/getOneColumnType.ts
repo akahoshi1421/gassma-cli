@@ -1,11 +1,11 @@
-const getOneColumnType = (columType: unknown) => {
-  if (typeof columType === "string") {
-    switch (columType) {
+const getOneColumnType = (columnType: unknown) => {
+  if (typeof columnType === "string") {
+    switch (columnType) {
       case "number":
       case "string":
       case "Date":
       case "boolean":
-        return columType;
+        return columnType;
       case "{{number}}":
         return `"number"`;
       case "{{Date}}":
@@ -13,11 +13,11 @@ const getOneColumnType = (columType: unknown) => {
       case "{{boolean}}":
         return `"boolean"`;
       default:
-        return `"${columType}"`;
+        return `"${columnType}"`;
     }
   }
 
-  return columType;
+  return columnType;
 };
 
 export { getOneColumnType };
