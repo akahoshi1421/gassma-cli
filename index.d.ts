@@ -74,19 +74,19 @@ export type Gassmaシート2Use = {
 
 export type Gassmaシート1CreateData = {
   data: Gassmaシート1Use;
-}
+};
 
 export type Gassmaシート2CreateData = {
   data: Gassmaシート2Use;
-}
+};
 
 export type Gassmaシート1CreateManyData = {
   data: Gassmaシート1Use[];
-}
+};
 
 export type Gassmaシート2CreateManyData = {
   data: Gassmaシート2Use[];
-}
+};
 
 export type Gassmaシート1idFilterConditions = {
   equals?: number;
@@ -100,7 +100,7 @@ export type Gassmaシート1idFilterConditions = {
   contains?: string;
   startsWith?: string;
   endsWith?: string;
-}
+};
 
 export type Gassmaシート1nameFilterConditions = {
   equals?: "abc" | "def" | "hij";
@@ -114,7 +114,7 @@ export type Gassmaシート1nameFilterConditions = {
   contains?: string;
   startsWith?: string;
   endsWith?: string;
-}
+};
 
 export type Gassmaシート1hogeFilterConditions = {
   equals?: 1 | 2;
@@ -128,7 +128,7 @@ export type Gassmaシート1hogeFilterConditions = {
   contains?: string;
   startsWith?: string;
   endsWith?: string;
-}
+};
 
 export type Gassmaシート2addressFilterConditions = {
   equals?: string;
@@ -142,7 +142,7 @@ export type Gassmaシート2addressFilterConditions = {
   contains?: string;
   startsWith?: string;
   endsWith?: string;
-}
+};
 
 export type Gassmaシート2created_atFilterConditions = {
   equals?: Date;
@@ -156,7 +156,7 @@ export type Gassmaシート2created_atFilterConditions = {
   contains?: string;
   startsWith?: string;
   endsWith?: string;
-}
+};
 
 export type Gassmaシート2isFilterConditions = {
   equals?: boolean;
@@ -170,7 +170,7 @@ export type Gassmaシート2isFilterConditions = {
   contains?: string;
   startsWith?: string;
   endsWith?: string;
-}
+};
 
 export type Gassmaシート1WhereUse = {
   "id"?: number | Gassmaシート1idFilterConditions;
@@ -285,32 +285,32 @@ export type Gassmaシート2FindManyData = Gassmaシート2FindData;
 export type Gassmaシート1UpdateData = {
   where?: Gassmaシート1WhereUse;
   data: Gassmaシート1Use;
-}
+};
 
 export type Gassmaシート2UpdateData = {
   where?: Gassmaシート2WhereUse;
   data: Gassmaシート2Use;
-}
+};
 
 export type Gassmaシート1UpsertData = {
   where: Gassmaシート1WhereUse;
   update: Gassmaシート1Use;
   data: Gassmaシート1Use;
-}
+};
 
 export type Gassmaシート2UpsertData = {
   where: Gassmaシート2WhereUse;
   update: Gassmaシート2Use;
   data: Gassmaシート2Use;
-}
+};
 
 export type Gassmaシート1DeleteData = {
   where: Gassmaシート1WhereUse;
-}
+};
 
 export type Gassmaシート2DeleteData = {
   where: Gassmaシート2WhereUse;
-}
+};
 
 export type Gassmaシート1AggregateData = {
   where?: Gassmaシート1WhereUse;
@@ -375,14 +375,14 @@ export type Gassmaシート1CountData = {
   orderBy?: Gassmaシート1OrderBy;
   take?: number;
   skip?: number;
-}
+};
 
 export type Gassmaシート2CountData = {
   where?: Gassmaシート2WhereUse;
   orderBy?: Gassmaシート2OrderBy;
   take?: number;
   skip?: number;
-}
+};
 
 export type Gassmaシート1CreateReturn = {
  "id": number | null;
