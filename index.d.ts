@@ -467,3 +467,7 @@ export type Gassmaシート2AggregateResult<T extends Gassmaシート2AggregateD
       : K
     : never]: K extends string ? Gassmaシート2AggregateField<T[K], K> : never;
 };
+
+export type Gassmaシート1GroupByBaseReturn = Gassmaシート1CreateReturn;
+
+export type Gassmaシート2GroupByBaseReturn = Gassmaシート2CreateReturn;
