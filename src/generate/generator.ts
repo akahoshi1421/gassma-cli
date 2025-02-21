@@ -3,6 +3,7 @@ import { getGassmaAggregateData } from "./typeGenerate/gassmaAggregateData";
 import { getGassmaAggregateField } from "./typeGenerate/gassmaAggregateField";
 import { getGassmaAggregateResult } from "./typeGenerate/gassmaAggregateResult";
 import { getGassmaAnyUse } from "./typeGenerate/gassmaAnyUse";
+import { getGassmaByField } from "./typeGenerate/gassmaByField";
 import { getGassmaController } from "./typeGenerate/gassmaController";
 import { getGassmaCountData } from "./typeGenerate/gassmaCountData";
 import { getGassmaCreate } from "./typeGenerate/gassmaCreate";
@@ -60,6 +61,7 @@ const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
   result += getGassmaAggregateResult(sheetNames);
   result += getGassmaGroupByBaseReturn(sheetNames);
   result += getGassmaGroupByKeyOfBaseReturn(sheetNames);
+  result += getGassmaByField(sheetNames);
 
   return result;
 };

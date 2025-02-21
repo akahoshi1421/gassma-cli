@@ -472,6 +472,24 @@ export type Gassmaシート1GroupByBaseReturn = Gassmaシート1CreateReturn;
 
 export type Gassmaシート2GroupByBaseReturn = Gassmaシート2CreateReturn;
 
-export type Gassmaシート1KeyOfBaseReturn = keyof Gassmaシート1GroupByBaseReturn;
+export type Gassmaシート1GroupByKeyOfBaseReturn = keyof Gassmaシート1GroupByBaseReturn;
 
-export type Gassmaシート2KeyOfBaseReturn = keyof Gassmaシート2GroupByBaseReturn;
+export type Gassmaシート2GroupByKeyOfBaseReturn = keyof Gassmaシート2GroupByBaseReturn;
+
+export type Gassmaシート1ByField<T extends Gassmaシート1GroupByKeyOfBaseReturn | Gassmaシート1GroupByKeyOfBaseReturn[]> =
+  T extends Gassmaシート1GroupByKeyOfBaseReturn[]
+    ? {
+        [K in T[number]]: Gassmaシート1GroupByBaseReturn[K & keyof Gassmaシート1GroupByBaseReturn];
+      }
+    : T extends keyof Gassmaシート1GroupByBaseReturn
+      ? { [K in T]: Gassmaシート1GroupByBaseReturn[K] }
+      : never;
+
+export type Gassmaシート2ByField<T extends Gassmaシート2GroupByKeyOfBaseReturn | Gassmaシート2GroupByKeyOfBaseReturn[]> =
+  T extends Gassmaシート2GroupByKeyOfBaseReturn[]
+    ? {
+        [K in T[number]]: Gassmaシート2GroupByBaseReturn[K & keyof Gassmaシート2GroupByBaseReturn];
+      }
+    : T extends keyof Gassmaシート2GroupByBaseReturn
+      ? { [K in T]: Gassmaシート2GroupByBaseReturn[K] }
+      : never;
