@@ -13,7 +13,7 @@ export class Gassma${sheetName}Controller {
   findFirst<T extends Gassma${sheetName}FindData>(findData: T): Gassma${sheetName}FindResult<T["select"]>;
   findMany<T extends Gassma${sheetName}FindManyData>(findData: T): Gassma${sheetName}FindResult<T["select"]>[];
   updateMany(updateData: Gassma${sheetName}UpdateData): UpdateManyReturn;
-  upsert(upsertData: Gassma${sheetName}UpsertData): UpsertManyReturn;
+  upsertMany(upsertData: Gassma${sheetName}UpsertData): UpsertManyReturn;
   deleteMany(deleteData: Gassma${sheetName}DeleteData): DeleteManyReturn;
   aggregate<T extends Gassma${sheetName}AggregateData>(aggregateData: T): Gassma${sheetName}AggregateResult<T>;
   count(coutData: Gassma${sheetName}CountData): number;

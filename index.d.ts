@@ -24,7 +24,7 @@ export class Gassmaシート1Controller {
   findFirst<T extends Gassmaシート1FindData>(findData: T): Gassmaシート1FindResult<T["select"]>;
   findMany<T extends Gassmaシート1FindManyData>(findData: T): Gassmaシート1FindResult<T["select"]>[];
   updateMany(updateData: Gassmaシート1UpdateData): UpdateManyReturn;
-  upsert(upsertData: Gassmaシート1UpsertData): UpsertManyReturn;
+  upsertMany(upsertData: Gassmaシート1UpsertData): UpsertManyReturn;
   deleteMany(deleteData: Gassmaシート1DeleteData): DeleteManyReturn;
   aggregate<T extends Gassmaシート1AggregateData>(aggregateData: T): Gassmaシート1AggregateResult<T>;
   count(coutData: Gassmaシート1CountData): number;
@@ -44,7 +44,7 @@ export class Gassmaシート2Controller {
   findFirst<T extends Gassmaシート2FindData>(findData: T): Gassmaシート2FindResult<T["select"]>;
   findMany<T extends Gassmaシート2FindManyData>(findData: T): Gassmaシート2FindResult<T["select"]>[];
   updateMany(updateData: Gassmaシート2UpdateData): UpdateManyReturn;
-  upsert(upsertData: Gassmaシート2UpsertData): UpsertManyReturn;
+  upsertMany(upsertData: Gassmaシート2UpsertData): UpsertManyReturn;
   deleteMany(deleteData: Gassmaシート2DeleteData): DeleteManyReturn;
   aggregate<T extends Gassmaシート2AggregateData>(aggregateData: T): Gassmaシート2AggregateResult<T>;
   count(coutData: Gassmaシート2CountData): number;
