@@ -28,7 +28,7 @@ export class Gassmaシート1Controller {
   deleteMany(deleteData: Gassmaシート1DeleteData): DeleteManyReturn;
   aggregate<T extends Gassmaシート1AggregateData>(aggregateData: T): Gassmaシート1AggregateResult<T>;
   count(coutData: Gassmaシート1CountData): number;
-  groupBy(groupByData: Gassmaシート1GroupByData): Gassmaシート1GroupByResult[];
+  groupBy<T extends Gassmaシート1GroupByData>(groupByData: T): Gassmaシート1GroupByResult<T>[];
 }
 
 export class Gassmaシート2Controller {
@@ -48,7 +48,7 @@ export class Gassmaシート2Controller {
   deleteMany(deleteData: Gassmaシート2DeleteData): DeleteManyReturn;
   aggregate<T extends Gassmaシート2AggregateData>(aggregateData: T): Gassmaシート2AggregateResult<T>;
   count(coutData: Gassmaシート2CountData): number;
-  groupBy(groupByData: Gassmaシート2GroupByData): Gassmaシート2GroupByResult[];
+  groupBy<T extends Gassmaシート2GroupByData>(groupByData: T): Gassmaシート2GroupByResult<T>[];
 }
 
 type ManyReturn = {
@@ -336,12 +336,12 @@ export type Gassmaシート2AggregateData = {
   _sum: Gassmaシート2Select;
 };
 
-export type Gassmaシート1GroupByData = {
+export type Gassmaシート1GroupByData = Gassmaシート1AggregateData & {
   by: "id" | "name" | "hoge" | ("id" | "name" | "hoge")[];
   having?: Gassmaシート1HavingUse;
 };
 
-export type Gassmaシート2GroupByData = {
+export type Gassmaシート2GroupByData = Gassmaシート2AggregateData & {
   by: "address" | "created_at" | "is" | ("address" | "created_at" | "is")[];
   having?: Gassmaシート2HavingUse;
 };
@@ -493,3 +493,19 @@ export type Gassmaシート2ByField<T extends Gassmaシート2GroupByKeyOfBaseRe
     : T extends keyof Gassmaシート2GroupByBaseReturn
       ? { [K in T]: Gassmaシート2GroupByBaseReturn[K] }
       : never;
+
+export type Gassmaシート1GroupByResult<T extends Gassmaシート1GroupByData> = Gassmaシート1ByField<T["by"]> & {
+  [K in keyof T as K extends "_avg" | "_count" | "_max" | "_min" | "_sum"
+    ? T[K] extends undefined
+      ? never
+      : K
+    : never]: K extends string ? Gassmaシート1AggregateField<T[K], K> : never;
+};
+
+export type Gassmaシート2GroupByResult<T extends Gassmaシート2GroupByData> = Gassmaシート2ByField<T["by"]> & {
+  [K in keyof T as K extends "_avg" | "_count" | "_max" | "_min" | "_sum"
+    ? T[K] extends undefined
+      ? never
+      : K
+    : never]: K extends string ? Gassmaシート2AggregateField<T[K], K> : never;
+};

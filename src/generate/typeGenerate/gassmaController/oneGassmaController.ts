@@ -17,7 +17,7 @@ export class Gassma${sheetName}Controller {
   deleteMany(deleteData: Gassma${sheetName}DeleteData): DeleteManyReturn;
   aggregate<T extends Gassma${sheetName}AggregateData>(aggregateData: T): Gassma${sheetName}AggregateResult<T>;
   count(coutData: Gassma${sheetName}CountData): number;
-  groupBy(groupByData: Gassma${sheetName}GroupByData): Gassma${sheetName}GroupByResult[];
+  groupBy<T extends Gassma${sheetName}GroupByData>(groupByData: T): Gassma${sheetName}GroupByResult<T>[];
 }
 `;
 };

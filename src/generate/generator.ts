@@ -18,6 +18,7 @@ import { getGassmaFindResult } from "./typeGenerate/gassmaFindResult";
 import { getGassmaGroupByBaseReturn } from "./typeGenerate/gassmaGroupByBaseReturn";
 import { getGassmaGroupByData } from "./typeGenerate/gassmaGroupByData";
 import { getGassmaGroupByKeyOfBaseReturn } from "./typeGenerate/gassmaGroupByKeyOfBaseReturn";
+import { getGassmaGroupByResult } from "./typeGenerate/gassmaGroupByResult";
 import { getGassmaHavingCore } from "./typeGenerate/gassmaHavingCore";
 import { getGassmaHavingUse } from "./typeGenerate/gassmaHavingUse";
 import { getGassmaMain } from "./typeGenerate/gassmaMain";
@@ -62,6 +63,7 @@ const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
   result += getGassmaGroupByBaseReturn(sheetNames);
   result += getGassmaGroupByKeyOfBaseReturn(sheetNames);
   result += getGassmaByField(sheetNames);
+  result += getGassmaGroupByResult(sheetNames);
 
   return result;
 };
