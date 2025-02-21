@@ -26,7 +26,7 @@ export class Gassmaシート1Controller {
   updateMany(updateData: Gassmaシート1UpdateData): UpdateManyReturn;
   upsert(upsertData: Gassmaシート1UpsertData): UpsertManyReturn;
   deleteMany(deleteData: Gassmaシート1DeleteData): DeleteManyReturn;
-  aggregate(aggregateData: Gassmaシート1AggregateData): Gassmaシート1AggregateResult;
+  aggregate<T extends Gassmaシート1Select>(aggregateData: Gassmaシート1AggregateData): Gassmaシート1AggregateResult<T>;
   count(coutData: Gassmaシート1CountData): number;
   groupBy(groupByData: Gassmaシート1GroupByData): Gassmaシート1GroupByResult[];
 }
@@ -46,7 +46,7 @@ export class Gassmaシート2Controller {
   updateMany(updateData: Gassmaシート2UpdateData): UpdateManyReturn;
   upsert(upsertData: Gassmaシート2UpsertData): UpsertManyReturn;
   deleteMany(deleteData: Gassmaシート2DeleteData): DeleteManyReturn;
-  aggregate(aggregateData: Gassmaシート2AggregateData): Gassmaシート2AggregateResult;
+  aggregate<T extends Gassmaシート2Select>(aggregateData: Gassmaシート2AggregateData): Gassmaシート2AggregateResult<T>;
   count(coutData: Gassmaシート2CountData): number;
   groupBy(groupByData: Gassmaシート2GroupByData): Gassmaシート2GroupByResult[];
 }
@@ -451,3 +451,19 @@ export type Gassmaシート2AggregateField<T, K extends string> = T extends unde
           ? P & keyof Gassmaシート2AggregateBaseReturn
           : never]: Gassmaシート2AggregateBaseReturn[P & keyof Gassmaシート2AggregateBaseReturn];
       };
+
+export type Gassmaシート1AggregateResult<T extends Gassmaシート1AggregateData> = {
+  [K in keyof T as K extends "_avg" | "_count" | "_max" | "_min" | "_sum"
+    ? T[K] extends undefined
+      ? never
+      : K
+    : never]: K extends string ? Gassmaシート1AggregateField<T[K], K> : never;
+};
+
+export type Gassmaシート2AggregateResult<T extends Gassmaシート2AggregateData> = {
+  [K in keyof T as K extends "_avg" | "_count" | "_max" | "_min" | "_sum"
+    ? T[K] extends undefined
+      ? never
+      : K
+    : never]: K extends string ? Gassmaシート2AggregateField<T[K], K> : never;
+};
