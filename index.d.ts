@@ -471,3 +471,7 @@ export type Gassmaシート2AggregateResult<T extends Gassmaシート2AggregateD
 export type Gassmaシート1GroupByBaseReturn = Gassmaシート1CreateReturn;
 
 export type Gassmaシート2GroupByBaseReturn = Gassmaシート2CreateReturn;
+
+export type Gassmaシート1KeyOfBaseReturn = keyof Gassmaシート1GroupByBaseReturn;
+
+export type Gassmaシート2KeyOfBaseReturn = keyof Gassmaシート2GroupByBaseReturn;
