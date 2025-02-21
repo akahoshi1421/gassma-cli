@@ -4,15 +4,15 @@ const getOneGassmaAnyUse = (
   sheetContent: Record<string, unknown[]>,
   sheetName: string
 ) => {
-  const oneAnyUse = Object.keys(sheetContent).reduce((pre, columName) => {
-    const columnTypes = sheetContent[columName];
+  const oneAnyUse = Object.keys(sheetContent).reduce((pre, columnName) => {
+    const columnTypes = sheetContent[columnName];
 
     const now = getColumnType(columnTypes);
 
-    const isQuestionMark = columName.at(-1) === "?";
+    const isQuestionMark = columnName.at(-1) === "?";
     const removedQuestionMark = isQuestionMark
-      ? columName.substring(0, columName.length - 1)
-      : columName;
+      ? columnName.substring(0, columnName.length - 1)
+      : columnName;
     const insertColumnName = isQuestionMark
       ? `"${removedQuestionMark}"?`
       : `"${removedQuestionMark}"`;
