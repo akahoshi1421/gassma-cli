@@ -26,7 +26,7 @@ export class Gassmaシート1Controller {
   updateMany(updateData: Gassmaシート1UpdateData): UpdateManyReturn;
   upsert(upsertData: Gassmaシート1UpsertData): UpsertManyReturn;
   deleteMany(deleteData: Gassmaシート1DeleteData): DeleteManyReturn;
-  aggregate<T extends Gassmaシート1Select>(aggregateData: Gassmaシート1AggregateData): Gassmaシート1AggregateResult<T>;
+  aggregate<T extends Gassmaシート1AggregateData>(aggregateData: T): Gassmaシート1AggregateResult<T>;
   count(coutData: Gassmaシート1CountData): number;
   groupBy(groupByData: Gassmaシート1GroupByData): Gassmaシート1GroupByResult[];
 }
@@ -46,7 +46,7 @@ export class Gassmaシート2Controller {
   updateMany(updateData: Gassmaシート2UpdateData): UpdateManyReturn;
   upsert(upsertData: Gassmaシート2UpsertData): UpsertManyReturn;
   deleteMany(deleteData: Gassmaシート2DeleteData): DeleteManyReturn;
-  aggregate<T extends Gassmaシート2Select>(aggregateData: Gassmaシート2AggregateData): Gassmaシート2AggregateResult<T>;
+  aggregate<T extends Gassmaシート2AggregateData>(aggregateData: T): Gassmaシート2AggregateResult<T>;
   count(coutData: Gassmaシート2CountData): number;
   groupBy(groupByData: Gassmaシート2GroupByData): Gassmaシート2GroupByResult[];
 }
