@@ -5,7 +5,7 @@ export type Gassma${sheetName}CountData = {
   orderBy?: Gassma${sheetName}OrderBy;
   take?: number;
   skip?: number;
-}
+};
 `;
 };
 

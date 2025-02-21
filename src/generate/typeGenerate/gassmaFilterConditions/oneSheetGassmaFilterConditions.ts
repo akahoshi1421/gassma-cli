@@ -27,7 +27,7 @@ export type Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions =
   contains?: string;
   startsWith?: string;
   endsWith?: string;
-}
+};
 `;
 
       return pre + oneFilterConditionsType;
