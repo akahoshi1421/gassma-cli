@@ -9,6 +9,8 @@ const getOneSheetGassmaFilterConditions = (
     (pre, columnName) => {
       const columnTypes = sheetContent[columnName];
       const now = getColumnType(columnTypes);
+      const isQuestionMark = columnName.at(-1) === "?";
+
       const removedSpaceCurrentColumnName =
         getRemovedCantUseVarChar(columnName);
 
@@ -16,8 +18,8 @@ const getOneSheetGassmaFilterConditions = (
 
       const oneFilterConditionsType = `
 export type Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions = {
-  equals?: ${now};
-  not?: ${now};
+  equals?: ${now}${isQuestionMark ? " | null" : ""};
+  not?: ${now}${isQuestionMark ? " | null" : ""};
   in?: ${isOneType ? `${now}[]` : `(${now})[]`};
   notIn?: ${isOneType ? `${now}[]` : `(${now})[]`};
   lt?: ${now};
