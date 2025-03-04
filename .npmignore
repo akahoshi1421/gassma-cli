@@ -4,3 +4,6 @@ node_modules/
 src/
 .gitignore
 tsconfig.json
+index.d.ts
+eslint.config.mjs
+schema.yml
