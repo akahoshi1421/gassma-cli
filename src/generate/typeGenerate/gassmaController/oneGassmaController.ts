@@ -10,7 +10,7 @@ export class Gassma${sheetName}Controller {
   ): void;
   createMany(createdData: Gassma${sheetName}CreateManyData): CreateManyReturn;
   create(createdData: Gassma${sheetName}CreateData): Gassma${sheetName}CreateReturn;
-  findFirst<T extends Gassma${sheetName}FindData>(findData: T): Gassma${sheetName}FindResult<T["select"]>;
+  findFirst<T extends Gassma${sheetName}FindData>(findData: T): Gassma${sheetName}FindResult<T["select"]> | null;
   findMany<T extends Gassma${sheetName}FindManyData>(findData: T): Gassma${sheetName}FindResult<T["select"]>[];
   updateMany(updateData: Gassma${sheetName}UpdateData): UpdateManyReturn;
   upsertMany(upsertData: Gassma${sheetName}UpsertData): UpsertManyReturn;
