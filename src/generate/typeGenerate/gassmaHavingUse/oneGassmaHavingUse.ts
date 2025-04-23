@@ -16,7 +16,7 @@ const getOneGassmaHavingUse = (
       : columnName;
 
     return `${pre}  "${removedQuestionMark}"?: ${now}${isQuestionMark ? " | null" : ""} | Gassma${sheetName}${removedSpaceCurrentColumnName}HavingCore;\n`;
-  }, `\nexport type Gassma${sheetName}HavingUse = {\n`);
+  }, `\ndeclare type Gassma${sheetName}HavingUse = {\n`);
 
   return `${oneHavingUse}
   AND?: Gassma${sheetName}HavingUse[] | Gassma${sheetName}HavingUse;
