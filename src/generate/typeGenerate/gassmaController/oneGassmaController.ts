@@ -1,6 +1,6 @@
 const getOneGassmaController = (sheetName: string) => {
   return `
-export class Gassma${sheetName}Controller {
+declare class Gassma${sheetName}Controller {
   constructor(sheetName: string, id?: string);
 
   changeSettings(
