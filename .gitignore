@@ -6,3 +6,17 @@ node_modules/
 dist/
 
 schema.yml
+
+# Coverage reports
+coverage/
+
+# LLM関連
+LLM/
+
+# Claude Code関連ファイル
+.claude/
+.mcp.json
+CLAUDE.md
+
+# dev
+indexDev.d.ts

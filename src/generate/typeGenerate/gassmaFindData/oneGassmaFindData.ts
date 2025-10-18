@@ -24,9 +24,10 @@ const getOneGassmaFindData = (
     return `${pre}"${removedQuestionMark}" | `;
   }, "");
 
-  return `\nexport type Gassma${sheetName}FindData = {
+  return `\ndeclare type Gassma${sheetName}FindData = {
   where?: Gassma${sheetName}WhereUse;
   select?: Gassma${sheetName}Select;
+  omit?: Gassma${sheetName}Omit;
   orderBy?: Gassma${sheetName}OrderBy;
   take?: number;
   skip?: number;
