@@ -1,6 +1,6 @@
 const getOneGassmaDeleteData = (sheetName: string) => {
   return `
-declare type Gassma${sheetName}DeleteData = {
+export type Gassma${sheetName}DeleteData = {
   where: Gassma${sheetName}WhereUse;
 };
 `;

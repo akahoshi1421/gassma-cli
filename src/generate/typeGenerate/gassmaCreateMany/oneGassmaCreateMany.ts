@@ -1,6 +1,6 @@
 const getOneGassmaCreateMany = (sheetName: string) => {
   return `
-declare type Gassma${sheetName}CreateManyData = {
+export type Gassma${sheetName}CreateManyData = {
   data: Gassma${sheetName}Use[];
 };
 `;

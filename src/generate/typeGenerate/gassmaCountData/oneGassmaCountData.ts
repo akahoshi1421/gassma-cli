@@ -1,6 +1,6 @@
 const getOneGassmaCountData = (sheetName: string) => {
   return `
-declare type Gassma${sheetName}CountData = {
+export type Gassma${sheetName}CountData = {
   where?: Gassma${sheetName}WhereUse;
   orderBy?: Gassma${sheetName}OrderBy;
   take?: number;

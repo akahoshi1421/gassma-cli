@@ -1,6 +1,6 @@
 const getOneGassmaDefaultFindResult = (sheetName: string) => {
   return `
-declare type Gassma${sheetName}DefaultFindResult = Gassma${sheetName}CreateReturn;
+export type Gassma${sheetName}DefaultFindResult = Gassma${sheetName}CreateReturn;
 `;
 };
 

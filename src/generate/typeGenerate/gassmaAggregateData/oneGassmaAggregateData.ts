@@ -1,6 +1,6 @@
 const getOneGassmaAggregateData = (sheetName: string) => {
   return `
-declare type Gassma${sheetName}AggregateData = {
+export type Gassma${sheetName}AggregateData = {
   where?: Gassma${sheetName}WhereUse;
   orderBy?: Gassma${sheetName}OrderBy;
   take?: number;

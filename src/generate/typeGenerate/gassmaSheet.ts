@@ -5,7 +5,7 @@ const getGassmaSheet = (sheetNames: string[]) => {
     const removedSpaceCurrentSheetName = getRemovedCantUseVarChar(current);
 
     return `${pre}  "${current}": Gassma${removedSpaceCurrentSheetName}Controller;\n`;
-  }, "declare type GassmaSheet = {\n");
+  }, "export type GassmaSheet = {\n");
 
   return sheetTypeDeclare + "};\n";
 };
