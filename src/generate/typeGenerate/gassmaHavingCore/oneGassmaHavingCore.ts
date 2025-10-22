@@ -8,7 +8,7 @@ const getOneGassmaHavingCore = (
     const removedSpaceCurrentColumnName = getRemovedCantUseVarChar(columnName);
 
     const oneHavingCoreType = `
-declare type Gassma${sheetName}${removedSpaceCurrentColumnName}HavingCore = {
+export type Gassma${sheetName}${removedSpaceCurrentColumnName}HavingCore = {
   _avg?: Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions;
   _count?: Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions;
   _max?: Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions;

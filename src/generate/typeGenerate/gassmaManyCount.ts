@@ -1,13 +1,13 @@
 const getGassmaManyCount = () => {
   return `
-type ManyReturn = {
+export type ManyReturn = {
   count: number;
 };
 
-declare type CreateManyReturn = ManyReturn;
-declare type UpdateManyReturn = ManyReturn;
-declare type DeleteManyReturn = ManyReturn;
-declare type UpsertManyReturn = ManyReturn;
+export type CreateManyReturn = ManyReturn;
+export type UpdateManyReturn = ManyReturn;
+export type DeleteManyReturn = ManyReturn;
+export type UpsertManyReturn = ManyReturn;
 `;
 };
 

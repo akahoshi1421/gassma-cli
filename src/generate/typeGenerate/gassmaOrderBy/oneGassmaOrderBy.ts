@@ -9,7 +9,7 @@ const getOneGassmaOrderBy = (
       : columnName;
 
     return `${pre}  "${removedQuestionMark}"?: "asc" | "desc";\n`;
-  }, `\ndeclare type Gassma${sheetName}OrderBy = {\n`);
+  }, `\nexport type Gassma${sheetName}OrderBy = {\n`);
 
   return `${oneAnyUse}};\n`;
 };
