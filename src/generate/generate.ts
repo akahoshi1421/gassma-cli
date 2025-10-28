@@ -4,32 +4,37 @@ import { generater } from "./generator";
 import { yamlReader } from "./read/yamlReader";
 import { writer } from "./writer";
 
-function generate(fileName?: string) {
-  // デフォルトは ./gassma/schema.yml を探す
-  let targetPath: string;
+function generate() {
+  // gassmaディレクトリ内の全YAMLファイルを処理
+  const gassmaDir = "./gassma";
   
-  if (fileName) {
-    // ファイル名が指定された場合はそのまま使用
-    targetPath = fileName;
-  } else {
-    // デフォルトは ./gassma/schema.yml を優先、なければ ./schema.yml
-    const gassmaPath = path.join("./gassma", "schema.yml");
-    const rootPath = "./schema.yml";
-    
-    if (fs.existsSync(gassmaPath)) {
-      targetPath = gassmaPath;
-      console.log(`📁 Using schema file from gassma directory: ${gassmaPath}`);
-    } else if (fs.existsSync(rootPath)) {
-      targetPath = rootPath;
-      console.log(`📁 Using schema file from root: ${rootPath}`);
-    } else {
-      throw new Error("schema.yml not found. Please create either ./gassma/schema.yml or ./schema.yml");
-    }
+  if (!fs.existsSync(gassmaDir)) {
+    throw new Error("./gassma/ directory not found. Please create ./gassma/ directory with YAML files.");
   }
   
-  const jsonConverted = yamlReader(targetPath);
-  const resultString = generater(jsonConverted);
-  writer(resultString);
+  // gassmaディレクトリ内の全YAMLファイルを取得
+  const yamlFiles = fs.readdirSync(gassmaDir).filter(file => 
+    file.endsWith('.yml') || file.endsWith('.yaml')
+  );
+  
+  if (yamlFiles.length === 0) {
+    throw new Error("No YAML files found in ./gassma/ directory. Please create at least one .yml or .yaml file.");
+  }
+  
+  console.log(`📁 Found ${yamlFiles.length} YAML file(s) in gassma directory`);
+  
+  // 各YAMLファイルを処理
+  yamlFiles.forEach(file => {
+    const filePath = path.join(gassmaDir, file);
+    console.log(`  📄 Processing: ${file}`);
+    
+    const jsonConverted = yamlReader(filePath);
+    const resultString = generater(jsonConverted);
+    const baseName = path.basename(file, path.extname(file));
+    writer(resultString, baseName);
+  });
+  
+  console.log(`✅ Generated ${yamlFiles.length} type definition file(s)`);
 }
 
 export { generate };

@@ -5,19 +5,18 @@ import { generate } from "./generate/generate";
 const program = new Command();
 
 program
-  .name("generate")
+  .name("gassma")
   .version("1.0.0")
   .description("A CLI for providing GASsma dynamic types from yaml files")
-  .argument("<do>", "do type")
-  .option("-f, --file", "yaml file");
+  .argument("<command>", "command to execute");
 
 program.parse();
 
-const [doing, fileName] = program.args;
+const [command] = program.args;
 
-switch (doing) {
+switch (command) {
   case "generate":
-    generate(fileName);
+    generate();
     break;
   default:
     throw new ArgumentError();
