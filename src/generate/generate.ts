@@ -8,18 +8,16 @@ function generate() {
   // gassmaディレクトリ内の全YAMLファイルを処理
   const gassmaDir = "./gassma";
   
-  if (!fs.existsSync(gassmaDir)) {
+  if (!fs.existsSync(gassmaDir))
     throw new Error("./gassma/ directory not found. Please create ./gassma/ directory with YAML files.");
-  }
   
   // gassmaディレクトリ内の全YAMLファイルを取得
   const yamlFiles = fs.readdirSync(gassmaDir).filter(file => 
     file.endsWith('.yml') || file.endsWith('.yaml')
   );
   
-  if (yamlFiles.length === 0) {
+  if (yamlFiles.length === 0)
     throw new Error("No YAML files found in ./gassma/ directory. Please create at least one .yml or .yaml file.");
-  }
   
   console.log(`📁 Found ${yamlFiles.length} YAML file(s) in gassma directory`);
   
