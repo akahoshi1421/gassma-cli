@@ -24,6 +24,7 @@
     "CLI tools"
   ],
   "devDependencies": {
+    "@biomejs/biome": "2.3.2",
     "@eslint/js": "^9.17.0",
     "@types/js-yaml": "^4.0.9",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
