@@ -2,7 +2,7 @@ import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaCreateReturn } from "./gassmaCreateReturn/oneGassmaCreateReturn";
 
 const getGassmaCreateReturn = (
-  dictYaml: Record<string, Record<string, unknown[]>>
+  dictYaml: Record<string, Record<string, unknown[]>>,
 ) => {
   const createReturnTypeDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -15,7 +15,7 @@ const getGassmaCreateReturn = (
         getOneGassmaCreateReturn(sheetContent, removedSpaceCurrentSheetName)
       );
     },
-    ""
+    "",
   );
 
   return createReturnTypeDeclare;

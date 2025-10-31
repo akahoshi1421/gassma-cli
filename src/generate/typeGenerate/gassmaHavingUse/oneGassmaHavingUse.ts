@@ -3,7 +3,7 @@ import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
 
 const getOneGassmaHavingUse = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const oneHavingUse = Object.keys(sheetContent).reduce((pre, columnName) => {
     const columnTypes = sheetContent[columnName];

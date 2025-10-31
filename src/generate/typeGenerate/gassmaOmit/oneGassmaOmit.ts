@@ -1,6 +1,6 @@
 const getOneGassmaOmit = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const oneOmit = Object.keys(sheetContent).reduce((pre, columnName) => {
     const isQuestionMark = columnName.at(-1) === "?";

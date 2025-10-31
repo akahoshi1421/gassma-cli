@@ -7,12 +7,12 @@ const getTargetPath = (fileName: string): string => {
   const isDevelopment = !fs.existsSync(npmPath);
 
   // npm環境の場合: node_modules/gassmaに個別ファイルとして出力
-  if(!isDevelopment) return path.join("./node_modules/gassma", `${fileName}.d.ts`);
-  
+  if (!isDevelopment)
+    return path.join("./node_modules/gassma", `${fileName}.d.ts`);
+
   // 開発環境の場合: devTypesディレクトリに個別ファイルとして出力
   const devDir = "./devTypes";
-  if (!fs.existsSync(devDir))
-    fs.mkdirSync(devDir, { recursive: true });
+  if (!fs.existsSync(devDir)) fs.mkdirSync(devDir, { recursive: true });
   return path.join(devDir, `${fileName}.d.ts`);
 };
 

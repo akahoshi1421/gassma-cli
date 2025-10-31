@@ -2,7 +2,7 @@ import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaAggregateBaseReturn } from "./gassmaAggregateBaseReturn/oneGassmaAggregateBaseReturn";
 
 const getGassmaAggregateBaseReturn = (
-  dictYaml: Record<string, Record<string, unknown[]>>
+  dictYaml: Record<string, Record<string, unknown[]>>,
 ) => {
   const aggregateBaseReturnTypeDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -14,11 +14,11 @@ const getGassmaAggregateBaseReturn = (
         pre +
         getOneGassmaAggregateBaseReturn(
           sheetContent,
-          removedSpaceCurrentSheetName
+          removedSpaceCurrentSheetName,
         )
       );
     },
-    ""
+    "",
   );
 
   return aggregateBaseReturnTypeDeclare;

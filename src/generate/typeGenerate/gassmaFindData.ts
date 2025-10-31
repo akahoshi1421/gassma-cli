@@ -2,7 +2,7 @@ import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaFindData } from "./gassmaFindData/oneGassmaFindData";
 
 const getGassmaFindData = (
-  dictYaml: Record<string, Record<string, unknown[]>>
+  dictYaml: Record<string, Record<string, unknown[]>>,
 ) => {
   const findDeclare = Object.keys(dictYaml).reduce((pre, currentSheetName) => {
     const sheetContent = dictYaml[currentSheetName];

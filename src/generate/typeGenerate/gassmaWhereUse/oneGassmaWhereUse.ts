@@ -3,7 +3,7 @@ import { getColumnType } from "../../util/getColumnType";
 
 const getOneGassmaWhereUse = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const oneWhereUse = Object.keys(sheetContent).reduce((pre, columnName) => {
     const columnTypes = sheetContent[columnName];

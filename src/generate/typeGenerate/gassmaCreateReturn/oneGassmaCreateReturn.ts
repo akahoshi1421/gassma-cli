@@ -2,7 +2,7 @@ import { getColumnType } from "../../util/getColumnType";
 
 const getOneGassmaCreateReturn = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const oneCreateReturn = Object.keys(sheetContent).reduce(
     (pre, columnName) => {
@@ -17,7 +17,7 @@ const getOneGassmaCreateReturn = (
 
       return `${pre} "${removedQuestionMark}": ${now}${isQuestionMark ? " | null" : ""};\n`;
     },
-    `\nexport type Gassma${sheetName}CreateReturn = {\n`
+    `\nexport type Gassma${sheetName}CreateReturn = {\n`,
   );
 
   return `${oneCreateReturn}};\n`;

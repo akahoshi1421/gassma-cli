@@ -2,7 +2,7 @@ import { getOneAggregateColumnType } from "./getColumnType/aggregate/getOneAggre
 
 const getAggregateColumnType = (columnTypes: unknown[]) => {
   const isAllTypeSame = columnTypes.every((oneColumnType) =>
-    getOneAggregateColumnType(oneColumnType)
+    getOneAggregateColumnType(oneColumnType),
   );
 
   return isAllTypeSame ? getOneAggregateColumnType(columnTypes[0]) : "";
