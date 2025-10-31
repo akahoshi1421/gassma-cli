@@ -1,5 +1,5 @@
-import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
 import { getColumnType } from "../../util/getColumnType";
+import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
 
 const getOneSheetGassmaFilterConditions = (
   sheetContent: Record<string, unknown[]>,
