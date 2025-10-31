@@ -5,20 +5,18 @@ import { generate } from "./generate/generate";
 const program = new Command();
 
 program
-  .name("generate")
+  .name("gassma")
   .version("1.0.0")
-  .description("A CLI for providing GASsma dynamic types from yaml files")
-  .argument("<do>", "do type")
-  .option("-f, --file", "yaml file");
+  .description("A CLI for providing GASsma dynamic types from yaml files");
+
+program
+  .command("generate [directory]")
+  .description("Generate type definitions from YAML files")
+  .action((directory) => {
+    generate(directory);
+  });
 
 program.parse();
 
-const [doing, fileName] = program.args;
-
-switch (doing) {
-  case "generate":
-    generate(fileName);
-    break;
-  default:
-    throw new ArgumentError();
-}
+if (program.args.length === 0)
+  throw new ArgumentError();
