@@ -11,7 +11,7 @@ const writer = (resultTypeString: string, fileName: string) => {
     fs.mkdirSync(dir, { recursive: true });
 
   fs.writeFileSync(targetPath, resultTypeString);
-  console.log(`    ✅ Generated: ${targetPath}`);
+  console.log(`✅ Generated: ${targetPath}`);
 };
 
 export { writer };

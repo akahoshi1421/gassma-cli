@@ -7,17 +7,16 @@ const program = new Command();
 program
   .name("gassma")
   .version("1.0.0")
-  .description("A CLI for providing GASsma dynamic types from yaml files")
-  .argument("<command>", "command to execute");
+  .description("A CLI for providing GASsma dynamic types from yaml files");
+
+program
+  .command("generate [directory]")
+  .description("Generate type definitions from YAML files")
+  .action((directory) => {
+    generate(directory);
+  });
 
 program.parse();
 
-const [command] = program.args;
-
-switch (command) {
-  case "generate":
-    generate();
-    break;
-  default:
-    throw new ArgumentError();
-}
+if (program.args.length === 0)
+  throw new ArgumentError();

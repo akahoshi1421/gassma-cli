@@ -4,12 +4,12 @@ import { generater } from "./generator";
 import { yamlReader } from "./read/yamlReader";
 import { writer } from "./writer";
 
-function generate() {
+function generate(customDir?: string) {
   // gassmaディレクトリ内の全YAMLファイルを処理
-  const gassmaDir = "./gassma";
+  const gassmaDir = customDir || "./gassma";
   
   if (!fs.existsSync(gassmaDir))
-    throw new Error("./gassma/ directory not found. Please create ./gassma/ directory with YAML files.");
+    throw new Error(`${gassmaDir}/ directory not found. Please create ${gassmaDir}/ directory with YAML files.`);
   
   // gassmaディレクトリ内の全YAMLファイルを取得
   const yamlFiles = fs.readdirSync(gassmaDir).filter(file => 
@@ -17,9 +17,9 @@ function generate() {
   );
   
   if (yamlFiles.length === 0)
-    throw new Error("No YAML files found in ./gassma/ directory. Please create at least one .yml or .yaml file.");
+    throw new Error(`No YAML files found in ${gassmaDir}/ directory. Please create at least one .yml or .yaml file.`);
   
-  console.log(`📁 Found ${yamlFiles.length} YAML file(s) in gassma directory`);
+  console.log(`📁 Found ${yamlFiles.length} YAML file(s) in ${path.basename(gassmaDir)} directory`);
   
   // 各YAMLファイルを処理
   yamlFiles.forEach(file => {
