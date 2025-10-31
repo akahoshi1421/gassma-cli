@@ -1,6 +1,6 @@
 import fs from "fs";
-import path from "path";
 import { load } from "js-yaml";
+import path from "path";
 
 function yamlReader(filePath: string) {
   // パスをそのまま使用（generate.tsで処理済み）
