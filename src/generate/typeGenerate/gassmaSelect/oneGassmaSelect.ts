@@ -1,6 +1,6 @@
 const getOneGassmaSelect = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const oneSelct = Object.keys(sheetContent).reduce((pre, columnName) => {
     const isQuestionMark = columnName.at(-1) === "?";

@@ -1,6 +1,6 @@
 const getOneGassmaGroupByData = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const byArrayData = Object.keys(sheetContent).reduce(
     (pre, columnName, index) => {
@@ -13,7 +13,7 @@ const getOneGassmaGroupByData = (
         ? `${pre}"${removedQuestionMark}" | `
         : `${pre}"${removedQuestionMark}"`;
     },
-    ""
+    "",
   );
   const byData = Object.keys(sheetContent).reduce((pre, columnName) => {
     const isQuestionMark = columnName.at(-1) === "?";

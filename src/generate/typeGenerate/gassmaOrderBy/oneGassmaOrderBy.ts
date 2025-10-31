@@ -1,6 +1,6 @@
 const getOneGassmaOrderBy = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const oneAnyUse = Object.keys(sheetContent).reduce((pre, columnName) => {
     const isQuestionMark = columnName.at(-1) === "?";

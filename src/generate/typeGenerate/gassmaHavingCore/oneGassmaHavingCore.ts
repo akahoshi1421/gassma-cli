@@ -2,7 +2,7 @@ import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
 
 const getOneGassmaHavingCore = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const oneHavingCore = Object.keys(sheetContent).reduce((pre, columnName) => {
     const removedSpaceCurrentColumnName = getRemovedCantUseVarChar(columnName);

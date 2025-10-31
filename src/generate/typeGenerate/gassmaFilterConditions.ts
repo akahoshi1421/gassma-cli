@@ -2,7 +2,7 @@ import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneSheetGassmaFilterConditions } from "./gassmaFilterConditions/oneSheetGassmaFilterConditions";
 
 const getGassmaFilterCoditions = (
-  dictYaml: Record<string, Record<string, unknown[]>>
+  dictYaml: Record<string, Record<string, unknown[]>>,
 ) => {
   const filterConditionsDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -14,11 +14,11 @@ const getGassmaFilterCoditions = (
         pre +
         getOneSheetGassmaFilterConditions(
           sheetContent,
-          removedSpaceCurrentSheetName
+          removedSpaceCurrentSheetName,
         )
       );
     },
-    ""
+    "",
   );
 
   return filterConditionsDeclare;

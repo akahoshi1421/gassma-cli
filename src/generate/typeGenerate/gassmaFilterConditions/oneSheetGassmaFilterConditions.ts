@@ -3,7 +3,7 @@ import { getColumnType } from "../../util/getColumnType";
 
 const getOneSheetGassmaFilterConditions = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const oneFilterConditions = Object.keys(sheetContent).reduce(
     (pre, columnName) => {
@@ -34,7 +34,7 @@ export type Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions =
 
       return pre + oneFilterConditionsType;
     },
-    ""
+    "",
   );
 
   return oneFilterConditions;

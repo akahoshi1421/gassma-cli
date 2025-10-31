@@ -1,6 +1,6 @@
 const getOneGassmaFindData = (
   sheetContent: Record<string, unknown[]>,
-  sheetName: string
+  sheetName: string,
 ) => {
   const distinctArrayData = Object.keys(sheetContent).reduce(
     (pre, columnName, index) => {
@@ -13,7 +13,7 @@ const getOneGassmaFindData = (
         ? `${pre}"${removedQuestionMark}" | `
         : `${pre}"${removedQuestionMark}"`;
     },
-    ""
+    "",
   );
   const distinctData = Object.keys(sheetContent).reduce((pre, columnName) => {
     const isQuestionMark = columnName.at(-1) === "?";

@@ -2,7 +2,7 @@ import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaSelect } from "./gassmaSelect/oneGassmaSelect";
 
 const getGassmaSelect = (
-  dictYaml: Record<string, Record<string, unknown[]>>
+  dictYaml: Record<string, Record<string, unknown[]>>,
 ) => {
   const selectDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -14,7 +14,7 @@ const getGassmaSelect = (
         pre + getOneGassmaSelect(sheetContent, removedSpaceCurrentSheetName)
       );
     },
-    ""
+    "",
   );
 
   return selectDeclare;

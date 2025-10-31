@@ -7,8 +7,7 @@ const writer = (resultTypeString: string, fileName: string) => {
 
   // ディレクトリが存在することを確認
   const dir = path.dirname(targetPath);
-  if (!fs.existsSync(dir))
-    fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
   fs.writeFileSync(targetPath, resultTypeString);
   console.log(`✅ Generated: ${targetPath}`);
