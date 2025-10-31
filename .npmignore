@@ -1,8 +1,13 @@
+.claude/
 .vscode/*
-package-lock.json
+.github/
 node_modules/
 src/
+devTypes/
+gassma/
+
+package-lock.json
 .gitignore
 tsconfig.json
-eslint.config.mjs
-schema.yml
+biome.json
+.mcp.json
