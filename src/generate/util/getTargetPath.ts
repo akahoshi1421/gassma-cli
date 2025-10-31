@@ -13,7 +13,7 @@ const getTargetPath = (fileName: string): string => {
       fs.mkdirSync(devDir, { recursive: true });
     return path.join(devDir, `${fileName}.d.ts`);
   }
-  
+
   // npm環境の場合: node_modules/gassmaに個別ファイルとして出力
   return path.join("./node_modules/gassma", `${fileName}.d.ts`);
 };
