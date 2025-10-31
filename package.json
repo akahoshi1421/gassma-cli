@@ -7,7 +7,8 @@
     "gassma": "bin/index.js"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "husky"
   },
   "author": "akahoshi1421",
   "license": "MIT",
@@ -26,6 +27,13 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.2",
     "@types/js-yaml": "^4.0.9",
-    "globals": "^15.13.0"
+    "globals": "^15.13.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx,json,css,md}": [
+      "biome check --write"
+    ]
   }
 }

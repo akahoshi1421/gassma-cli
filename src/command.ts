@@ -19,4 +19,3 @@ program
 program.parse();
 
 if (program.args.length === 0) throw new ArgumentError();
-// test3
