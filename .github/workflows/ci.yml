@@ -17,16 +17,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '24.11.0'
           cache: 'npm'
 
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-20.x-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node-24.11.0-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-20.x-
+            ${{ runner.os }}-node-24.11.0-
             ${{ runner.os }}-node-
 
       - name: Install dependencies
@@ -51,16 +51,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '24.11.0'
           cache: 'npm'
 
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-20.x-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node-24.11.0-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-20.x-
+            ${{ runner.os }}-node-24.11.0-
             ${{ runner.os }}-node-
 
       - name: Install dependencies
