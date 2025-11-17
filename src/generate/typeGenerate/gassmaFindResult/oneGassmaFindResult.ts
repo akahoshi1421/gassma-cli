@@ -1,6 +1,6 @@
 const getOneGassmaFindResult = (sheetName: string) => {
   return `
-export type Gassma${sheetName}FindResult<T> = T extends undefined
+declare type Gassma${sheetName}FindResult<T> = T extends undefined
   ? Gassma${sheetName}DefaultFindResult
   : T extends Gassma${sheetName}Select
     ? {

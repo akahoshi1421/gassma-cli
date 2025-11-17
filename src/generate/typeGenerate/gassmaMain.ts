@@ -1,6 +1,6 @@
 const getGassmaMain = () => {
-  const mainTypeDeclare = `export namespace Gassma {
-  export class GassmaClient {
+  const mainTypeDeclare = `declare namespace Gassma {
+  class GassmaClient {
     constructor(id?: string);
 
     readonly sheets: GassmaSheet;

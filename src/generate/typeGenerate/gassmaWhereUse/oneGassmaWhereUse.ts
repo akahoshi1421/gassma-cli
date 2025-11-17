@@ -16,7 +16,7 @@ const getOneGassmaWhereUse = (
       : columnName;
 
     return `${pre}  "${removedQuestionMark}"?: ${now}${isQuestionMark ? " | null" : ""} | Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions;\n`;
-  }, `\nexport type Gassma${sheetName}WhereUse = {\n`);
+  }, `\ndeclare type Gassma${sheetName}WhereUse = {\n`);
 
   return `${oneWhereUse}
   AND?: Gassma${sheetName}WhereUse[] | Gassma${sheetName}WhereUse;

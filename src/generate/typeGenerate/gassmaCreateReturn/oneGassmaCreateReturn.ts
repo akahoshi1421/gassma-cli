@@ -17,7 +17,7 @@ const getOneGassmaCreateReturn = (
 
       return `${pre} "${removedQuestionMark}": ${now}${isQuestionMark ? " | null" : ""};\n`;
     },
-    `\nexport type Gassma${sheetName}CreateReturn = {\n`,
+    `\ndeclare type Gassma${sheetName}CreateReturn = {\n`,
   );
 
   return `${oneCreateReturn}};\n`;
