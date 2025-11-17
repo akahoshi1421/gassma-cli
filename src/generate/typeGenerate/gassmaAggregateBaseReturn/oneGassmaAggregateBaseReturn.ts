@@ -19,7 +19,7 @@ const getOneGassmaAggregateBaseReturn = (
     "",
   );
 
-  return `\nexport type Gassma${sheetName}AggregateBaseReturn = {
+  return `\ndeclare type Gassma${sheetName}AggregateBaseReturn = {
 ${oneAggregateBaseReturn}};
 `;
 };

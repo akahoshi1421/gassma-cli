@@ -1,6 +1,6 @@
 const getOneGassmaGroupByBaseReturn = (sheetName: string) => {
   return `
-export type Gassma${sheetName}GroupByBaseReturn = Gassma${sheetName}CreateReturn;
+declare type Gassma${sheetName}GroupByBaseReturn = Gassma${sheetName}CreateReturn;
 `;
 };
 
