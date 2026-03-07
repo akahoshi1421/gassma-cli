@@ -141,4 +141,55 @@ model Post {
       reference: "id",
     });
   });
+
+  it("should extract manyToMany relation with through table", () => {
+    const schema = `
+model Post {
+  id       Int       @id
+  title    String
+  postTags PostTag[]
+}
+
+model Tag {
+  id       Int       @id
+  name     String
+  postTags PostTag[]
+}
+
+model PostTag {
+  postId Int
+  tagId  Int
+  post   Post @relation(fields: [postId], references: [id])
+  tag    Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([postId, tagId])
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Post.postTags).toEqual({
+      type: "oneToMany",
+      to: "PostTag",
+      field: "id",
+      reference: "postId",
+    });
+    expect(result.Tag.postTags).toEqual({
+      type: "oneToMany",
+      to: "PostTag",
+      field: "id",
+      reference: "tagId",
+    });
+    expect(result.PostTag.post).toEqual({
+      type: "manyToOne",
+      to: "Post",
+      field: "postId",
+      reference: "id",
+    });
+    expect(result.PostTag.tag).toEqual({
+      type: "manyToOne",
+      to: "Tag",
+      field: "tagId",
+      reference: "id",
+    });
+  });
 });
