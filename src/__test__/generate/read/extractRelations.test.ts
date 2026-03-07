@@ -142,6 +142,72 @@ model Post {
     });
   });
 
+  it("should extract implicit manyToMany relation", () => {
+    const schema = `
+model Post {
+  id    Int    @id
+  title String
+  tags  Tag[]
+}
+
+model Tag {
+  id    Int    @id
+  name  String
+  posts Post[]
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Post.tags).toEqual({
+      type: "manyToMany",
+      to: "Tag",
+      field: "id",
+      reference: "id",
+      through: {
+        sheet: "_PostToTag",
+        field: "postId",
+        reference: "tagId",
+      },
+    });
+    expect(result.Tag.posts).toEqual({
+      type: "manyToMany",
+      to: "Post",
+      field: "id",
+      reference: "id",
+      through: {
+        sheet: "_PostToTag",
+        field: "tagId",
+        reference: "postId",
+      },
+    });
+  });
+
+  it("should sort implicit manyToMany table name alphabetically", () => {
+    const schema = `
+model Zebra {
+  id    Int    @id
+  apples Apple[]
+}
+
+model Apple {
+  id     Int    @id
+  zebras Zebra[]
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Zebra.apples.through).toEqual({
+      sheet: "_AppleToZebra",
+      field: "zebraId",
+      reference: "appleId",
+    });
+    expect(result.Apple.zebras.through).toEqual({
+      sheet: "_AppleToZebra",
+      field: "appleId",
+      reference: "zebraId",
+    });
+  });
+
   it("should extract manyToMany relation with through table", () => {
     const schema = `
 model Post {

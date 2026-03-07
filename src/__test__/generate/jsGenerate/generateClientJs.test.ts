@@ -59,4 +59,29 @@ describe("generateClientJs", () => {
     expect(result).toContain('"onDelete": "Cascade"');
     expect(result).toContain('"onUpdate": "SetNull"');
   });
+
+  it("should include through property for manyToMany relations", () => {
+    const relations = {
+      Post: {
+        tags: {
+          type: "manyToMany" as const,
+          to: "Tag",
+          field: "id",
+          reference: "id",
+          through: {
+            sheet: "_PostToTag",
+            field: "postId",
+            reference: "tagId",
+          },
+        },
+      },
+    };
+
+    const result = generateClientJs(relations);
+
+    expect(result).toContain('"through"');
+    expect(result).toContain('"_PostToTag"');
+    expect(result).toContain('"postId"');
+    expect(result).toContain('"tagId"');
+  });
 });
