@@ -2,11 +2,36 @@ import { getGassmaMain } from "../../../generate/typeGenerate/gassmaMain";
 
 describe("getGassmaMain", () => {
   it("should generate namespace declaration with GassmaClient class", () => {
-    const result = getGassmaMain();
+    const result = getGassmaMain(["User", "Post"]);
 
     expect(result).toContain("declare namespace Gassma");
     expect(result).toContain("class GassmaClient");
-    expect(result).toContain("constructor(id?: string)");
+    expect(result).toContain(
+      "constructor(idOrOptions?: string | GassmaClientOptions)",
+    );
     expect(result).toContain("readonly sheets: GassmaSheet");
+  });
+
+  it("should generate GassmaClientOptions type", () => {
+    const result = getGassmaMain(["User", "Post"]);
+
+    expect(result).toContain("declare type GassmaClientOptions");
+    expect(result).toContain("id?: string");
+    expect(result).toContain("relations?: Gassma.RelationsConfig");
+    expect(result).toContain("omit?: GassmaGlobalOmitConfig");
+  });
+
+  it("should generate GassmaGlobalOmitConfig with model-specific omit", () => {
+    const result = getGassmaMain(["User", "Post"]);
+
+    expect(result).toContain("declare type GassmaGlobalOmitConfig");
+    expect(result).toContain('"User"?: GassmaUserOmit');
+    expect(result).toContain('"Post"?: GassmaPostOmit');
+  });
+
+  it("should handle sheet names with special characters", () => {
+    const result = getGassmaMain(["My Sheet"]);
+
+    expect(result).toContain('"My Sheet"?: GassmaMySheetOmit');
   });
 });

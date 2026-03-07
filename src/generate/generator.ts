@@ -32,9 +32,9 @@ import { getGassmaUpsertData } from "./typeGenerate/gassmaUpsertData";
 import { getGassmaWhereUse } from "./typeGenerate/gassmaWhereUse";
 
 const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
-  let result = getGassmaMain();
-
   const sheetNames = Object.keys(dictYaml);
+  let result = getGassmaMain(sheetNames);
+
   result += getGassmaSheet(sheetNames);
   result += getGassmaController(sheetNames);
   result += getGassmaManyCount();
