@@ -18,9 +18,9 @@
   "author": "akahoshi1421",
   "license": "MIT",
   "dependencies": {
+    "@loancrate/prisma-schema-parser": "^3.0.0",
     "@types/node": "^22.10.2",
-    "commander": "^12.1.0",
-    "js-yaml": "^4.1.0"
+    "commander": "^12.1.0"
   },
   "keywords": [
     "Google Apps Script",
@@ -31,9 +31,7 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "2.3.2",
-    "@loancrate/prisma-schema-parser": "^3.0.0",
     "@types/jest": "^30.0.0",
-    "@types/js-yaml": "^4.0.9",
     "globals": "^15.13.0",
     "husky": "^9.1.7",
     "jest": "^30.2.0",
