@@ -1,11 +1,13 @@
 import { parsePrismaSchema } from "@loancrate/prisma-schema-parser";
 import { mapPrismaType } from "./mapPrismaType";
 import { isScalarField } from "./isScalarField";
+import { extractAddTypes } from "./extractAddTypes";
 
 function prismaReader(
   schemaText: string,
 ): Record<string, Record<string, unknown[]>> {
   const ast = parsePrismaSchema(schemaText);
+  const addTypes = extractAddTypes(schemaText);
   const result: Record<string, Record<string, unknown[]>> = {};
 
   ast.declarations.forEach((decl) => {
@@ -30,7 +32,8 @@ function prismaReader(
         ? `${member.name.value}?`
         : member.name.value;
 
-      fields[fieldName] = [tsType];
+      const extra = addTypes[modelName]?.[member.name.value] ?? [];
+      fields[fieldName] = [tsType, ...extra];
     });
 
     result[modelName] = fields;
