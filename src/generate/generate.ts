@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { generater } from "./generator";
+import { extractOutputPath } from "./read/extractOutputPath";
 import { prismaReader } from "./read/prismaReader";
 import { writer } from "./writer";
 
@@ -30,10 +31,18 @@ function generate(customDir?: string) {
     console.log(`  📄 Processing: ${file}`);
 
     const schemaText = fs.readFileSync(filePath, "utf-8");
+
+    const outputPath = extractOutputPath(schemaText);
+    if (!outputPath)
+      throw new Error(
+        `No output path found in ${file}. Please add 'output' to the generator block.\n` +
+          `Example:\n  generator client {\n    provider = "prisma-client-js"\n    output   = "./generated/gassma"\n  }`,
+      );
+
     const parsed = prismaReader(schemaText);
     const resultString = generater(parsed);
     const baseName = path.basename(file, ".prisma");
-    writer(resultString, baseName);
+    writer(resultString, baseName, outputPath);
   });
 
   console.log(`✅ Generated ${prismaFiles.length} type definition file(s)`);

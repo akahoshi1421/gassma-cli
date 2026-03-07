@@ -1,11 +1,13 @@
 import fs from "fs";
 import path from "path";
-import { getTargetPath } from "./util/getTargetPath";
 
-const writer = (resultTypeString: string, fileName: string) => {
-  const targetPath = getTargetPath(fileName);
+const writer = (
+  resultTypeString: string,
+  fileName: string,
+  outputDir: string,
+) => {
+  const targetPath = path.join(outputDir, `${fileName}.d.ts`);
 
-  // ディレクトリが存在することを確認
   const dir = path.dirname(targetPath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
