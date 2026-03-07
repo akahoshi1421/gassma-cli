@@ -3,19 +3,19 @@ import { getOneGassmaController } from "../../../generate/typeGenerate/gassmaCon
 describe("getOneGassmaController", () => {
   const result = getOneGassmaController("User");
 
-  it("コントローラクラス宣言を生成する", () => {
+  it("should generate controller class declaration", () => {
     expect(result).toContain("declare class GassmaUserController");
   });
 
-  it("constructorを含む", () => {
+  it("should include constructor", () => {
     expect(result).toContain("constructor(sheetName: string, id?: string)");
   });
 
-  it("changeSettingsメソッドを含む", () => {
+  it("should include changeSettings method", () => {
     expect(result).toContain("changeSettings(");
   });
 
-  it("CRUDメソッドを含む", () => {
+  it("should include CRUD methods", () => {
     expect(result).toContain("createMany(");
     expect(result).toContain("create(");
     expect(result).toContain("findFirst<T extends GassmaUserFindData>");
@@ -25,7 +25,7 @@ describe("getOneGassmaController", () => {
     expect(result).toContain("deleteMany(");
   });
 
-  it("集計メソッドを含む", () => {
+  it("should include aggregation methods", () => {
     expect(result).toContain("aggregate<T extends GassmaUserAggregateData>");
     expect(result).toContain("count(");
     expect(result).toContain("groupBy<T extends GassmaUserGroupByData>");

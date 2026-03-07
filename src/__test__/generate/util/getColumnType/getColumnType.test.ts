@@ -1,15 +1,15 @@
 import { getColumnType } from "../../../../generate/util/getColumnType";
 
 describe("getColumnType", () => {
-  it("要素1つの場合は単一型を返す", () => {
+  it("should return single type for single element array", () => {
     expect(getColumnType(["number"])).toBe("number");
   });
 
-  it("要素1つの文字列リテラルの場合", () => {
+  it("should return string literal type for single string element", () => {
     expect(getColumnType(["abc"])).toBe('"abc"');
   });
 
-  it("複数要素の場合はユニオン型を返す", () => {
+  it("should return union type for multiple elements", () => {
     expect(getColumnType(["abc", "def"])).toBe('"abc" | "def"');
   });
 });

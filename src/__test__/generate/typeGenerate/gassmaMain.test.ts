@@ -1,7 +1,7 @@
 import { getGassmaMain } from "../../../generate/typeGenerate/gassmaMain";
 
 describe("getGassmaMain", () => {
-  it("GassmaClientクラスを含むnamespace宣言を生成する", () => {
+  it("should generate namespace declaration with GassmaClient class", () => {
     const result = getGassmaMain();
 
     expect(result).toContain("declare namespace Gassma");

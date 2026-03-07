@@ -1,7 +1,7 @@
 import { getGassmaSheet } from "../../../generate/typeGenerate/gassmaSheet";
 
 describe("getGassmaSheet", () => {
-  it("シート名に対応するController型のマッピングを生成する", () => {
+  it("should generate controller type mapping for sheet names", () => {
     const result = getGassmaSheet(["User", "Post"]);
 
     expect(result).toContain("declare type GassmaSheet = {");
@@ -10,13 +10,13 @@ describe("getGassmaSheet", () => {
     expect(result).toContain("};");
   });
 
-  it("記号入りシート名は変数名部分のみ記号除去する", () => {
+  it("should remove symbols only from variable name part", () => {
     const result = getGassmaSheet(["my-sheet"]);
 
     expect(result).toContain('"my-sheet": GassmamysheetController;');
   });
 
-  it("空配列の場合は空のオブジェクト型を生成する", () => {
+  it("should generate empty object type for empty array", () => {
     const result = getGassmaSheet([]);
 
     expect(result).toBe("declare type GassmaSheet = {\n};\n");
