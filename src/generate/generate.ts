@@ -1,9 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { generater } from "./generator";
+import { generateClientJs } from "./jsGenerate/generateClientJs";
 import { extractOutputPath } from "./read/extractOutputPath";
+import { extractRelations } from "./read/extractRelations";
 import { prismaReader } from "./read/prismaReader";
 import { writer } from "./writer";
+import { jsWriter } from "./jsWriter";
 
 function generate(customDir?: string) {
   const gassmaDir = customDir || "./gassma";
@@ -43,6 +46,10 @@ function generate(customDir?: string) {
     const resultString = generater(parsed);
     const baseName = path.basename(file, ".prisma");
     writer(resultString, baseName, outputPath);
+
+    const relations = extractRelations(schemaText);
+    const clientJs = generateClientJs(relations);
+    jsWriter(clientJs, "client", outputPath);
   });
 
   console.log(`✅ Generated ${prismaFiles.length} type definition file(s)`);
