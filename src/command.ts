@@ -7,11 +7,11 @@ const program = new Command();
 program
   .name("gassma")
   .version("1.0.0")
-  .description("A CLI for providing GASsma dynamic types from yaml files");
+  .description("A CLI for providing GASsma dynamic types from .prisma files");
 
 program
   .command("generate [directory]")
-  .description("Generate type definitions from YAML files")
+  .description("Generate type definitions from .prisma files")
   .action((directory) => {
     generate(directory);
   });
