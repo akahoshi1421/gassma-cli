@@ -28,6 +28,13 @@ const getGassmaCommonNamespace = () => {
 
   return `declare namespace Gassma {
 ${commonTypes}
+  interface GassmaClientMap {}
+
+  class GassmaClient<T extends keyof GassmaClientMap> {
+    constructor(idOrOptions?: string | GassmaClientMap[T]["options"]);
+    readonly sheets: GassmaClientMap[T]["sheets"];
+  }
+
   class FieldRef {
     readonly modelName: string;
     readonly name: string;
@@ -40,17 +47,19 @@ ${errorClasses}}
 };
 
 const getGassmaSchemaClient = (sheetNames: string[], schemaName: string) => {
-  const clientDeclare = `declare namespace Gassma {
-  class Gassma${schemaName}Client {
-    constructor(idOrOptions?: string | Gassma${schemaName}ClientOptions);
-    readonly sheets: Gassma${schemaName}Sheet;
+  const clientMapEntry = `declare namespace Gassma {
+  interface GassmaClientMap {
+    "${schemaName}": {
+      sheets: Gassma${schemaName}Sheet;
+      options: Gassma${schemaName}ClientOptions;
+    };
   }
 }
 
 `;
 
   return (
-    clientDeclare +
+    clientMapEntry +
     getGassmaGlobalOmitConfig(sheetNames, schemaName) +
     getGassmaClientOptions(schemaName)
   );
