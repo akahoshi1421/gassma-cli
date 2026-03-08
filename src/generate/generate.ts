@@ -43,11 +43,10 @@ function generate(customDir?: string) {
       );
 
     const parsed = prismaReader(schemaText);
-    const resultString = generater(parsed);
+    const relations = extractRelations(schemaText);
+    const resultString = generater(parsed, relations);
     const baseName = path.basename(file, ".prisma");
     writer(resultString, baseName, outputPath);
-
-    const relations = extractRelations(schemaText);
     const clientJs = generateClientJs(relations);
     jsWriter(clientJs, "client", outputPath);
   });

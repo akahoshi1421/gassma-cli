@@ -30,8 +30,12 @@ import { getGassmaSheet } from "./typeGenerate/gassmaSheet";
 import { getGassmaUpdateData } from "./typeGenerate/gassmaUpdateData";
 import { getGassmaUpsertData } from "./typeGenerate/gassmaUpsertData";
 import { getGassmaWhereUse } from "./typeGenerate/gassmaWhereUse";
+import type { RelationsConfig } from "./read/extractRelations";
 
-const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
+const generater = (
+  dictYaml: Record<string, Record<string, unknown[]>>,
+  relations?: RelationsConfig,
+) => {
   const sheetNames = Object.keys(dictYaml);
   let result = getGassmaMain(sheetNames);
 
@@ -42,7 +46,7 @@ const generater = (dictYaml: Record<string, Record<string, unknown[]>>) => {
   result += getGassmaCreate(sheetNames);
   result += getGassmaCreateMany(sheetNames);
   result += getGassmaFilterCoditions(dictYaml);
-  result += getGassmaWhereUse(dictYaml);
+  result += getGassmaWhereUse(dictYaml, relations);
   result += getGassmaHavingCore(dictYaml);
   result += getGassmaHavingUse(dictYaml);
   result += getGassmaFindData(dictYaml);
