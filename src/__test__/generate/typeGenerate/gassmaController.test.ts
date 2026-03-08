@@ -25,6 +25,12 @@ describe("getOneGassmaController", () => {
     expect(result).toContain("deleteMany(");
   });
 
+  it("should include fields property", () => {
+    expect(result).toContain(
+      "readonly fields: Record<string, Gassma.FieldRef>",
+    );
+  });
+
   it("should include aggregation methods", () => {
     expect(result).toContain("aggregate<T extends GassmaUserAggregateData>");
     expect(result).toContain("count(");

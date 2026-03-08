@@ -3,6 +3,7 @@ const getOneGassmaController = (sheetName: string) => {
 declare class Gassma${sheetName}Controller {
   constructor(sheetName: string, id?: string);
 
+  readonly fields: Record<string, Gassma.FieldRef>;
   changeSettings(
     startRowNumber: number,
     startColumnNumber: number,
