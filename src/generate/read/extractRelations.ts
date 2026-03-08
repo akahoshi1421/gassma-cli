@@ -87,8 +87,6 @@ const buildRelationsConfig = (
       to: rel.toModel,
       field: rel.localField,
       reference: rel.foreignField,
-      ...(rel.onDelete ? { onDelete: rel.onDelete } : {}),
-      ...(rel.onUpdate ? { onUpdate: rel.onUpdate } : {}),
     };
 
     const inverseModel = models.find((m) => m.name.value === rel.toModel);
