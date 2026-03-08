@@ -19,6 +19,12 @@ const getGassmaClientOptions = () => {
 
 const getGassmaMain = (sheetNames: string[]) => {
   const mainTypeDeclare = `declare namespace Gassma {
+  class FieldRef {
+    readonly modelName: string;
+    readonly name: string;
+    constructor(modelName: string, name: string);
+  }
+
   class GassmaClient {
     constructor(idOrOptions?: string | GassmaClientOptions);
 

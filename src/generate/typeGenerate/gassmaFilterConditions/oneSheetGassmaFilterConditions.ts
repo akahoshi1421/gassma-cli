@@ -18,17 +18,18 @@ const getOneSheetGassmaFilterConditions = (
 
       const oneFilterConditionsType = `
 declare type Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions = {
-  equals?: ${now}${isQuestionMark ? " | null" : ""};
+  equals?: ${now}${isQuestionMark ? " | null" : ""} | Gassma.FieldRef;
   not?: ${now}${isQuestionMark ? " | null" : ""};
   in?: ${isOneType ? `${now}[]` : `(${now})[]`};
   notIn?: ${isOneType ? `${now}[]` : `(${now})[]`};
-  lt?: ${now};
-  lte?: ${now};
-  gt?: ${now};
-  gte?: ${now};
-  contains?: string;
-  startsWith?: string;
-  endsWith?: string;
+  lt?: ${now} | Gassma.FieldRef;
+  lte?: ${now} | Gassma.FieldRef;
+  gt?: ${now} | Gassma.FieldRef;
+  gte?: ${now} | Gassma.FieldRef;
+  contains?: string | Gassma.FieldRef;
+  startsWith?: string | Gassma.FieldRef;
+  endsWith?: string | Gassma.FieldRef;
+  mode?: "default" | "insensitive";
 };
 `;
 

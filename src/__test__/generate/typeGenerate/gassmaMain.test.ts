@@ -29,6 +29,14 @@ describe("getGassmaMain", () => {
     expect(result).toContain('"Post"?: GassmaPostOmit');
   });
 
+  it("should generate FieldRef class in namespace", () => {
+    const result = getGassmaMain(["User"]);
+
+    expect(result).toContain("class FieldRef");
+    expect(result).toContain("readonly modelName: string");
+    expect(result).toContain("readonly name: string");
+  });
+
   it("should handle sheet names with special characters", () => {
     const result = getGassmaMain(["My Sheet"]);
 
