@@ -33,6 +33,7 @@ const getOneGassmaFindData = (
   skip?: number;
   distinct?: ${distinctData}(${distinctArrayData})[];
   include?: Gassma.IncludeData;
+  _count?: Gassma.CountValue;
 };\n`;
 };
 

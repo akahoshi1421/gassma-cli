@@ -30,4 +30,10 @@ describe("getOneGassmaFindData", () => {
 
     expect(result).toContain("include?: Gassma.IncludeData");
   });
+
+  it("should include _count property", () => {
+    const result = getOneGassmaFindData(sheetContent, "User");
+
+    expect(result).toContain("_count?: Gassma.CountValue;");
+  });
 });
