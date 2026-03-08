@@ -2,11 +2,13 @@ import { getOneGassmaUpdateData } from "../../../generate/typeGenerate/gassmaUpd
 import type { RelationsConfig } from "../../../generate/read/extractRelations";
 
 describe("getOneGassmaUpdateData", () => {
-  it("should generate UpdateData without relations", () => {
+  it("should generate UpdateData with NumberOperation support", () => {
     const result = getOneGassmaUpdateData("User");
 
     expect(result).toContain("declare type GassmaUserUpdateData");
-    expect(result).toContain("data: GassmaUserUse;");
+    expect(result).toContain(
+      "[K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.NumberOperation",
+    );
   });
 
   it("should add nested write operations for relations", () => {

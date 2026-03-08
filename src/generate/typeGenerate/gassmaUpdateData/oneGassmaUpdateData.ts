@@ -6,9 +6,10 @@ const getOneGassmaUpdateData = (
   relations?: RelationsConfig,
 ) => {
   const nestedFields = getNestedWriteFields(sheetName, relations);
+  const baseDataType = `{ [K in keyof Gassma${sheetName}Use]: Gassma${sheetName}Use[K] | Gassma.NumberOperation }`;
   const dataType = nestedFields
-    ? `Gassma${sheetName}Use & {\n${nestedFields}  }`
-    : `Gassma${sheetName}Use`;
+    ? `${baseDataType} & {\n${nestedFields}  }`
+    : baseDataType;
 
   return `
 declare type Gassma${sheetName}UpdateData = {
