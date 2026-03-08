@@ -12,7 +12,7 @@ const getOneGassmaUpsertSingleData = (
     ? `Gassma${schemaName}${sheetName}Use & {\n${nestedFields}  }`
     : `Gassma${schemaName}${sheetName}Use`;
 
-  const baseUpdateType = `{ [K in keyof Gassma${schemaName}${sheetName}Use]: Gassma${schemaName}${sheetName}Use[K] | Gassma.NumberOperation }`;
+  const baseUpdateType = `Partial<{ [K in keyof Gassma${schemaName}${sheetName}Use]: Gassma${schemaName}${sheetName}Use[K] | Gassma.NumberOperation }>`;
   const updateType = nestedFields
     ? `${baseUpdateType} & {\n${nestedFields}  }`
     : baseUpdateType;

@@ -14,9 +14,10 @@ describe("getOneGassmaUpdateSingleData", () => {
     expect(result).toContain("where: GassmaUserWhereUse;");
   });
 
-  it("should include data with NumberOperation", () => {
+  it("should include data with Partial NumberOperation", () => {
     const result = getOneGassmaUpdateSingleData("", "User");
 
+    expect(result).toContain("Partial<");
     expect(result).toContain(
       "[K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.NumberOperation",
     );
