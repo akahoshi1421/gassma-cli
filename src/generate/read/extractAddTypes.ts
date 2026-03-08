@@ -38,7 +38,9 @@ const processModel = (
       if (!comment.text.startsWith(GASSMA_ADD_TYPE_PREFIX)) return;
 
       const typesString = comment.text.slice(GASSMA_ADD_TYPE_PREFIX.length);
-      const types = typesString.split(",").map((t) => t.trim());
+      const types = typesString
+        .split(",")
+        .map((t) => t.trim().replace(/^"|"$/g, ""));
 
       if (!result[model.name.value]) result[model.name.value] = {};
       result[model.name.value][nextMember.name.value] = types;
