@@ -31,7 +31,8 @@ const getOneGassmaFindData = (
   orderBy?: Gassma${sheetName}OrderBy;
   take?: number;
   skip?: number;
-  distinct?: ${distinctData}(${distinctArrayData})[]
+  distinct?: ${distinctData}(${distinctArrayData})[];
+  include?: Gassma.IncludeData;
 };\n`;
 };
 
