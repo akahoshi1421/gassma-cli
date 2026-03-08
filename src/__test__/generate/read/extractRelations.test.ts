@@ -208,6 +208,32 @@ model Apple {
     });
   });
 
+  it("should extract self-referencing oneToMany relation", () => {
+    const schema = `
+model Category {
+  id       Int        @id @default(autoincrement())
+  name     String
+  parentId Int?
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Category.parent).toEqual({
+      type: "manyToOne",
+      to: "Category",
+      field: "parentId",
+      reference: "id",
+    });
+    expect(result.Category.children).toEqual({
+      type: "oneToMany",
+      to: "Category",
+      field: "id",
+      reference: "parentId",
+    });
+  });
+
   it("should extract manyToMany relation with through table", () => {
     const schema = `
 model Post {
