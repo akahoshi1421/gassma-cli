@@ -37,10 +37,16 @@ describe("generated .d.ts type check", () => {
         }),
       );
 
-      const result = execSync(`npx tsc --project ${tsconfigPath} 2>&1`, {
-        encoding: "utf-8",
-        cwd: tmpDir,
-      });
+      let result = "";
+      try {
+        result = execSync(`npx tsc --project ${tsconfigPath} 2>&1`, {
+          encoding: "utf-8",
+          cwd: tmpDir,
+        });
+      } catch (e) {
+        const error = e as { stdout?: string; stderr?: string };
+        result = error.stdout ?? error.stderr ?? "unknown error";
+      }
 
       expect(result).toBe("");
     } finally {
