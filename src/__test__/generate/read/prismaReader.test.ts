@@ -163,6 +163,32 @@ model User {
     expect(Object.keys(result)).toEqual(["User"]);
   });
 
+  it("should add types from @gassma.addType comment", () => {
+    const schema = `
+model User {
+  /// @gassma.addType string
+  id    Int    @id
+  name  String
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.User.id).toEqual(["number", "string"]);
+    expect(result.User.name).toEqual(["string"]);
+  });
+
+  it("should add multiple types from @gassma.addType comment", () => {
+    const schema = `
+model User {
+  /// @gassma.addType string, boolean
+  id Int @id
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.User.id).toEqual(["number", "string", "boolean"]);
+  });
+
   it("should ignore relation fields (list types referencing other models)", () => {
     const schema = `
 model User {
