@@ -10,6 +10,8 @@ const getOneGassmaCreate = (sheetName: string, relations?: RelationsConfig) => {
   return `
 declare type Gassma${sheetName}CreateData = {
   data: ${dataType};
+  select?: Gassma${sheetName}Select;
+  omit?: Gassma${sheetName}Omit;
 };
 `;
 };

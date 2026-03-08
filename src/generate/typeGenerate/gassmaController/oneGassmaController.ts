@@ -11,11 +11,11 @@ declare class Gassma${sheetName}Controller {
   ): void;
   createMany(createdData: Gassma${sheetName}CreateManyData): CreateManyReturn;
   createManyAndReturn(createdData: Gassma${sheetName}CreateManyData): Record<string, unknown>[];
-  create(createdData: Gassma${sheetName}CreateData): Gassma${sheetName}CreateReturn;
+  create<T extends Gassma${sheetName}CreateData>(createdData: T): Gassma${sheetName}FindResult<T["select"]>;
   findFirst<T extends Gassma${sheetName}FindData>(findData: T): Gassma${sheetName}FindResult<T["select"]> | null;
   findFirstOrThrow<T extends Gassma${sheetName}FindData>(findData: T): Gassma${sheetName}FindResult<T["select"]>;
   findMany<T extends Gassma${sheetName}FindManyData>(findData: T): Gassma${sheetName}FindResult<T["select"]>[];
-  update(updateData: Gassma.UpdateSingleData): Record<string, unknown> | null;
+  update<T extends Gassma${sheetName}UpdateSingleData>(updateData: T): Gassma${sheetName}FindResult<T["select"]> | null;
   updateMany(updateData: Gassma${sheetName}UpdateData): UpdateManyReturn;
   updateManyAndReturn(updateData: Gassma${sheetName}UpdateData): Record<string, unknown>[];
   upsert(upsertData: Gassma.UpsertSingleData): Record<string, unknown>;
