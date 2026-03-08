@@ -80,6 +80,34 @@ model Post {
     });
   });
 
+  it("should strip quotes from addType values", () => {
+    const schema = `
+model Order {
+  /// @gassma.addType "pending", "shipped", "delivered"
+  status String
+}
+`;
+    const result = extractAddTypes(schema);
+
+    expect(result).toEqual({
+      Order: { status: ["pending", "shipped", "delivered"] },
+    });
+  });
+
+  it("should handle mixed quoted and unquoted addType values", () => {
+    const schema = `
+model Post {
+  /// @gassma.addType number, "draft"
+  content String
+}
+`;
+    const result = extractAddTypes(schema);
+
+    expect(result).toEqual({
+      Post: { content: ["number", "draft"] },
+    });
+  });
+
   it("should ignore regular comments", () => {
     const schema = `
 model User {
