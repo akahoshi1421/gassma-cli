@@ -2,10 +2,11 @@ import { getOneGassmaUpdateData } from "../../../generate/typeGenerate/gassmaUpd
 import type { RelationsConfig } from "../../../generate/read/extractRelations";
 
 describe("getOneGassmaUpdateData", () => {
-  it("should generate UpdateData with NumberOperation support", () => {
+  it("should generate UpdateData with Partial NumberOperation support", () => {
     const result = getOneGassmaUpdateData("", "User");
 
     expect(result).toContain("declare type GassmaUserUpdateData");
+    expect(result).toContain("Partial<");
     expect(result).toContain(
       "[K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.NumberOperation",
     );

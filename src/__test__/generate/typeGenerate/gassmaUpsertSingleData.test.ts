@@ -20,9 +20,10 @@ describe("getOneGassmaUpsertSingleData", () => {
     expect(result).toContain("create: GassmaUserUse");
   });
 
-  it("should include update with NumberOperation", () => {
+  it("should include update with Partial NumberOperation", () => {
     const result = getOneGassmaUpsertSingleData("", "User");
 
+    expect(result).toContain("Partial<");
     expect(result).toContain(
       "[K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.NumberOperation",
     );
