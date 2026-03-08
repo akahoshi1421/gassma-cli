@@ -31,6 +31,34 @@ describe("getOneGassmaController", () => {
     );
   });
 
+  it("should include delete method", () => {
+    expect(result).toContain(
+      "delete(deleteData: Gassma.DeleteSingleData): Record<string, unknown> | null",
+    );
+  });
+
+  it("should include upsert method", () => {
+    expect(result).toContain(
+      "upsert(upsertData: Gassma.UpsertSingleData): Record<string, unknown>",
+    );
+  });
+
+  it("should include createManyAndReturn method", () => {
+    expect(result).toContain(
+      "createManyAndReturn(createdData: GassmaUserCreateManyData): Record<string, unknown>[]",
+    );
+  });
+
+  it("should include updateManyAndReturn method", () => {
+    expect(result).toContain(
+      "updateManyAndReturn(updateData: GassmaUserUpdateData): Record<string, unknown>[]",
+    );
+  });
+
+  it("should include findFirstOrThrow method", () => {
+    expect(result).toContain("findFirstOrThrow<T extends GassmaUserFindData>");
+  });
+
   it("should include aggregation methods", () => {
     expect(result).toContain("aggregate<T extends GassmaUserAggregateData>");
     expect(result).toContain("count(");

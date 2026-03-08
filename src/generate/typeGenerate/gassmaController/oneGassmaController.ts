@@ -10,11 +10,17 @@ declare class Gassma${sheetName}Controller {
     endColumnNumber: number
   ): void;
   createMany(createdData: Gassma${sheetName}CreateManyData): CreateManyReturn;
+  createManyAndReturn(createdData: Gassma${sheetName}CreateManyData): Record<string, unknown>[];
   create(createdData: Gassma${sheetName}CreateData): Gassma${sheetName}CreateReturn;
   findFirst<T extends Gassma${sheetName}FindData>(findData: T): Gassma${sheetName}FindResult<T["select"]> | null;
+  findFirstOrThrow<T extends Gassma${sheetName}FindData>(findData: T): Gassma${sheetName}FindResult<T["select"]>;
   findMany<T extends Gassma${sheetName}FindManyData>(findData: T): Gassma${sheetName}FindResult<T["select"]>[];
+  update(updateData: Gassma.UpdateSingleData): Record<string, unknown> | null;
   updateMany(updateData: Gassma${sheetName}UpdateData): UpdateManyReturn;
+  updateManyAndReturn(updateData: Gassma${sheetName}UpdateData): Record<string, unknown>[];
+  upsert(upsertData: Gassma.UpsertSingleData): Record<string, unknown>;
   upsertMany(upsertData: Gassma${sheetName}UpsertData): UpsertManyReturn;
+  delete(deleteData: Gassma.DeleteSingleData): Record<string, unknown> | null;
   deleteMany(deleteData: Gassma${sheetName}DeleteData): DeleteManyReturn;
   aggregate<T extends Gassma${sheetName}AggregateData>(aggregateData: T): Gassma${sheetName}AggregateResult<T>;
   count(coutData: Gassma${sheetName}CountData): number;
