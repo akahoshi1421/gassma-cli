@@ -1,4 +1,3 @@
-const gassmaStubs = `
 declare namespace Gassma {
   type RelationsConfig = Record<string, Record<string, unknown>>;
 
@@ -57,6 +56,3 @@ declare namespace Gassma {
   type DeleteManyReturn = ManyReturn;
   type UpsertManyReturn = ManyReturn;
 }
-`;
-
-export { gassmaStubs };
