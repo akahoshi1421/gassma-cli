@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { generater } from "../../generate/generator";
+import { generateClientDts } from "../../generate/jsGenerate/generateClientDts";
 import { prismaReader } from "../../generate/read/prismaReader";
 import { extractRelations } from "../../generate/read/extractRelations";
 
@@ -89,6 +90,14 @@ describe("generated .d.ts type check", () => {
     try {
       fs.writeFileSync(path.join(tmpDir, "hoge.d.ts"), hogeGenerated);
       fs.writeFileSync(path.join(tmpDir, "fuga.d.ts"), fugaGenerated);
+      fs.writeFileSync(
+        path.join(tmpDir, "hogeClient.d.ts"),
+        generateClientDts("Hoge"),
+      );
+      fs.writeFileSync(
+        path.join(tmpDir, "fugaClient.d.ts"),
+        generateClientDts("Fuga"),
+      );
       writeTsconfig(tsconfigPath);
 
       const result = runTsc(tmpDir, tsconfigPath);

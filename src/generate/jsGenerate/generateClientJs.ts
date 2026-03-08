@@ -1,15 +1,19 @@
 import type { RelationsConfig } from "../read/extractRelations";
 
-const generateClientJs = (relations: RelationsConfig): string => {
+const generateClientJs = (
+  relations: RelationsConfig,
+  schemaName: string,
+): string => {
+  const lowerName = schemaName.charAt(0).toLowerCase() + schemaName.slice(1);
   const relationsJson =
     Object.keys(relations).length === 0
       ? "{}"
       : JSON.stringify(relations, null, 2);
 
-  return `const relations = ${relationsJson};
+  return `const ${lowerName}Relations = ${relationsJson};
 
-function createGassmaClient(options) {
-  const mergedOptions = Object.assign({}, options, { relations: relations });
+function createGassma${schemaName}Client(options) {
+  var mergedOptions = Object.assign({}, options, { relations: ${lowerName}Relations });
   return new Gassma.GassmaClient(mergedOptions);
 }
 `;

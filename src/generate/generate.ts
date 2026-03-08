@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { generater } from "./generator";
+import { generateClientDts } from "./jsGenerate/generateClientDts";
 import { generateClientJs } from "./jsGenerate/generateClientJs";
 import { extractOutputPath } from "./read/extractOutputPath";
 import { extractRelations } from "./read/extractRelations";
@@ -57,8 +58,10 @@ function generate(customDir?: string) {
       includeCommon,
     );
     writer(resultString, baseName, outputPath);
-    const clientJs = generateClientJs(relations);
-    jsWriter(clientJs, "client", outputPath);
+    const clientJs = generateClientJs(relations, schemaName);
+    jsWriter(clientJs, `${baseName}Client`, outputPath);
+    const clientDts = generateClientDts(schemaName);
+    writer(clientDts, `${baseName}Client`, outputPath);
   });
 
   console.log(`✅ Generated ${prismaFiles.length} type definition file(s)`);
