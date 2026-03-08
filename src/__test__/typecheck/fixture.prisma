@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/gassma"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  age       Int?
+  isActive  Boolean  @default(true)
+  /// @gassma.addType boolean
+  score     Float
+  /// @gassma.addType string, boolean
+  rating    Int?
+  createdAt DateTime @default(now())
+  posts     Post[]
+  profile   Profile?
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  /// @gassma.addType number
+  content   String?
+  published Boolean  @default(false)
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tags      Tag[]
+}
+
+model Profile {
+  id     Int    @id @default(autoincrement())
+  bio    String
+  userId Int    @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts Post[]
+}
