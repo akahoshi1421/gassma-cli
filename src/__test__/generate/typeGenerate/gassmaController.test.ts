@@ -31,15 +31,15 @@ describe("getOneGassmaController", () => {
     );
   });
 
-  it("should include delete method", () => {
+  it("should have generic delete method with model-specific type", () => {
     expect(result).toContain(
-      "delete(deleteData: Gassma.DeleteSingleData): Record<string, unknown> | null",
+      'delete<T extends GassmaUserDeleteSingleData>(deleteData: T): GassmaUserFindResult<T["select"]> | null',
     );
   });
 
-  it("should include upsert method", () => {
+  it("should have generic upsert method with model-specific type", () => {
     expect(result).toContain(
-      "upsert(upsertData: Gassma.UpsertSingleData): Record<string, unknown>",
+      'upsert<T extends GassmaUserUpsertSingleData>(upsertData: T): GassmaUserFindResult<T["select"]>',
     );
   });
 

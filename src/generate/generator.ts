@@ -11,6 +11,7 @@ import { getGassmaCreateMany } from "./typeGenerate/gassmaCreateMany";
 import { getGassmaCreateReturn } from "./typeGenerate/gassmaCreateReturn";
 import { getGassmaDefaultFindResult } from "./typeGenerate/gassmaDefaultFindResult";
 import { getGassmaDeleteData } from "./typeGenerate/gassmaDeleteData";
+import { getGassmaDeleteSingleData } from "./typeGenerate/gassmaDeleteSingleData";
 import { getGassmaFilterCoditions } from "./typeGenerate/gassmaFilterConditions";
 import { getGassmaFindData } from "./typeGenerate/gassmaFindData";
 import { getGassmaFindManyData } from "./typeGenerate/gassmaFindManyData";
@@ -30,6 +31,7 @@ import { getGassmaSheet } from "./typeGenerate/gassmaSheet";
 import { getGassmaUpdateData } from "./typeGenerate/gassmaUpdateData";
 import { getGassmaUpdateSingleData } from "./typeGenerate/gassmaUpdateSingleData";
 import { getGassmaUpsertData } from "./typeGenerate/gassmaUpsertData";
+import { getGassmaUpsertSingleData } from "./typeGenerate/gassmaUpsertSingleData";
 import { getGassmaWhereUse } from "./typeGenerate/gassmaWhereUse";
 import type { RelationsConfig } from "./read/extractRelations";
 
@@ -55,7 +57,9 @@ const generater = (
   result += getGassmaUpdateData(sheetNames, relations);
   result += getGassmaUpdateSingleData(sheetNames, relations);
   result += getGassmaUpsertData(sheetNames);
+  result += getGassmaUpsertSingleData(sheetNames, relations);
   result += getGassmaDeleteData(sheetNames);
+  result += getGassmaDeleteSingleData(sheetNames);
   result += getGassmaAggregateData(sheetNames);
   result += getGassmaGroupByData(dictYaml);
   result += getGassmaOrderBy(dictYaml);

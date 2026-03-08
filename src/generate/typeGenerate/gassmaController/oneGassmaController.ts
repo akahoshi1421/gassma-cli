@@ -18,9 +18,9 @@ declare class Gassma${sheetName}Controller {
   update<T extends Gassma${sheetName}UpdateSingleData>(updateData: T): Gassma${sheetName}FindResult<T["select"]> | null;
   updateMany(updateData: Gassma${sheetName}UpdateData): UpdateManyReturn;
   updateManyAndReturn(updateData: Gassma${sheetName}UpdateData): Record<string, unknown>[];
-  upsert(upsertData: Gassma.UpsertSingleData): Record<string, unknown>;
+  upsert<T extends Gassma${sheetName}UpsertSingleData>(upsertData: T): Gassma${sheetName}FindResult<T["select"]>;
   upsertMany(upsertData: Gassma${sheetName}UpsertData): UpsertManyReturn;
-  delete(deleteData: Gassma.DeleteSingleData): Record<string, unknown> | null;
+  delete<T extends Gassma${sheetName}DeleteSingleData>(deleteData: T): Gassma${sheetName}FindResult<T["select"]> | null;
   deleteMany(deleteData: Gassma${sheetName}DeleteData): DeleteManyReturn;
   aggregate<T extends Gassma${sheetName}AggregateData>(aggregateData: T): Gassma${sheetName}AggregateResult<T>;
   count(coutData: Gassma${sheetName}CountData): number;
