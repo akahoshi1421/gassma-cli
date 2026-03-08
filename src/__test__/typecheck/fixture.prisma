@@ -11,6 +11,8 @@ model User {
   isActive  Boolean  @default(true)
   /// @gassma.addType boolean
   score     Float
+  /// @gassma.addType string, boolean
+  rating    Int?
   createdAt DateTime @default(now())
   posts     Post[]
   profile   Profile?
@@ -19,6 +21,7 @@ model User {
 model Post {
   id        Int      @id @default(autoincrement())
   title     String
+  /// @gassma.addType number
   content   String?
   published Boolean  @default(false)
   authorId  Int
