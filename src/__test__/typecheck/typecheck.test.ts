@@ -39,7 +39,16 @@ describe("generated .d.ts type check", () => {
 
       let result = "";
       try {
-        result = execSync(`npx tsc --project ${tsconfigPath} 2>&1`, {
+        const tscPath = path.join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "node_modules",
+          ".bin",
+          "tsc",
+        );
+        result = execSync(`${tscPath} --project ${tsconfigPath} 2>&1`, {
           encoding: "utf-8",
           cwd: tmpDir,
         });
