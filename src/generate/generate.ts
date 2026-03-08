@@ -29,6 +29,8 @@ function generate(customDir?: string) {
     `📁 Found ${prismaFiles.length} .prisma file(s) in ${path.basename(gassmaDir)} directory`,
   );
 
+  const commonWritten = new Set<string>();
+
   prismaFiles.forEach((file) => {
     const filePath = path.join(gassmaDir, file);
     console.log(`  📄 Processing: ${file}`);
@@ -44,8 +46,16 @@ function generate(customDir?: string) {
 
     const parsed = prismaReader(schemaText);
     const relations = extractRelations(schemaText);
-    const resultString = generater(parsed, relations);
     const baseName = path.basename(file, ".prisma");
+    const schemaName = baseName.charAt(0).toUpperCase() + baseName.slice(1);
+    const includeCommon = !commonWritten.has(outputPath);
+    commonWritten.add(outputPath);
+    const resultString = generater(
+      parsed,
+      relations,
+      schemaName,
+      includeCommon,
+    );
     writer(resultString, baseName, outputPath);
     const clientJs = generateClientJs(relations);
     jsWriter(clientJs, "client", outputPath);

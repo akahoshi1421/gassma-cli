@@ -3,6 +3,7 @@ import { getOneGassmaHavingUse } from "./gassmaHavingUse/oneGassmaHavingUse";
 
 const getGassmaHavingUse = (
   dictYaml: Record<string, Record<string, unknown[]>>,
+  schemaName: string,
 ) => {
   const havingUseDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -11,7 +12,12 @@ const getGassmaHavingUse = (
         getRemovedCantUseVarChar(currentSheetName);
 
       return (
-        pre + getOneGassmaHavingUse(sheetContent, removedSpaceCurrentSheetName)
+        pre +
+        getOneGassmaHavingUse(
+          sheetContent,
+          schemaName,
+          removedSpaceCurrentSheetName,
+        )
       );
     },
     "",

@@ -4,6 +4,7 @@ import type { RelationsConfig } from "../read/extractRelations";
 
 const getGassmaWhereUse = (
   dictYaml: Record<string, Record<string, unknown[]>>,
+  schemaName: string,
   relations?: RelationsConfig,
 ) => {
   const whereUseDeclare = Object.keys(dictYaml).reduce(
@@ -16,6 +17,7 @@ const getGassmaWhereUse = (
         pre +
         getOneGassmaWhereUse(
           sheetContent,
+          schemaName,
           removedSpaceCurrentSheetName,
           relations,
         )

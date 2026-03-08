@@ -2,6 +2,7 @@ import type { RelationsConfig } from "../../read/extractRelations";
 
 const getOneGassmaOrderBy = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
   relations?: RelationsConfig,
 ) => {
@@ -12,7 +13,7 @@ const getOneGassmaOrderBy = (
       : columnName;
 
     return `${pre}  "${removedQuestionMark}"?: "asc" | "desc" | Gassma.SortOrderInput;\n`;
-  }, `\ndeclare type Gassma${sheetName}OrderBy = {\n`);
+  }, `\ndeclare type Gassma${schemaName}${sheetName}OrderBy = {\n`);
 
   const modelRelations = relations?.[sheetName];
   const relationFields = modelRelations

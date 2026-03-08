@@ -4,6 +4,7 @@ import type { RelationsConfig } from "../read/extractRelations";
 
 const getGassmaUpdateSingleData = (
   sheetNames: string[],
+  schemaName: string,
   relations?: RelationsConfig,
 ) => {
   const updateSingleDataDeclare = sheetNames.reduce((pre, currentSheetName) => {
@@ -12,7 +13,11 @@ const getGassmaUpdateSingleData = (
 
     return (
       pre +
-      getOneGassmaUpdateSingleData(removedSpaceCurrentSheetName, relations)
+      getOneGassmaUpdateSingleData(
+        schemaName,
+        removedSpaceCurrentSheetName,
+        relations,
+      )
     );
   }, "");
 

@@ -1,7 +1,7 @@
-const getOneGassmaDeleteData = (sheetName: string) => {
+const getOneGassmaDeleteData = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${sheetName}DeleteData = {
-  where: Gassma${sheetName}WhereUse;
+declare type Gassma${schemaName}${sheetName}DeleteData = {
+  where: Gassma${schemaName}${sheetName}WhereUse;
   limit?: number;
 };
 `;

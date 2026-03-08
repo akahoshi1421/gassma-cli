@@ -3,6 +3,7 @@ import { getOneGassmaGroupByData } from "./gassmaGroupByData/oneGassmaGroupByDat
 
 const getGassmaGroupByData = (
   dictYaml: Record<string, Record<string, unknown[]>>,
+  schemaName: string,
 ) => {
   const groupByDataDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -12,7 +13,11 @@ const getGassmaGroupByData = (
 
       return (
         pre +
-        getOneGassmaGroupByData(sheetContent, removedSpaceCurrentSheetName)
+        getOneGassmaGroupByData(
+          sheetContent,
+          schemaName,
+          removedSpaceCurrentSheetName,
+        )
       );
     },
     "",

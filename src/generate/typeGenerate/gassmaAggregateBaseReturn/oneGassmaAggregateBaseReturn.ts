@@ -3,6 +3,7 @@ import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
 
 const getOneGassmaAggregateBaseReturn = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
 ) => {
   const oneAggregateBaseReturn = Object.keys(sheetContent).reduce(
@@ -19,7 +20,7 @@ const getOneGassmaAggregateBaseReturn = (
     "",
   );
 
-  return `\ndeclare type Gassma${sheetName}AggregateBaseReturn = {
+  return `\ndeclare type Gassma${schemaName}${sheetName}AggregateBaseReturn = {
 ${oneAggregateBaseReturn}};
 `;
 };

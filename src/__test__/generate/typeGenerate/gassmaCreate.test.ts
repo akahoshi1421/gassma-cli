@@ -3,7 +3,7 @@ import type { RelationsConfig } from "../../../generate/read/extractRelations";
 
 describe("getOneGassmaCreate", () => {
   it("should generate CreateData without relations", () => {
-    const result = getOneGassmaCreate("User");
+    const result = getOneGassmaCreate("", "User");
 
     expect(result).toContain("declare type GassmaUserCreateData");
     expect(result).toContain("data: GassmaUserUse");
@@ -21,7 +21,7 @@ describe("getOneGassmaCreate", () => {
       },
     };
 
-    const result = getOneGassmaCreate("User", relations);
+    const result = getOneGassmaCreate("", "User", relations);
 
     expect(result).toContain(
       'data: GassmaUserUse & {\n    "posts"?: Gassma.NestedWriteOperation;\n  }',
@@ -46,20 +46,20 @@ describe("getOneGassmaCreate", () => {
       },
     };
 
-    const result = getOneGassmaCreate("User", relations);
+    const result = getOneGassmaCreate("", "User", relations);
 
     expect(result).toContain('"posts"?: Gassma.NestedWriteOperation');
     expect(result).toContain('"profile"?: Gassma.NestedWriteOperation');
   });
 
   it("should include select property", () => {
-    const result = getOneGassmaCreate("User");
+    const result = getOneGassmaCreate("", "User");
 
     expect(result).toContain("select?: GassmaUserSelect;");
   });
 
   it("should include omit property", () => {
-    const result = getOneGassmaCreate("User");
+    const result = getOneGassmaCreate("", "User");
 
     expect(result).toContain("omit?: GassmaUserOmit;");
   });
@@ -76,7 +76,7 @@ describe("getOneGassmaCreate", () => {
       },
     };
 
-    const result = getOneGassmaCreate("User", relations);
+    const result = getOneGassmaCreate("", "User", relations);
 
     expect(result).toContain("data: GassmaUserUse;");
     expect(result).not.toContain("NestedWriteOperation");

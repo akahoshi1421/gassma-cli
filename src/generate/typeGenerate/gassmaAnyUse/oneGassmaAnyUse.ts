@@ -2,6 +2,7 @@ import { getColumnType } from "../../util/getColumnType";
 
 const getOneGassmaAnyUse = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
 ) => {
   const oneAnyUse = Object.keys(sheetContent).reduce((pre, columnName) => {
@@ -18,7 +19,7 @@ const getOneGassmaAnyUse = (
       : `"${removedQuestionMark}"`;
 
     return `${pre}  ${insertColumnName}: ${now};\n`;
-  }, `\ndeclare type Gassma${sheetName}Use = {\n`);
+  }, `\ndeclare type Gassma${schemaName}${sheetName}Use = {\n`);
 
   return `${oneAnyUse}};\n`;
 };

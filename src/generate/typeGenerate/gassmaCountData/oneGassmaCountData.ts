@@ -1,8 +1,8 @@
-const getOneGassmaCountData = (sheetName: string) => {
+const getOneGassmaCountData = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${sheetName}CountData = {
-  where?: Gassma${sheetName}WhereUse;
-  orderBy?: Gassma${sheetName}OrderBy;
+declare type Gassma${schemaName}${sheetName}CountData = {
+  where?: Gassma${schemaName}${sheetName}WhereUse;
+  orderBy?: Gassma${schemaName}${sheetName}OrderBy;
   take?: number;
   skip?: number;
 };

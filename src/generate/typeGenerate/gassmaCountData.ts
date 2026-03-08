@@ -1,12 +1,14 @@
 import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaCountData } from "./gassmaCountData/oneGassmaCountData";
 
-const getGassmaCountData = (sheetNames: string[]) => {
+const getGassmaCountData = (sheetNames: string[], schemaName: string) => {
   const countDataDeclare = sheetNames.reduce((pre, currentSheetName) => {
     const removedSpaceCurrentSheetName =
       getRemovedCantUseVarChar(currentSheetName);
 
-    return pre + getOneGassmaCountData(removedSpaceCurrentSheetName);
+    return (
+      pre + getOneGassmaCountData(schemaName, removedSpaceCurrentSheetName)
+    );
   }, "");
 
   return countDataDeclare;

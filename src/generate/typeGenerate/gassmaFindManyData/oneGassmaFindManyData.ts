@@ -1,6 +1,6 @@
-const getOneGassmaFindManyData = (sheetName: string) => {
+const getOneGassmaFindManyData = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${sheetName}FindManyData = Gassma${sheetName}FindData;    
+declare type Gassma${schemaName}${sheetName}FindManyData = Gassma${schemaName}${sheetName}FindData;
 `;
 };
 

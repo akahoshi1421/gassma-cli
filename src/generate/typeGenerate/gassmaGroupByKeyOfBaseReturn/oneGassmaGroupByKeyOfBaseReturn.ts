@@ -1,6 +1,9 @@
-const getOneGassmaGroupByKeyOfBaseReturn = (sheetName: string) => {
+const getOneGassmaGroupByKeyOfBaseReturn = (
+  schemaName: string,
+  sheetName: string,
+) => {
   return `
-declare type Gassma${sheetName}GroupByKeyOfBaseReturn = keyof Gassma${sheetName}GroupByBaseReturn;
+declare type Gassma${schemaName}${sheetName}GroupByKeyOfBaseReturn = keyof Gassma${schemaName}${sheetName}GroupByBaseReturn;
 `;
 };
 

@@ -3,6 +3,7 @@ import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
 
 const getOneGassmaHavingUse = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
 ) => {
   const oneHavingUse = Object.keys(sheetContent).reduce((pre, columnName) => {
@@ -15,13 +16,13 @@ const getOneGassmaHavingUse = (
       ? columnName.substring(0, columnName.length - 1)
       : columnName;
 
-    return `${pre}  "${removedQuestionMark}"?: ${now}${isQuestionMark ? " | null" : ""} | Gassma${sheetName}${removedSpaceCurrentColumnName}HavingCore;\n`;
-  }, `\ndeclare type Gassma${sheetName}HavingUse = {\n`);
+    return `${pre}  "${removedQuestionMark}"?: ${now}${isQuestionMark ? " | null" : ""} | Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}HavingCore;\n`;
+  }, `\ndeclare type Gassma${schemaName}${sheetName}HavingUse = {\n`);
 
   return `${oneHavingUse}
-  AND?: Gassma${sheetName}HavingUse[] | Gassma${sheetName}HavingUse;
-  OR?: Gassma${sheetName}HavingUse[];
-  NOT?: Gassma${sheetName}HavingUse[] | Gassma${sheetName}HavingUse;
+  AND?: Gassma${schemaName}${sheetName}HavingUse[] | Gassma${schemaName}${sheetName}HavingUse;
+  OR?: Gassma${schemaName}${sheetName}HavingUse[];
+  NOT?: Gassma${schemaName}${sheetName}HavingUse[] | Gassma${schemaName}${sheetName}HavingUse;
 };
 `;
 };
