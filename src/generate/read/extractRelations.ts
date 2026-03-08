@@ -109,6 +109,8 @@ const buildRelationsConfig = (
       to: rel.modelName,
       field: rel.foreignField,
       reference: rel.localField,
+      ...(rel.onDelete ? { onDelete: rel.onDelete } : {}),
+      ...(rel.onUpdate ? { onUpdate: rel.onUpdate } : {}),
     };
   });
 

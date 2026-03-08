@@ -102,6 +102,9 @@ model Post {
 
     expect(result.Post.author.onDelete).toBe("Cascade");
     expect(result.Post.author.onUpdate).toBe("SetNull");
+
+    expect(result.User.posts.onDelete).toBe("Cascade");
+    expect(result.User.posts.onUpdate).toBe("SetNull");
   });
 
   it("should handle multiple relations on the same model", () => {
