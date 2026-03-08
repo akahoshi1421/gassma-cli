@@ -15,6 +15,7 @@ const getOneGassmaUpdateData = (
 declare type Gassma${sheetName}UpdateData = {
   where?: Gassma${sheetName}WhereUse;
   data: ${dataType};
+  limit?: number;
 };
 `;
 };
