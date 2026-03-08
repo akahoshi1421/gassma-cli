@@ -1,8 +1,10 @@
 import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaWhereUse } from "./gassmaWhereUse/oneGassmaWhereUse";
+import type { RelationsConfig } from "../read/extractRelations";
 
 const getGassmaWhereUse = (
   dictYaml: Record<string, Record<string, unknown[]>>,
+  relations?: RelationsConfig,
 ) => {
   const whereUseDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -11,7 +13,12 @@ const getGassmaWhereUse = (
         getRemovedCantUseVarChar(currentSheetName);
 
       return (
-        pre + getOneGassmaWhereUse(sheetContent, removedSpaceCurrentSheetName)
+        pre +
+        getOneGassmaWhereUse(
+          sheetContent,
+          removedSpaceCurrentSheetName,
+          relations,
+        )
       );
     },
     "",
