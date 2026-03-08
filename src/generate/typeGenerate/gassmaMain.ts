@@ -1,4 +1,5 @@
 import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
+import { getGassmaErrorClasses } from "./gassmaErrorClasses";
 
 const getGassmaGlobalOmitConfig = (sheetNames: string[]) => {
   const body = sheetNames.reduce((pre, sheetName) => {
@@ -18,6 +19,8 @@ const getGassmaClientOptions = () => {
 };
 
 const getGassmaMain = (sheetNames: string[]) => {
+  const errorClasses = getGassmaErrorClasses();
+
   const mainTypeDeclare = `declare namespace Gassma {
   class FieldRef {
     readonly modelName: string;
@@ -30,7 +33,8 @@ const getGassmaMain = (sheetNames: string[]) => {
 
     readonly sheets: GassmaSheet;
   }
-}
+
+${errorClasses}}
 
 `;
 
