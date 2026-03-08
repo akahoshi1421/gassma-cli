@@ -10,16 +10,15 @@ const generateClientJs = (
       ? "{}"
       : JSON.stringify(relations, null, 2);
 
-  return `var ${lowerName}Relations = ${relationsJson};
+  return `const ${lowerName}Relations = ${relationsJson};
 
-var GassmaClient = (function () {
-  function GassmaClient(options) {
-    var mergedOptions = Object.assign({}, options, { relations: ${lowerName}Relations });
-    var client = new Gassma.GassmaClient(mergedOptions);
+class GassmaClient {
+  constructor(options) {
+    const mergedOptions = Object.assign({}, options, { relations: ${lowerName}Relations });
+    const client = new Gassma.GassmaClient(mergedOptions);
     this.sheets = client.sheets;
   }
-  return GassmaClient;
-})();
+}
 
 exports.GassmaClient = GassmaClient;
 `;
