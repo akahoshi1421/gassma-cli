@@ -218,14 +218,6 @@
   "overrides": [
     { "includes": ["**/*.{js,mjs,cjs,ts}"] },
     {
-      "includes": ["src/__test__/typecheck/gassma-stubs.d.ts"],
-      "linter": {
-        "rules": {
-          "style": { "noNamespace": "off" }
-        }
-      }
-    },
-    {
       "includes": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
       "linter": {
         "rules": {
