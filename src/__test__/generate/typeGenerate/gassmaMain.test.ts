@@ -42,4 +42,16 @@ describe("getGassmaMain", () => {
 
     expect(result).toContain('"My Sheet"?: GassmaMySheetOmit');
   });
+
+  it("should include common types in namespace", () => {
+    const result = getGassmaMain(["User"]);
+
+    expect(result).toContain("type RelationsConfig =");
+    expect(result).toContain("type NumberOperation =");
+    expect(result).toContain("type ManyReturn =");
+    expect(result).toContain("type NestedWriteOperation =");
+    expect(result).toContain("type SortOrderInput =");
+    expect(result).toContain("type IncludeData =");
+    expect(result).toContain("type CountValue =");
+  });
 });

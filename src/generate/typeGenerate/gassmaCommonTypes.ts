@@ -1,5 +1,5 @@
-declare namespace Gassma {
-  type RelationsConfig = Record<string, Record<string, unknown>>;
+const getGassmaCommonTypes = () => {
+  return `  type RelationsConfig = Record<string, Record<string, unknown>>;
 
   type IncludeData = {
     [relationName: string]: unknown;
@@ -55,4 +55,7 @@ declare namespace Gassma {
   type UpdateManyReturn = ManyReturn;
   type DeleteManyReturn = ManyReturn;
   type UpsertManyReturn = ManyReturn;
-}
+`;
+};
+
+export { getGassmaCommonTypes };
