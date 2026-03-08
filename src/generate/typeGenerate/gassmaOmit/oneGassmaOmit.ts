@@ -1,5 +1,6 @@
 const getOneGassmaOmit = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
 ) => {
   const oneOmit = Object.keys(sheetContent).reduce((pre, columnName) => {
@@ -9,7 +10,7 @@ const getOneGassmaOmit = (
       : columnName;
 
     return `${pre}  "${removedQuestionMark}"?: true;\n`;
-  }, `\ndeclare type Gassma${sheetName}Omit = {\n`);
+  }, `\ndeclare type Gassma${schemaName}${sheetName}Omit = {\n`);
 
   return `${oneOmit}};\n`;
 };

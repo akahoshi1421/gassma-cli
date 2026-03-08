@@ -1,9 +1,9 @@
-const getOneGassmaUpsertData = (sheetName: string) => {
+const getOneGassmaUpsertData = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${sheetName}UpsertData = {
-  where: Gassma${sheetName}WhereUse;
-  update: Gassma${sheetName}Use;
-  data: Gassma${sheetName}Use;
+declare type Gassma${schemaName}${sheetName}UpsertData = {
+  where: Gassma${schemaName}${sheetName}WhereUse;
+  update: Gassma${schemaName}${sheetName}Use;
+  data: Gassma${schemaName}${sheetName}Use;
 };
 `;
 };

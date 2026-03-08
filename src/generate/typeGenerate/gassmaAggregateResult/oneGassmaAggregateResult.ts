@@ -1,11 +1,11 @@
-const getOneGassmaAggregateResult = (sheetName: string) => {
+const getOneGassmaAggregateResult = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${sheetName}AggregateResult<T extends Gassma${sheetName}AggregateData> = {
+declare type Gassma${schemaName}${sheetName}AggregateResult<T extends Gassma${schemaName}${sheetName}AggregateData> = {
   [K in keyof T as K extends "_avg" | "_count" | "_max" | "_min" | "_sum"
     ? T[K] extends undefined
       ? never
       : K
-    : never]: K extends string ? Gassma${sheetName}AggregateField<T[K], K> : never;
+    : never]: K extends string ? Gassma${schemaName}${sheetName}AggregateField<T[K], K> : never;
 };
 `;
 };

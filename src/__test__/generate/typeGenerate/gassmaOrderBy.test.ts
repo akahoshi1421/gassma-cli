@@ -9,19 +9,19 @@ describe("getOneGassmaOrderBy", () => {
   };
 
   it("should generate OrderBy type", () => {
-    const result = getOneGassmaOrderBy(sheetContent, "User");
+    const result = getOneGassmaOrderBy(sheetContent, "", "User");
 
     expect(result).toContain("declare type GassmaUserOrderBy");
   });
 
   it("should support SortOrderInput with nulls option", () => {
-    const result = getOneGassmaOrderBy(sheetContent, "User");
+    const result = getOneGassmaOrderBy(sheetContent, "", "User");
 
     expect(result).toContain('"id"?: "asc" | "desc" | Gassma.SortOrderInput;');
   });
 
   it("should remove question mark from column names", () => {
-    const result = getOneGassmaOrderBy(sheetContent, "User");
+    const result = getOneGassmaOrderBy(sheetContent, "", "User");
 
     expect(result).toContain('"email"?:');
     expect(result).not.toContain('"email?"');
@@ -39,7 +39,7 @@ describe("getOneGassmaOrderBy", () => {
       },
     };
 
-    const result = getOneGassmaOrderBy(sheetContent, "User", relations);
+    const result = getOneGassmaOrderBy(sheetContent, "", "User", relations);
 
     expect(result).toContain('"posts"?: Gassma.RelationOrderBy;');
   });
@@ -56,7 +56,7 @@ describe("getOneGassmaOrderBy", () => {
       },
     };
 
-    const result = getOneGassmaOrderBy(sheetContent, "User", relations);
+    const result = getOneGassmaOrderBy(sheetContent, "", "User", relations);
 
     expect(result).toContain('"_count"?: Gassma.RelationOrderBy;');
   });
@@ -73,7 +73,7 @@ describe("getOneGassmaOrderBy", () => {
       },
     };
 
-    const result = getOneGassmaOrderBy(sheetContent, "User", relations);
+    const result = getOneGassmaOrderBy(sheetContent, "", "User", relations);
 
     expect(result).not.toContain("Gassma.RelationOrderBy");
   });

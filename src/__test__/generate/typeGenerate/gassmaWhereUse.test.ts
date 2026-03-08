@@ -8,7 +8,7 @@ describe("getOneGassmaWhereUse", () => {
   };
 
   it("should generate WhereUse without relations", () => {
-    const result = getOneGassmaWhereUse(sheetContent, "User");
+    const result = getOneGassmaWhereUse(sheetContent, "", "User");
 
     expect(result).toContain("declare type GassmaUserWhereUse");
     expect(result).toContain('"id"?:');
@@ -30,7 +30,7 @@ describe("getOneGassmaWhereUse", () => {
       },
     };
 
-    const result = getOneGassmaWhereUse(sheetContent, "User", relations);
+    const result = getOneGassmaWhereUse(sheetContent, "", "User", relations);
 
     expect(result).toContain('"posts"?: Gassma.RelationListFilter');
   });
@@ -47,7 +47,7 @@ describe("getOneGassmaWhereUse", () => {
       },
     };
 
-    const result = getOneGassmaWhereUse(sheetContent, "Post", relations);
+    const result = getOneGassmaWhereUse(sheetContent, "", "Post", relations);
 
     expect(result).toContain('"author"?: Gassma.RelationSingleFilter');
   });
@@ -64,7 +64,7 @@ describe("getOneGassmaWhereUse", () => {
       },
     };
 
-    const result = getOneGassmaWhereUse(sheetContent, "User", relations);
+    const result = getOneGassmaWhereUse(sheetContent, "", "User", relations);
 
     expect(result).toContain('"profile"?: Gassma.RelationSingleFilter');
   });
@@ -81,7 +81,7 @@ describe("getOneGassmaWhereUse", () => {
       },
     };
 
-    const result = getOneGassmaWhereUse(sheetContent, "Post", relations);
+    const result = getOneGassmaWhereUse(sheetContent, "", "Post", relations);
 
     expect(result).toContain('"tags"?: Gassma.RelationListFilter');
   });
@@ -98,7 +98,7 @@ describe("getOneGassmaWhereUse", () => {
       },
     };
 
-    const result = getOneGassmaWhereUse(sheetContent, "User", relations);
+    const result = getOneGassmaWhereUse(sheetContent, "", "User", relations);
 
     expect(result).not.toContain("RelationListFilter");
     expect(result).not.toContain("RelationSingleFilter");

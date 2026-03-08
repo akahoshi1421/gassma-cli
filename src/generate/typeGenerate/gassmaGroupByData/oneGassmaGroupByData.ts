@@ -1,5 +1,6 @@
 const getOneGassmaGroupByData = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
 ) => {
   const byArrayData = Object.keys(sheetContent).reduce(
@@ -24,9 +25,9 @@ const getOneGassmaGroupByData = (
     return `${pre}"${removedQuestionMark}" | `;
   }, "");
 
-  return `\ndeclare type Gassma${sheetName}GroupByData = Gassma${sheetName}AggregateData & {
+  return `\ndeclare type Gassma${schemaName}${sheetName}GroupByData = Gassma${schemaName}${sheetName}AggregateData & {
   by: ${byData}(${byArrayData})[];
-  having?: Gassma${sheetName}HavingUse;
+  having?: Gassma${schemaName}${sheetName}HavingUse;
 };
 `;
 };

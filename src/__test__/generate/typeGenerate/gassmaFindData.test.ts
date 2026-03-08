@@ -8,7 +8,7 @@ describe("getOneGassmaFindData", () => {
   };
 
   it("should generate FindData type with where, select, omit, orderBy", () => {
-    const result = getOneGassmaFindData(sheetContent, "User");
+    const result = getOneGassmaFindData(sheetContent, "", "User");
 
     expect(result).toContain("declare type GassmaUserFindData");
     expect(result).toContain("where?: GassmaUserWhereUse");
@@ -18,7 +18,7 @@ describe("getOneGassmaFindData", () => {
   });
 
   it("should include take, skip, and distinct", () => {
-    const result = getOneGassmaFindData(sheetContent, "User");
+    const result = getOneGassmaFindData(sheetContent, "", "User");
 
     expect(result).toContain("take?: number");
     expect(result).toContain("skip?: number");
@@ -26,19 +26,19 @@ describe("getOneGassmaFindData", () => {
   });
 
   it("should include include property", () => {
-    const result = getOneGassmaFindData(sheetContent, "User");
+    const result = getOneGassmaFindData(sheetContent, "", "User");
 
     expect(result).toContain("include?: Gassma.IncludeData");
   });
 
   it("should include cursor property", () => {
-    const result = getOneGassmaFindData(sheetContent, "User");
+    const result = getOneGassmaFindData(sheetContent, "", "User");
 
     expect(result).toContain("cursor?: Partial<GassmaUserUse>;");
   });
 
   it("should include _count property", () => {
-    const result = getOneGassmaFindData(sheetContent, "User");
+    const result = getOneGassmaFindData(sheetContent, "", "User");
 
     expect(result).toContain("_count?: Gassma.CountValue;");
   });

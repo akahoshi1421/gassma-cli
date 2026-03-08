@@ -3,6 +3,7 @@ import { getOneGassmaAggregateBaseReturn } from "./gassmaAggregateBaseReturn/one
 
 const getGassmaAggregateBaseReturn = (
   dictYaml: Record<string, Record<string, unknown[]>>,
+  schemaName: string,
 ) => {
   const aggregateBaseReturnTypeDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -14,6 +15,7 @@ const getGassmaAggregateBaseReturn = (
         pre +
         getOneGassmaAggregateBaseReturn(
           sheetContent,
+          schemaName,
           removedSpaceCurrentSheetName,
         )
       );

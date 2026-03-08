@@ -1,7 +1,7 @@
 import { generateClientJs } from "../../../generate/jsGenerate/generateClientJs";
 
 describe("generateClientJs", () => {
-  it("should generate JS with embedded relations config", () => {
+  it("should generate JS with embedded relations config and schema name", () => {
     const relations = {
       User: {
         posts: {
@@ -21,23 +21,23 @@ describe("generateClientJs", () => {
       },
     };
 
-    const result = generateClientJs(relations);
+    const result = generateClientJs(relations, "Hoge");
 
-    expect(result).toContain("const relations =");
+    expect(result).toContain("const hogeRelations =");
     expect(result).toContain('"User"');
     expect(result).toContain('"posts"');
     expect(result).toContain('"oneToMany"');
     expect(result).toContain('"Post"');
     expect(result).toContain('"author"');
     expect(result).toContain('"manyToOne"');
-    expect(result).toContain("function createGassmaClient");
+    expect(result).toContain("function createGassmaHogeClient");
   });
 
   it("should generate JS with empty relations when none exist", () => {
-    const result = generateClientJs({});
+    const result = generateClientJs({}, "Hoge");
 
-    expect(result).toContain("const relations = {}");
-    expect(result).toContain("function createGassmaClient");
+    expect(result).toContain("const hogeRelations = {}");
+    expect(result).toContain("function createGassmaHogeClient");
   });
 
   it("should include onDelete and onUpdate when present", () => {
@@ -54,7 +54,7 @@ describe("generateClientJs", () => {
       },
     };
 
-    const result = generateClientJs(relations);
+    const result = generateClientJs(relations, "Hoge");
 
     expect(result).toContain('"onDelete": "Cascade"');
     expect(result).toContain('"onUpdate": "SetNull"');
@@ -77,11 +77,19 @@ describe("generateClientJs", () => {
       },
     };
 
-    const result = generateClientJs(relations);
+    const result = generateClientJs(relations, "Hoge");
 
     expect(result).toContain('"through"');
     expect(result).toContain('"_PostToTag"');
     expect(result).toContain('"postId"');
     expect(result).toContain('"tagId"');
+  });
+
+  it("should pass schemaName to function name", () => {
+    const result = generateClientJs({}, "Fuga");
+
+    expect(result).toContain("const fugaRelations =");
+    expect(result).toContain("function createGassmaFugaClient");
+    expect(result).toContain("new Gassma.GassmaClient(mergedOptions)");
   });
 });

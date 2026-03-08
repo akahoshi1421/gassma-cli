@@ -4,6 +4,7 @@ import type { RelationsConfig } from "../read/extractRelations";
 
 const getGassmaOrderBy = (
   dictYaml: Record<string, Record<string, unknown[]>>,
+  schemaName: string,
   relations?: RelationsConfig,
 ) => {
   const orderByDeclare = Object.keys(dictYaml).reduce(
@@ -16,6 +17,7 @@ const getGassmaOrderBy = (
         pre +
         getOneGassmaOrderBy(
           sheetContent,
+          schemaName,
           removedSpaceCurrentSheetName,
           relations,
         )

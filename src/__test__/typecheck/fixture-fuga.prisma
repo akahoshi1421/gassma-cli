@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/gassma"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  age       Int?
+  orders    Order[]
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}

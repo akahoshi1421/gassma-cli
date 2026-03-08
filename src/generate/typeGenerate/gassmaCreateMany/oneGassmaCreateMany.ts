@@ -1,7 +1,7 @@
-const getOneGassmaCreateMany = (sheetName: string) => {
+const getOneGassmaCreateMany = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${sheetName}CreateManyData = {
-  data: Gassma${sheetName}Use[];
+declare type Gassma${schemaName}${sheetName}CreateManyData = {
+  data: Gassma${schemaName}${sheetName}Use[];
 };
 `;
 };

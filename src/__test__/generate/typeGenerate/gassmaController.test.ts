@@ -1,7 +1,7 @@
 import { getOneGassmaController } from "../../../generate/typeGenerate/gassmaController/oneGassmaController";
 
 describe("getOneGassmaController", () => {
-  const result = getOneGassmaController("User");
+  const result = getOneGassmaController("", "User");
 
   it("should generate controller class declaration", () => {
     expect(result).toContain("declare class GassmaUserController");

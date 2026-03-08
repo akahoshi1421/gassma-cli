@@ -1,5 +1,6 @@
 const getOneGassmaSelect = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
 ) => {
   const oneSelct = Object.keys(sheetContent).reduce((pre, columnName) => {
@@ -9,7 +10,7 @@ const getOneGassmaSelect = (
       : columnName;
 
     return `${pre}  "${removedQuestionMark}"?: true;\n`;
-  }, `\ndeclare type Gassma${sheetName}Select = {\n`);
+  }, `\ndeclare type Gassma${schemaName}${sheetName}Select = {\n`);
 
   return `${oneSelct}};\n`;
 };

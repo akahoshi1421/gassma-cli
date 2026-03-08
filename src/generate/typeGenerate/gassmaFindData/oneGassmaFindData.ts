@@ -1,5 +1,6 @@
 const getOneGassmaFindData = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
 ) => {
   const distinctArrayData = Object.keys(sheetContent).reduce(
@@ -24,16 +25,16 @@ const getOneGassmaFindData = (
     return `${pre}"${removedQuestionMark}" | `;
   }, "");
 
-  return `\ndeclare type Gassma${sheetName}FindData = {
-  where?: Gassma${sheetName}WhereUse;
-  select?: Gassma${sheetName}Select;
-  omit?: Gassma${sheetName}Omit;
-  orderBy?: Gassma${sheetName}OrderBy;
+  return `\ndeclare type Gassma${schemaName}${sheetName}FindData = {
+  where?: Gassma${schemaName}${sheetName}WhereUse;
+  select?: Gassma${schemaName}${sheetName}Select;
+  omit?: Gassma${schemaName}${sheetName}Omit;
+  orderBy?: Gassma${schemaName}${sheetName}OrderBy;
   take?: number;
   skip?: number;
   distinct?: ${distinctData}(${distinctArrayData})[];
   include?: Gassma.IncludeData;
-  cursor?: Partial<Gassma${sheetName}Use>;
+  cursor?: Partial<Gassma${schemaName}${sheetName}Use>;
   _count?: Gassma.CountValue;
 };\n`;
 };

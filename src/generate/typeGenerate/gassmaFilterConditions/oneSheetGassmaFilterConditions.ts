@@ -3,6 +3,7 @@ import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
 
 const getOneSheetGassmaFilterConditions = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
 ) => {
   const oneFilterConditions = Object.keys(sheetContent).reduce(
@@ -17,7 +18,7 @@ const getOneSheetGassmaFilterConditions = (
       const isOneType = columnTypes.length === 1;
 
       const oneFilterConditionsType = `
-declare type Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions = {
+declare type Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions = {
   equals?: ${now}${isQuestionMark ? " | null" : ""} | Gassma.FieldRef;
   not?: ${now}${isQuestionMark ? " | null" : ""};
   in?: ${isOneType ? `${now}[]` : `(${now})[]`};

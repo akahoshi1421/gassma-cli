@@ -3,6 +3,7 @@ import { getOneGassmaCreateReturn } from "./gassmaCreateReturn/oneGassmaCreateRe
 
 const getGassmaCreateReturn = (
   dictYaml: Record<string, Record<string, unknown[]>>,
+  schemaName: string,
 ) => {
   const createReturnTypeDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -12,7 +13,11 @@ const getGassmaCreateReturn = (
 
       return (
         pre +
-        getOneGassmaCreateReturn(sheetContent, removedSpaceCurrentSheetName)
+        getOneGassmaCreateReturn(
+          sheetContent,
+          schemaName,
+          removedSpaceCurrentSheetName,
+        )
       );
     },
     "",

@@ -38,44 +38,49 @@ import type { RelationsConfig } from "./read/extractRelations";
 const generater = (
   dictYaml: Record<string, Record<string, unknown[]>>,
   relations?: RelationsConfig,
+  schemaName?: string,
+  includeCommon?: boolean,
 ) => {
+  const schema = schemaName ?? "";
   const sheetNames = Object.keys(dictYaml);
-  let result = getGassmaMain(sheetNames);
+  let result = getGassmaMain(sheetNames, schema, includeCommon);
 
-  result += getGassmaSheet(sheetNames);
-  result += getGassmaController(sheetNames);
-  result += getGassmaManyCount();
-  result += getGassmaAnyUse(dictYaml);
-  result += getGassmaCreate(sheetNames, relations);
-  result += getGassmaCreateMany(sheetNames);
-  result += getGassmaFilterCoditions(dictYaml);
-  result += getGassmaWhereUse(dictYaml, relations);
-  result += getGassmaHavingCore(dictYaml);
-  result += getGassmaHavingUse(dictYaml);
-  result += getGassmaFindData(dictYaml);
-  result += getGassmaFindManyData(sheetNames);
-  result += getGassmaUpdateData(sheetNames, relations);
-  result += getGassmaUpdateSingleData(sheetNames, relations);
-  result += getGassmaUpsertData(sheetNames);
-  result += getGassmaUpsertSingleData(sheetNames, relations);
-  result += getGassmaDeleteData(sheetNames);
-  result += getGassmaDeleteSingleData(sheetNames);
-  result += getGassmaAggregateData(sheetNames);
-  result += getGassmaGroupByData(dictYaml);
-  result += getGassmaOrderBy(dictYaml, relations);
-  result += getGassmaSelect(dictYaml);
-  result += getGassmaOmit(dictYaml);
-  result += getGassmaCountData(sheetNames);
-  result += getGassmaCreateReturn(dictYaml);
-  result += getGassmaDefaultFindResult(sheetNames);
-  result += getGassmaFindResult(sheetNames);
-  result += getGassmaAggregateBaseReturn(dictYaml);
-  result += getGassmaAggregateField(sheetNames);
-  result += getGassmaAggregateResult(sheetNames);
-  result += getGassmaGroupByBaseReturn(sheetNames);
-  result += getGassmaGroupByKeyOfBaseReturn(sheetNames);
-  result += getGassmaByField(sheetNames);
-  result += getGassmaGroupByResult(sheetNames);
+  result += getGassmaSheet(sheetNames, schema);
+  result += getGassmaController(sheetNames, schema);
+  if (includeCommon !== false) {
+    result += getGassmaManyCount();
+  }
+  result += getGassmaAnyUse(dictYaml, schema);
+  result += getGassmaCreate(sheetNames, schema, relations);
+  result += getGassmaCreateMany(sheetNames, schema);
+  result += getGassmaFilterCoditions(dictYaml, schema);
+  result += getGassmaWhereUse(dictYaml, schema, relations);
+  result += getGassmaHavingCore(dictYaml, schema);
+  result += getGassmaHavingUse(dictYaml, schema);
+  result += getGassmaFindData(dictYaml, schema);
+  result += getGassmaFindManyData(sheetNames, schema);
+  result += getGassmaUpdateData(sheetNames, schema, relations);
+  result += getGassmaUpdateSingleData(sheetNames, schema, relations);
+  result += getGassmaUpsertData(sheetNames, schema);
+  result += getGassmaUpsertSingleData(sheetNames, schema, relations);
+  result += getGassmaDeleteData(sheetNames, schema);
+  result += getGassmaDeleteSingleData(sheetNames, schema);
+  result += getGassmaAggregateData(sheetNames, schema);
+  result += getGassmaGroupByData(dictYaml, schema);
+  result += getGassmaOrderBy(dictYaml, schema, relations);
+  result += getGassmaSelect(dictYaml, schema);
+  result += getGassmaOmit(dictYaml, schema);
+  result += getGassmaCountData(sheetNames, schema);
+  result += getGassmaCreateReturn(dictYaml, schema);
+  result += getGassmaDefaultFindResult(sheetNames, schema);
+  result += getGassmaFindResult(sheetNames, schema);
+  result += getGassmaAggregateBaseReturn(dictYaml, schema);
+  result += getGassmaAggregateField(sheetNames, schema);
+  result += getGassmaAggregateResult(sheetNames, schema);
+  result += getGassmaGroupByBaseReturn(sheetNames, schema);
+  result += getGassmaGroupByKeyOfBaseReturn(sheetNames, schema);
+  result += getGassmaByField(sheetNames, schema);
+  result += getGassmaGroupByResult(sheetNames, schema);
 
   return result;
 };

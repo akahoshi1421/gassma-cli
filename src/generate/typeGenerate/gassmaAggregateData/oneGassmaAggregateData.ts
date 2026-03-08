@@ -1,15 +1,15 @@
-const getOneGassmaAggregateData = (sheetName: string) => {
+const getOneGassmaAggregateData = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${sheetName}AggregateData = {
-  where?: Gassma${sheetName}WhereUse;
-  orderBy?: Gassma${sheetName}OrderBy;
+declare type Gassma${schemaName}${sheetName}AggregateData = {
+  where?: Gassma${schemaName}${sheetName}WhereUse;
+  orderBy?: Gassma${schemaName}${sheetName}OrderBy;
   take?: number;
   skip?: number;
-  _avg?: Gassma${sheetName}Select;
-  _count?: Gassma${sheetName}Select;
-  _max?: Gassma${sheetName}Select;
-  _min?: Gassma${sheetName}Select;
-  _sum?: Gassma${sheetName}Select;
+  _avg?: Gassma${schemaName}${sheetName}Select;
+  _count?: Gassma${schemaName}${sheetName}Select;
+  _max?: Gassma${schemaName}${sheetName}Select;
+  _min?: Gassma${schemaName}${sheetName}Select;
+  _sum?: Gassma${schemaName}${sheetName}Select;
 };
 `;
 };

@@ -25,6 +25,7 @@ const getRelationFields = (
 
 const getOneGassmaWhereUse = (
   sheetContent: Record<string, unknown[]>,
+  schemaName: string,
   sheetName: string,
   relations?: RelationsConfig,
 ) => {
@@ -38,15 +39,15 @@ const getOneGassmaWhereUse = (
       ? columnName.substring(0, columnName.length - 1)
       : columnName;
 
-    return `${pre}  "${removedQuestionMark}"?: ${now}${isQuestionMark ? " | null" : ""} | Gassma${sheetName}${removedSpaceCurrentColumnName}FilterConditions;\n`;
-  }, `\ndeclare type Gassma${sheetName}WhereUse = {\n`);
+    return `${pre}  "${removedQuestionMark}"?: ${now}${isQuestionMark ? " | null" : ""} | Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions;\n`;
+  }, `\ndeclare type Gassma${schemaName}${sheetName}WhereUse = {\n`);
 
   const relationFields = getRelationFields(sheetName, relations);
 
   return `${oneWhereUse}${relationFields}
-  AND?: Gassma${sheetName}WhereUse[] | Gassma${sheetName}WhereUse;
-  OR?: Gassma${sheetName}WhereUse[];
-  NOT?: Gassma${sheetName}WhereUse[] | Gassma${sheetName}WhereUse;
+  AND?: Gassma${schemaName}${sheetName}WhereUse[] | Gassma${schemaName}${sheetName}WhereUse;
+  OR?: Gassma${schemaName}${sheetName}WhereUse[];
+  NOT?: Gassma${schemaName}${sheetName}WhereUse[] | Gassma${schemaName}${sheetName}WhereUse;
 };
 `;
 };

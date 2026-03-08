@@ -1,12 +1,12 @@
-const getOneGassmaByField = (sheetName: string) => {
+const getOneGassmaByField = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${sheetName}ByField<T extends Gassma${sheetName}GroupByKeyOfBaseReturn | Gassma${sheetName}GroupByKeyOfBaseReturn[]> =
-  T extends Gassma${sheetName}GroupByKeyOfBaseReturn[]
+declare type Gassma${schemaName}${sheetName}ByField<T extends Gassma${schemaName}${sheetName}GroupByKeyOfBaseReturn | Gassma${schemaName}${sheetName}GroupByKeyOfBaseReturn[]> =
+  T extends Gassma${schemaName}${sheetName}GroupByKeyOfBaseReturn[]
     ? {
-        [K in T[number]]: Gassma${sheetName}GroupByBaseReturn[K & keyof Gassma${sheetName}GroupByBaseReturn];
+        [K in T[number]]: Gassma${schemaName}${sheetName}GroupByBaseReturn[K & keyof Gassma${schemaName}${sheetName}GroupByBaseReturn];
       }
-    : T extends keyof Gassma${sheetName}GroupByBaseReturn
-      ? { [K in T]: Gassma${sheetName}GroupByBaseReturn[K] }
+    : T extends keyof Gassma${schemaName}${sheetName}GroupByBaseReturn
+      ? { [K in T]: Gassma${schemaName}${sheetName}GroupByBaseReturn[K] }
       : never;
 `;
 };

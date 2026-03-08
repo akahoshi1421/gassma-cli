@@ -2,50 +2,77 @@ import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getGassmaCommonTypes } from "./gassmaCommonTypes";
 import { getGassmaErrorClasses } from "./gassmaErrorClasses";
 
-const getGassmaGlobalOmitConfig = (sheetNames: string[]) => {
+const getGassmaGlobalOmitConfig = (
+  sheetNames: string[],
+  schemaName: string,
+) => {
   const body = sheetNames.reduce((pre, sheetName) => {
     const cleanName = getRemovedCantUseVarChar(sheetName);
-    return `${pre}  "${sheetName}"?: Gassma${cleanName}Omit;\n`;
+    return `${pre}  "${sheetName}"?: Gassma${schemaName}${cleanName}Omit;\n`;
   }, "");
 
-  return `declare type GassmaGlobalOmitConfig = {\n${body}};\n`;
+  return `declare type Gassma${schemaName}GlobalOmitConfig = {\n${body}};\n`;
 };
 
-const getGassmaClientOptions = () => {
-  return `declare type GassmaClientOptions = {
+const getGassmaClientOptions = (schemaName: string) => {
+  return `declare type Gassma${schemaName}ClientOptions = {
   id?: string;
   relations?: Gassma.RelationsConfig;
-  omit?: GassmaGlobalOmitConfig;
+  omit?: Gassma${schemaName}GlobalOmitConfig;
 };\n`;
 };
 
-const getGassmaMain = (sheetNames: string[]) => {
-  const errorClasses = getGassmaErrorClasses();
+const getGassmaCommonNamespace = () => {
   const commonTypes = getGassmaCommonTypes();
+  const errorClasses = getGassmaErrorClasses();
 
-  const mainTypeDeclare = `declare namespace Gassma {
+  return `declare namespace Gassma {
 ${commonTypes}
+  interface GassmaClientMap {}
+
+  class GassmaClient<T extends keyof GassmaClientMap> {
+    constructor(idOrOptions?: string | GassmaClientMap[T]["options"]);
+    readonly sheets: GassmaClientMap[T]["sheets"];
+  }
+
   class FieldRef {
     readonly modelName: string;
     readonly name: string;
     constructor(modelName: string, name: string);
   }
 
-  class GassmaClient {
-    constructor(idOrOptions?: string | GassmaClientOptions);
-
-    readonly sheets: GassmaSheet;
-  }
-
 ${errorClasses}}
+
+`;
+};
+
+const getGassmaSchemaClient = (sheetNames: string[], schemaName: string) => {
+  const clientMapEntry = `declare namespace Gassma {
+  interface GassmaClientMap {
+    "${schemaName}": {
+      sheets: Gassma${schemaName}Sheet;
+      options: Gassma${schemaName}ClientOptions;
+    };
+  }
+}
 
 `;
 
   return (
-    mainTypeDeclare +
-    getGassmaGlobalOmitConfig(sheetNames) +
-    getGassmaClientOptions()
+    clientMapEntry +
+    getGassmaGlobalOmitConfig(sheetNames, schemaName) +
+    getGassmaClientOptions(schemaName)
   );
 };
 
-export { getGassmaMain };
+const getGassmaMain = (
+  sheetNames: string[],
+  schemaName: string,
+  includeCommon?: boolean,
+) => {
+  const common = includeCommon !== false ? getGassmaCommonNamespace() : "";
+
+  return common + getGassmaSchemaClient(sheetNames, schemaName);
+};
+
+export { getGassmaMain, getGassmaCommonNamespace };

@@ -1,13 +1,13 @@
-const getOneGassmaAggregateField = (sheetName: string) => {
+const getOneGassmaAggregateField = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${sheetName}AggregateField<T, K extends string> = T extends undefined
+declare type Gassma${schemaName}${sheetName}AggregateField<T, K extends string> = T extends undefined
   ? never
   : K extends "_count"
     ? { [P in keyof T as T[P] extends true ? P : never]: number }
     : {
         [P in keyof T as T[P] extends true
-          ? P & keyof Gassma${sheetName}AggregateBaseReturn
-          : never]: Gassma${sheetName}AggregateBaseReturn[P & keyof Gassma${sheetName}AggregateBaseReturn];
+          ? P & keyof Gassma${schemaName}${sheetName}AggregateBaseReturn
+          : never]: Gassma${schemaName}${sheetName}AggregateBaseReturn[P & keyof Gassma${schemaName}${sheetName}AggregateBaseReturn];
       };
 `;
 };
