@@ -1,5 +1,8 @@
 const generateClientDts = (schemaName: string): string => {
-  return `declare function createGassma${schemaName}Client(options?: Gassma${schemaName}ClientOptions): Gassma.GassmaClient<"${schemaName}">;
+  return `export declare class GassmaClient {
+  constructor(options?: Gassma${schemaName}ClientOptions);
+  readonly sheets: Gassma${schemaName}Sheet;
+}
 `;
 };
 
