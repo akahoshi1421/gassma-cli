@@ -1,8 +1,10 @@
 import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaOrderBy } from "./gassmaOrderBy/oneGassmaOrderBy";
+import type { RelationsConfig } from "../read/extractRelations";
 
 const getGassmaOrderBy = (
   dictYaml: Record<string, Record<string, unknown[]>>,
+  relations?: RelationsConfig,
 ) => {
   const orderByDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -11,7 +13,12 @@ const getGassmaOrderBy = (
         getRemovedCantUseVarChar(currentSheetName);
 
       return (
-        pre + getOneGassmaOrderBy(sheetContent, removedSpaceCurrentSheetName)
+        pre +
+        getOneGassmaOrderBy(
+          sheetContent,
+          removedSpaceCurrentSheetName,
+          relations,
+        )
       );
     },
     "",
