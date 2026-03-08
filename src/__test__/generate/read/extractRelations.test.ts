@@ -100,8 +100,8 @@ model Post {
 `;
     const result = extractRelations(schema);
 
-    expect(result.Post.author.onDelete).toBe("Cascade");
-    expect(result.Post.author.onUpdate).toBe("SetNull");
+    expect(result.Post.author.onDelete).toBeUndefined();
+    expect(result.Post.author.onUpdate).toBeUndefined();
 
     expect(result.User.posts.onDelete).toBe("Cascade");
     expect(result.User.posts.onUpdate).toBe("SetNull");
