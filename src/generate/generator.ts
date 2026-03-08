@@ -28,6 +28,7 @@ import { getGassmaOrderBy } from "./typeGenerate/gassmaOrderBy";
 import { getGassmaSelect } from "./typeGenerate/gassmaSelect";
 import { getGassmaSheet } from "./typeGenerate/gassmaSheet";
 import { getGassmaUpdateData } from "./typeGenerate/gassmaUpdateData";
+import { getGassmaUpdateSingleData } from "./typeGenerate/gassmaUpdateSingleData";
 import { getGassmaUpsertData } from "./typeGenerate/gassmaUpsertData";
 import { getGassmaWhereUse } from "./typeGenerate/gassmaWhereUse";
 import type { RelationsConfig } from "./read/extractRelations";
@@ -52,6 +53,7 @@ const generater = (
   result += getGassmaFindData(dictYaml);
   result += getGassmaFindManyData(sheetNames);
   result += getGassmaUpdateData(sheetNames, relations);
+  result += getGassmaUpdateSingleData(sheetNames, relations);
   result += getGassmaUpsertData(sheetNames);
   result += getGassmaDeleteData(sheetNames);
   result += getGassmaAggregateData(sheetNames);

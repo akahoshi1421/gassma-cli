@@ -52,6 +52,18 @@ describe("getOneGassmaCreate", () => {
     expect(result).toContain('"profile"?: Gassma.NestedWriteOperation');
   });
 
+  it("should include select property", () => {
+    const result = getOneGassmaCreate("User");
+
+    expect(result).toContain("select?: GassmaUserSelect;");
+  });
+
+  it("should include omit property", () => {
+    const result = getOneGassmaCreate("User");
+
+    expect(result).toContain("omit?: GassmaUserOmit;");
+  });
+
   it("should not add relation fields when no relations for model", () => {
     const relations: RelationsConfig = {
       Post: {

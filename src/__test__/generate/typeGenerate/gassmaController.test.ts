@@ -17,7 +17,7 @@ describe("getOneGassmaController", () => {
 
   it("should include CRUD methods", () => {
     expect(result).toContain("createMany(");
-    expect(result).toContain("create(");
+    expect(result).toContain("create<T extends GassmaUserCreateData>");
     expect(result).toContain("findFirst<T extends GassmaUserFindData>");
     expect(result).toContain("findMany<T extends GassmaUserFindManyData>");
     expect(result).toContain("updateMany(");
@@ -57,6 +57,18 @@ describe("getOneGassmaController", () => {
 
   it("should include findFirstOrThrow method", () => {
     expect(result).toContain("findFirstOrThrow<T extends GassmaUserFindData>");
+  });
+
+  it("should have generic create method with FindResult return", () => {
+    expect(result).toContain(
+      'create<T extends GassmaUserCreateData>(createdData: T): GassmaUserFindResult<T["select"]>',
+    );
+  });
+
+  it("should have generic update method with model-specific type", () => {
+    expect(result).toContain(
+      'update<T extends GassmaUserUpdateSingleData>(updateData: T): GassmaUserFindResult<T["select"]> | null',
+    );
   });
 
   it("should include aggregation methods", () => {
