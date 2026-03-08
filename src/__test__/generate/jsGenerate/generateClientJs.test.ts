@@ -1,7 +1,7 @@
 import { generateClientJs } from "../../../generate/jsGenerate/generateClientJs";
 
 describe("generateClientJs", () => {
-  it("should generate JS with embedded relations config and schema name", () => {
+  it("should generate GassmaClient class with embedded relations", () => {
     const relations = {
       User: {
         posts: {
@@ -23,21 +23,22 @@ describe("generateClientJs", () => {
 
     const result = generateClientJs(relations, "Hoge");
 
-    expect(result).toContain("const hogeRelations =");
+    expect(result).toContain("hogeRelations =");
     expect(result).toContain('"User"');
     expect(result).toContain('"posts"');
     expect(result).toContain('"oneToMany"');
     expect(result).toContain('"Post"');
     expect(result).toContain('"author"');
     expect(result).toContain('"manyToOne"');
-    expect(result).toContain("function createGassmaHogeClient");
+    expect(result).toContain("function GassmaClient");
+    expect(result).toContain("exports.GassmaClient = GassmaClient");
   });
 
-  it("should generate JS with empty relations when none exist", () => {
+  it("should generate GassmaClient with empty relations when none exist", () => {
     const result = generateClientJs({}, "Hoge");
 
-    expect(result).toContain("const hogeRelations = {}");
-    expect(result).toContain("function createGassmaHogeClient");
+    expect(result).toContain("hogeRelations = {}");
+    expect(result).toContain("function GassmaClient");
   });
 
   it("should include onDelete and onUpdate when present", () => {
@@ -85,11 +86,12 @@ describe("generateClientJs", () => {
     expect(result).toContain('"tagId"');
   });
 
-  it("should pass schemaName to function name", () => {
+  it("should merge relations into options in constructor", () => {
     const result = generateClientJs({}, "Fuga");
 
-    expect(result).toContain("const fugaRelations =");
-    expect(result).toContain("function createGassmaFugaClient");
-    expect(result).toContain("new Gassma.GassmaClient(mergedOptions)");
+    expect(result).toContain("fugaRelations =");
+    expect(result).toContain(
+      "Object.assign({}, options, { relations: fugaRelations })",
+    );
   });
 });
