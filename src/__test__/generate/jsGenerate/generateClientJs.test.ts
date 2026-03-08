@@ -30,7 +30,7 @@ describe("generateClientJs", () => {
     expect(result).toContain('"Post"');
     expect(result).toContain('"author"');
     expect(result).toContain('"manyToOne"');
-    expect(result).toContain("function GassmaClient");
+    expect(result).toContain("class GassmaClient");
     expect(result).toContain("exports.GassmaClient = GassmaClient");
   });
 
@@ -38,7 +38,7 @@ describe("generateClientJs", () => {
     const result = generateClientJs({}, "Hoge");
 
     expect(result).toContain("hogeRelations = {}");
-    expect(result).toContain("function GassmaClient");
+    expect(result).toContain("class GassmaClient");
   });
 
   it("should include onDelete and onUpdate when present", () => {
