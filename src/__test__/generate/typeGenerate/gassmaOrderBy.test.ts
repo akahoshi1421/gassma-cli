@@ -41,7 +41,9 @@ describe("getOneGassmaOrderBy", () => {
 
     const result = getOneGassmaOrderBy(sheetContent, "", "User", relations);
 
-    expect(result).toContain('"posts"?: GassmaPostOrderBy;');
+    expect(result).toContain(
+      '"posts"?: GassmaPostOrderBy | { _count: "asc" | "desc" };',
+    );
   });
 
   it("should add _count with relation name keys", () => {
