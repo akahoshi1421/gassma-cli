@@ -6,7 +6,7 @@ const getOneGassmaCreate = (
   sheetName: string,
   relations?: RelationsConfig,
 ) => {
-  const nestedFields = getNestedWriteFields(sheetName, relations);
+  const nestedFields = getNestedWriteFields(schemaName, sheetName, relations);
   const dataType = nestedFields
     ? `Gassma${schemaName}${sheetName}Use & {\n${nestedFields}  }`
     : `Gassma${schemaName}${sheetName}Use`;

@@ -18,13 +18,16 @@ const getOneGassmaOrderBy = (
   const modelRelations = relations?.[sheetName];
   const relationFields = modelRelations
     ? Object.keys(modelRelations).reduce((pre, relationName) => {
-        return `${pre}  "${relationName}"?: Gassma.RelationOrderBy;\n`;
+        const targetModel = modelRelations[relationName].to;
+        return `${pre}  "${relationName}"?: Gassma${schemaName}${targetModel}OrderBy;\n`;
       }, "")
     : "";
 
   const countField =
     modelRelations && Object.keys(modelRelations).length > 0
-      ? '  "_count"?: Gassma.RelationOrderBy;\n'
+      ? `  "_count"?: { ${Object.keys(modelRelations)
+          .map((name) => `"${name}"?: "asc" | "desc"`)
+          .join("; ")} };\n`
       : "";
 
   return `${scalarFields}${relationFields}${countField}};\n`;

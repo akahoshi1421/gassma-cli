@@ -26,7 +26,11 @@ describe("getOneGassmaUpdateData", () => {
 
     const result = getOneGassmaUpdateData("", "User", relations);
 
-    expect(result).toContain('"posts"?: Gassma.NestedWriteOperation');
+    expect(result).toContain('"posts"?:');
+    expect(result).toContain("create?: GassmaPostUse | GassmaPostUse[]");
+    expect(result).toContain(
+      "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
+    );
   });
 
   it("should include limit property", () => {

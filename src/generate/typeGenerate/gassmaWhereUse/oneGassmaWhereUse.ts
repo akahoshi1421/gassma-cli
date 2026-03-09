@@ -6,6 +6,7 @@ const isListRelation = (type: string): boolean =>
   type === "oneToMany" || type === "manyToMany";
 
 const getRelationFields = (
+  schemaName: string,
   sheetName: string,
   relations?: RelationsConfig,
 ): string => {
@@ -15,9 +16,10 @@ const getRelationFields = (
 
   return Object.keys(modelRelations).reduce((pre, relationName) => {
     const rel = modelRelations[relationName];
+    const targetWhere = `Gassma${schemaName}${rel.to}WhereUse`;
     const filterType = isListRelation(rel.type)
-      ? "Gassma.RelationListFilter"
-      : "Gassma.RelationSingleFilter";
+      ? `{ some?: ${targetWhere}; every?: ${targetWhere}; none?: ${targetWhere} }`
+      : `{ is?: ${targetWhere}; isNot?: ${targetWhere} }`;
 
     return `${pre}  "${relationName}"?: ${filterType};\n`;
   }, "");
@@ -42,7 +44,7 @@ const getOneGassmaWhereUse = (
     return `${pre}  "${removedQuestionMark}"?: ${now}${isQuestionMark ? " | null" : ""} | Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions;\n`;
   }, `\ndeclare type Gassma${schemaName}${sheetName}WhereUse = {\n`);
 
-  const relationFields = getRelationFields(sheetName, relations);
+  const relationFields = getRelationFields(schemaName, sheetName, relations);
 
   return `${oneWhereUse}${relationFields}
   AND?: Gassma${schemaName}${sheetName}WhereUse[] | Gassma${schemaName}${sheetName}WhereUse;

@@ -58,10 +58,7 @@ describe("getGassmaMain", () => {
     expect(result).toContain("type RelationsConfig =");
     expect(result).toContain("type NumberOperation =");
     expect(result).toContain("type ManyReturn =");
-    expect(result).toContain("type NestedWriteOperation =");
     expect(result).toContain("type SortOrderInput =");
-    expect(result).toContain("type IncludeData =");
-    expect(result).toContain("type CountValue =");
   });
 
   it("should exclude common types when includeCommon is false", () => {

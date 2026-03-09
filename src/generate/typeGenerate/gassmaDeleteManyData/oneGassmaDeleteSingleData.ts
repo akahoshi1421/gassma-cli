@@ -6,7 +6,7 @@ const getOneGassmaDeleteSingleData = (
 declare type Gassma${schemaName}${sheetName}DeleteSingleData = {
   where: Gassma${schemaName}${sheetName}WhereUse;
   select?: Gassma${schemaName}${sheetName}Select;
-  include?: Gassma.IncludeData;
+  include?: Gassma${schemaName}${sheetName}Include;
   omit?: Gassma${schemaName}${sheetName}Omit;
 };
 `;

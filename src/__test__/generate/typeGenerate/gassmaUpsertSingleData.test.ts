@@ -38,7 +38,7 @@ describe("getOneGassmaUpsertSingleData", () => {
   it("should include include property", () => {
     const result = getOneGassmaUpsertSingleData("", "User");
 
-    expect(result).toContain("include?: Gassma.IncludeData;");
+    expect(result).toContain("include?: GassmaUserInclude;");
   });
 
   it("should include omit property", () => {
@@ -61,6 +61,10 @@ describe("getOneGassmaUpsertSingleData", () => {
 
     const result = getOneGassmaUpsertSingleData("", "User", relations);
 
-    expect(result).toContain('"posts"?: Gassma.NestedWriteOperation');
+    expect(result).toContain('"posts"?:');
+    expect(result).toContain("create?: GassmaPostUse | GassmaPostUse[]");
+    expect(result).toContain(
+      "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
+    );
   });
 });
