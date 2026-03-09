@@ -15,10 +15,10 @@ const getGassmaGlobalOmitConfig = (
 };
 
 const getGassmaClientOptions = (schemaName: string) => {
-  return `declare type Gassma${schemaName}ClientOptions = {
+  return `declare type Gassma${schemaName}ClientOptions<O extends Gassma${schemaName}GlobalOmitConfig = {}> = {
   id?: string;
   relations?: Gassma.RelationsConfig;
-  omit?: Gassma${schemaName}GlobalOmitConfig;
+  omit?: O;
 };\n`;
 };
 
@@ -52,6 +52,7 @@ const getGassmaSchemaClient = (sheetNames: string[], schemaName: string) => {
     "${schemaName}": {
       sheets: Gassma${schemaName}Sheet;
       options: Gassma${schemaName}ClientOptions;
+      globalOmitConfig: Gassma${schemaName}GlobalOmitConfig;
     };
   }
 }

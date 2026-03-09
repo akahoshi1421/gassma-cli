@@ -47,6 +47,10 @@ const getGassmaCommonTypes = () => {
     isNot?: Record<string, unknown>;
   };
 
+  type TrueKeys<T> = { [K in keyof T]: T[K] extends true ? K : never }[keyof T];
+  type FalseKeys<T> = { [K in keyof T]: T[K] extends false ? K : never }[keyof T];
+  type ResolveOmitKeys<GO, QO> = Exclude<TrueKeys<GO>, FalseKeys<QO>> | TrueKeys<QO>;
+
   type ManyReturn = {
     count: number;
   };

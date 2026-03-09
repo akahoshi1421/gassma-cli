@@ -57,6 +57,23 @@ const generateFromPrisma = (
   return generater(parsed, relations, schemaName, includeCommon);
 };
 
+const writeTsconfigWithTs = (tsconfigPath: string) => {
+  fs.writeFileSync(
+    tsconfigPath,
+    JSON.stringify({
+      compilerOptions: {
+        strict: true,
+        noEmit: true,
+        skipLibCheck: false,
+        lib: ["ES2021"],
+        module: "ES2020",
+        moduleResolution: "node",
+      },
+      include: ["*.d.ts", "*.ts"],
+    }),
+  );
+};
+
 describe("generated .d.ts type check", () => {
   it("should pass tsc --noEmit without type errors", () => {
     const prismaPath = path.join(__dirname, "fixture.prisma");
@@ -68,6 +85,76 @@ describe("generated .d.ts type check", () => {
     try {
       fs.writeFileSync(path.join(tmpDir, "generated.d.ts"), generated);
       writeTsconfig(tsconfigPath);
+
+      const result = runTsc(tmpDir, tsconfigPath);
+      expect(result).toBe("");
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
+
+  it("should reflect global omit in return types", () => {
+    const prismaPath = path.join(__dirname, "fixture.prisma");
+    const generated = generateFromPrisma(prismaPath);
+    const clientDts = generateClientDts("");
+
+    const tmpDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), "gassma-typecheck-omit-"),
+    );
+    const tsconfigPath = path.join(tmpDir, "tsconfig.json");
+
+    const usageTs = `
+/// <reference path="./generated.d.ts" />
+import { GassmaClient } from "./client";
+
+// グローバルomitなし: 全フィールドアクセス可能
+declare const client: GassmaClient;
+const r1 = client.sheets.User.findFirst({ where: { id: 1 } });
+if (r1) {
+  const email: string = r1.email;
+  const name: string | null = r1.name;
+}
+
+// グローバルomitあり: email が返り値から除外される
+declare const clientOmit: GassmaClient<{ User: { email: true } }>;
+const r2 = clientOmit.sheets.User.findFirst({ where: { id: 1 } });
+if (r2) {
+  const name: string | null = r2.name;
+  // @ts-expect-error email はグローバルomitで除外
+  r2.email;
+}
+
+// omit: { email: false } でグローバルomitを解除
+const r3 = clientOmit.sheets.User.findFirst({ where: { id: 1 }, omit: { email: false } });
+if (r3) {
+  const email: string = r3.email;
+}
+
+// select はグローバルomitを上書き
+const r4 = clientOmit.sheets.User.findFirst({ where: { id: 1 }, select: { email: true } });
+if (r4) {
+  const email: string = r4.email;
+}
+
+// クエリomitも返り値に反映
+const r5 = client.sheets.User.findFirst({ where: { id: 1 }, omit: { name: true } });
+if (r5) {
+  const email: string = r5.email;
+  // @ts-expect-error name はクエリomitで除外
+  r5.name;
+}
+
+// findMany でも同様
+const r6 = clientOmit.sheets.User.findMany({ where: {} });
+// @ts-expect-error email はグローバルomitで除外
+r6[0]?.email;
+`;
+
+    try {
+      fs.writeFileSync(path.join(tmpDir, "generated.d.ts"), generated);
+      fs.writeFileSync(path.join(tmpDir, "client.d.ts"), clientDts);
+      fs.writeFileSync(path.join(tmpDir, "usage.ts"), usageTs);
+      writeTsconfigWithTs(tsconfigPath);
 
       const result = runTsc(tmpDir, tsconfigPath);
       expect(result).toBe("");

@@ -9,7 +9,7 @@ const getOneGassmaOmit = (
       ? columnName.substring(0, columnName.length - 1)
       : columnName;
 
-    return `${pre}  "${removedQuestionMark}"?: true;\n`;
+    return `${pre}  "${removedQuestionMark}"?: true | false;\n`;
   }, `\ndeclare type Gassma${schemaName}${sheetName}Omit = {\n`);
 
   return `${oneOmit}};\n`;
