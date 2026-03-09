@@ -17,15 +17,16 @@ const getOneGassmaUpsertSingleData = (
     ? `${baseUpdateType} & {\n${nestedFields}  }`
     : baseUpdateType;
 
+  const s = `Gassma${schemaName}${sheetName}Select`;
+  const o = `Gassma${schemaName}${sheetName}Omit`;
+
   return `
 declare type Gassma${schemaName}${sheetName}UpsertSingleData = {
   where: Gassma${schemaName}${sheetName}WhereUse;
   create: ${createType};
   update: ${updateType};
-  select?: Gassma${schemaName}${sheetName}Select;
   include?: Gassma${schemaName}${sheetName}Include;
-  omit?: Gassma${schemaName}${sheetName}Omit;
-};
+} & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });
 `;
 };
 

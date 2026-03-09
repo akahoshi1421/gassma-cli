@@ -11,12 +11,13 @@ const getOneGassmaCreate = (
     ? `Gassma${schemaName}${sheetName}Use & {\n${nestedFields}  }`
     : `Gassma${schemaName}${sheetName}Use`;
 
+  const s = `Gassma${schemaName}${sheetName}Select`;
+  const o = `Gassma${schemaName}${sheetName}Omit`;
+
   return `
 declare type Gassma${schemaName}${sheetName}CreateData = {
   data: ${dataType};
-  select?: Gassma${schemaName}${sheetName}Select;
-  omit?: Gassma${schemaName}${sheetName}Omit;
-};
+} & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });
 `;
 };
 

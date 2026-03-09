@@ -17,6 +17,13 @@ describe("getOneGassmaFindData", () => {
     expect(result).toContain("orderBy?: GassmaUserOrderBy");
   });
 
+  it("should make select and omit mutually exclusive", () => {
+    const result = getOneGassmaFindData(sheetContent, "", "User");
+
+    expect(result).toContain("select?: GassmaUserSelect; omit?: never");
+    expect(result).toContain("select?: never; omit?: GassmaUserOmit");
+  });
+
   it("should include take, skip, and distinct", () => {
     const result = getOneGassmaFindData(sheetContent, "", "User");
 
