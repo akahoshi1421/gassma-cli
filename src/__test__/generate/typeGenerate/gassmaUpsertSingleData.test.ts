@@ -44,7 +44,14 @@ describe("getOneGassmaUpsertSingleData", () => {
   it("should include omit property", () => {
     const result = getOneGassmaUpsertSingleData("", "User");
 
-    expect(result).toContain("omit?: GassmaUserOmit;");
+    expect(result).toContain("omit?: GassmaUserOmit");
+  });
+
+  it("should make select and omit mutually exclusive", () => {
+    const result = getOneGassmaUpsertSingleData("", "User");
+
+    expect(result).toContain("select?: GassmaUserSelect; omit?: never");
+    expect(result).toContain("select?: never; omit?: GassmaUserOmit");
   });
 
   it("should add nested write operations for relations in create and update", () => {

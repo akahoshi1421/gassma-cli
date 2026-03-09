@@ -25,10 +25,11 @@ const getOneGassmaFindData = (
     return `${pre}"${removedQuestionMark}" | `;
   }, "");
 
+  const s = `Gassma${schemaName}${sheetName}Select`;
+  const o = `Gassma${schemaName}${sheetName}Omit`;
+
   return `\ndeclare type Gassma${schemaName}${sheetName}FindData = {
   where?: Gassma${schemaName}${sheetName}WhereUse;
-  select?: Gassma${schemaName}${sheetName}Select;
-  omit?: Gassma${schemaName}${sheetName}Omit;
   orderBy?: Gassma${schemaName}${sheetName}OrderBy;
   take?: number;
   skip?: number;
@@ -36,7 +37,7 @@ const getOneGassmaFindData = (
   include?: Gassma${schemaName}${sheetName}Include;
   cursor?: Partial<Gassma${schemaName}${sheetName}Use>;
   _count?: Gassma${schemaName}${sheetName}CountValue;
-};\n`;
+} & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });\n`;
 };
 
 export { getOneGassmaFindData };
