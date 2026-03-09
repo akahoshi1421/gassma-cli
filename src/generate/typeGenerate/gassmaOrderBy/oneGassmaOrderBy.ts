@@ -19,7 +19,7 @@ const getOneGassmaOrderBy = (
   const relationFields = modelRelations
     ? Object.keys(modelRelations).reduce((pre, relationName) => {
         const targetModel = modelRelations[relationName].to;
-        return `${pre}  "${relationName}"?: Gassma${schemaName}${targetModel}OrderBy;\n`;
+        return `${pre}  "${relationName}"?: Gassma${schemaName}${targetModel}OrderBy | { _count: "asc" | "desc" };\n`;
       }, "")
     : "";
 

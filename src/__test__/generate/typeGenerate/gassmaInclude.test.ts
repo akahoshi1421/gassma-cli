@@ -42,8 +42,25 @@ describe("getOneGassmaInclude", () => {
     const result = getOneGassmaInclude("", "User", relations);
 
     expect(result).toContain(
-      '"posts"?: true | { select?: GassmaPostSelect; omit?: GassmaPostOmit; where?: GassmaPostWhereUse; orderBy?: GassmaPostOrderBy; take?: number; skip?: number; _count?: GassmaPostCountValue };',
+      '"posts"?: true | { select?: GassmaPostSelect; omit?: GassmaPostOmit; where?: GassmaPostWhereUse; orderBy?: GassmaPostOrderBy; take?: number; skip?: number; include?: GassmaPostInclude; _count?: GassmaPostCountValue };',
     );
+  });
+
+  it("should include _count at top level", () => {
+    const relations: RelationsConfig = {
+      User: {
+        posts: {
+          type: "oneToMany",
+          to: "Post",
+          field: "id",
+          reference: "authorId",
+        },
+      },
+    };
+
+    const result = getOneGassmaInclude("", "User", relations);
+
+    expect(result).toContain('"_count"?: GassmaUserCountValue');
   });
 
   it("should return empty type when no relations", () => {

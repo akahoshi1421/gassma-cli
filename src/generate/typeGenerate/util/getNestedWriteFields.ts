@@ -27,7 +27,32 @@ const getNestedWriteFields = (
       ? `{ where: ${target}WhereUse; create: ${target}Use } | { where: ${target}WhereUse; create: ${target}Use }[]`
       : `{ where: ${target}WhereUse; create: ${target}Use }`;
 
-    return `${pre}    "${relationName}"?: { create?: ${createType}; connect?: ${connectType}; connectOrCreate?: ${connectOrCreateType} };\n`;
+    const ops = [
+      `create?: ${createType}`,
+      `connect?: ${connectType}`,
+      `connectOrCreate?: ${connectOrCreateType}`,
+    ];
+
+    if (rel.type === "oneToMany") {
+      ops.push(
+        `update?: { where: ${target}WhereUse; data: Partial<${target}Use> } | { where: ${target}WhereUse; data: Partial<${target}Use> }[]`,
+      );
+      ops.push(`delete?: boolean | ${target}WhereUse | ${target}WhereUse[]`);
+      ops.push(`deleteMany?: ${target}WhereUse | ${target}WhereUse[]`);
+      ops.push(
+        `disconnect?: boolean | ${target}WhereUse | ${target}WhereUse[]`,
+      );
+      ops.push(`set?: ${target}WhereUse[]`);
+    } else if (rel.type === "oneToOne") {
+      ops.push(`update?: Partial<${target}Use>`);
+      ops.push("delete?: true");
+      ops.push("disconnect?: true");
+    } else if (rel.type === "manyToMany") {
+      ops.push(`disconnect?: ${target}WhereUse | ${target}WhereUse[]`);
+      ops.push(`set?: ${target}WhereUse[]`);
+    }
+
+    return `${pre}    "${relationName}"?: { ${ops.join("; ")} };\n`;
   }, "");
 
   return fields;
