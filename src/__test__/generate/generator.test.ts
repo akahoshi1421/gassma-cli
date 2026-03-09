@@ -21,9 +21,15 @@ describe("generater", () => {
   });
 
   it("should include GassmaSheet type", () => {
-    expect(result).toContain("declare type GassmaSheet = {");
-    expect(result).toContain('"User": GassmaUserController;');
-    expect(result).toContain('"Post": GassmaPostController;');
+    expect(result).toContain(
+      "declare type GassmaSheet<O extends GassmaGlobalOmitConfig = {}> = {",
+    );
+    expect(result).toContain(
+      '"User": GassmaUserController<O extends { "User": infer UO } ? UO extends GassmaUserOmit ? UO : {} : {}>;',
+    );
+    expect(result).toContain(
+      '"Post": GassmaPostController<O extends { "Post": infer UO } ? UO extends GassmaPostOmit ? UO : {} : {}>;',
+    );
   });
 
   it("should include Controller for each sheet", () => {

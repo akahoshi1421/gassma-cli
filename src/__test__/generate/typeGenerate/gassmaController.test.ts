@@ -4,7 +4,9 @@ describe("getOneGassmaController", () => {
   const result = getOneGassmaController("", "User");
 
   it("should generate controller class declaration", () => {
-    expect(result).toContain("declare class GassmaUserController");
+    expect(result).toContain(
+      "declare class GassmaUserController<GO extends GassmaUserOmit = {}>",
+    );
   });
 
   it("should include constructor", () => {
@@ -33,13 +35,13 @@ describe("getOneGassmaController", () => {
 
   it("should have generic delete method with model-specific type", () => {
     expect(result).toContain(
-      'delete<T extends GassmaUserDeleteSingleData>(deleteData: T): GassmaUserFindResult<T["select"]> | null',
+      'delete<T extends GassmaUserDeleteSingleData>(deleteData: T): GassmaUserFindResult<T["select"], T["omit"], GO> | null',
     );
   });
 
   it("should have generic upsert method with model-specific type", () => {
     expect(result).toContain(
-      'upsert<T extends GassmaUserUpsertSingleData>(upsertData: T): GassmaUserFindResult<T["select"]>',
+      'upsert<T extends GassmaUserUpsertSingleData>(upsertData: T): GassmaUserFindResult<T["select"], T["omit"], GO>',
     );
   });
 
@@ -61,13 +63,13 @@ describe("getOneGassmaController", () => {
 
   it("should have generic create method with FindResult return", () => {
     expect(result).toContain(
-      'create<T extends GassmaUserCreateData>(createdData: T): GassmaUserFindResult<T["select"]>',
+      'create<T extends GassmaUserCreateData>(createdData: T): GassmaUserFindResult<T["select"], T["omit"], GO>',
     );
   });
 
   it("should have generic update method with model-specific type", () => {
     expect(result).toContain(
-      'update<T extends GassmaUserUpdateSingleData>(updateData: T): GassmaUserFindResult<T["select"]> | null',
+      'update<T extends GassmaUserUpdateSingleData>(updateData: T): GassmaUserFindResult<T["select"], T["omit"], GO> | null',
     );
   });
 

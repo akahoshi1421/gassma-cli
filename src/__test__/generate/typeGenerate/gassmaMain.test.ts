@@ -27,7 +27,7 @@ describe("getGassmaMain", () => {
     expect(result).toContain("declare type GassmaTestClientOptions");
     expect(result).toContain("id?: string");
     expect(result).toContain("relations?: Gassma.RelationsConfig");
-    expect(result).toContain("omit?: GassmaTestGlobalOmitConfig");
+    expect(result).toContain("omit?: O");
   });
 
   it("should generate GassmaGlobalOmitConfig with model-specific omit", () => {
