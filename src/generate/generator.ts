@@ -25,6 +25,8 @@ import { getGassmaHavingUse } from "./typeGenerate/gassmaHavingUse";
 import { getGassmaMain } from "./typeGenerate/gassmaMain";
 import { getGassmaManyCount } from "./typeGenerate/gassmaManyCount";
 import { getGassmaOmit } from "./typeGenerate/gassmaOmit";
+import { getGassmaInclude } from "./typeGenerate/gassmaInclude";
+import { getGassmaCountValue } from "./typeGenerate/gassmaCountValue";
 import { getGassmaOrderBy } from "./typeGenerate/gassmaOrderBy";
 import { getGassmaSelect } from "./typeGenerate/gassmaSelect";
 import { getGassmaSheet } from "./typeGenerate/gassmaSheet";
@@ -67,6 +69,8 @@ const generater = (
   result += getGassmaDeleteSingleData(sheetNames, schema);
   result += getGassmaAggregateData(sheetNames, schema);
   result += getGassmaGroupByData(dictYaml, schema);
+  result += getGassmaInclude(sheetNames, schema, relations);
+  result += getGassmaCountValue(sheetNames, schema, relations);
   result += getGassmaOrderBy(dictYaml, schema, relations);
   result += getGassmaSelect(dictYaml, schema);
   result += getGassmaOmit(dictYaml, schema);

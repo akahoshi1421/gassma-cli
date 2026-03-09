@@ -32,7 +32,9 @@ describe("getOneGassmaWhereUse", () => {
 
     const result = getOneGassmaWhereUse(sheetContent, "", "User", relations);
 
-    expect(result).toContain('"posts"?: Gassma.RelationListFilter');
+    expect(result).toContain(
+      '"posts"?: { some?: GassmaPostWhereUse; every?: GassmaPostWhereUse; none?: GassmaPostWhereUse }',
+    );
   });
 
   it("should add manyToOne relation filter with is/isNot", () => {
@@ -49,7 +51,9 @@ describe("getOneGassmaWhereUse", () => {
 
     const result = getOneGassmaWhereUse(sheetContent, "", "Post", relations);
 
-    expect(result).toContain('"author"?: Gassma.RelationSingleFilter');
+    expect(result).toContain(
+      '"author"?: { is?: GassmaUserWhereUse; isNot?: GassmaUserWhereUse }',
+    );
   });
 
   it("should add oneToOne relation filter with is/isNot", () => {
@@ -66,7 +70,9 @@ describe("getOneGassmaWhereUse", () => {
 
     const result = getOneGassmaWhereUse(sheetContent, "", "User", relations);
 
-    expect(result).toContain('"profile"?: Gassma.RelationSingleFilter');
+    expect(result).toContain(
+      '"profile"?: { is?: GassmaProfileWhereUse; isNot?: GassmaProfileWhereUse }',
+    );
   });
 
   it("should add manyToMany relation filter with some/every/none", () => {
@@ -83,7 +89,9 @@ describe("getOneGassmaWhereUse", () => {
 
     const result = getOneGassmaWhereUse(sheetContent, "", "Post", relations);
 
-    expect(result).toContain('"tags"?: Gassma.RelationListFilter');
+    expect(result).toContain(
+      '"tags"?: { some?: GassmaTagWhereUse; every?: GassmaTagWhereUse; none?: GassmaTagWhereUse }',
+    );
   });
 
   it("should not add relation fields when no relations for model", () => {

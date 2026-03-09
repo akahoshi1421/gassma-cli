@@ -47,13 +47,13 @@ describe("getOneGassmaController", () => {
 
   it("should include createManyAndReturn method", () => {
     expect(result).toContain(
-      "createManyAndReturn(createdData: GassmaUserCreateManyData): Record<string, unknown>[]",
+      "createManyAndReturn(createdData: GassmaUserCreateManyData): GassmaUserDefaultFindResult[]",
     );
   });
 
   it("should include updateManyAndReturn method", () => {
     expect(result).toContain(
-      "updateManyAndReturn(updateData: GassmaUserUpdateData): Record<string, unknown>[]",
+      "updateManyAndReturn(updateData: GassmaUserUpdateData): GassmaUserDefaultFindResult[]",
     );
   });
 

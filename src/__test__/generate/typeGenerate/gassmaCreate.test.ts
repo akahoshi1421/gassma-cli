@@ -9,7 +9,7 @@ describe("getOneGassmaCreate", () => {
     expect(result).toContain("data: GassmaUserUse");
   });
 
-  it("should add nested write operations for relations", () => {
+  it("should add nested write operations with target model types for oneToMany", () => {
     const relations: RelationsConfig = {
       User: {
         posts: {
@@ -23,20 +23,19 @@ describe("getOneGassmaCreate", () => {
 
     const result = getOneGassmaCreate("", "User", relations);
 
+    expect(result).toContain('"posts"?:');
+    expect(result).toContain("create?: GassmaPostUse | GassmaPostUse[]");
     expect(result).toContain(
-      'data: GassmaUserUse & {\n    "posts"?: Gassma.NestedWriteOperation;\n  }',
+      "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
+    );
+    expect(result).toContain(
+      "connectOrCreate?: { where: GassmaPostWhereUse; create: GassmaPostUse }",
     );
   });
 
-  it("should add multiple relation fields", () => {
+  it("should add nested write operations with target model types for oneToOne", () => {
     const relations: RelationsConfig = {
       User: {
-        posts: {
-          type: "oneToMany",
-          to: "Post",
-          field: "id",
-          reference: "authorId",
-        },
         profile: {
           type: "oneToOne",
           to: "Profile",
@@ -48,8 +47,12 @@ describe("getOneGassmaCreate", () => {
 
     const result = getOneGassmaCreate("", "User", relations);
 
-    expect(result).toContain('"posts"?: Gassma.NestedWriteOperation');
-    expect(result).toContain('"profile"?: Gassma.NestedWriteOperation');
+    expect(result).toContain('"profile"?:');
+    expect(result).toContain("create?: GassmaProfileUse");
+    expect(result).toContain("connect?: GassmaProfileWhereUse");
+    expect(result).toContain(
+      "connectOrCreate?: { where: GassmaProfileWhereUse; create: GassmaProfileUse }",
+    );
   });
 
   it("should include select property", () => {

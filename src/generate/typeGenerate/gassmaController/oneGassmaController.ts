@@ -11,14 +11,14 @@ declare class Gassma${schemaName}${sheetName}Controller<GO extends Gassma${schem
     endColumnNumber: number
   ): void;
   createMany(createdData: Gassma${schemaName}${sheetName}CreateManyData): CreateManyReturn;
-  createManyAndReturn(createdData: Gassma${schemaName}${sheetName}CreateManyData): Record<string, unknown>[];
+  createManyAndReturn(createdData: Gassma${schemaName}${sheetName}CreateManyData): Gassma${schemaName}${sheetName}DefaultFindResult[];
   create<T extends Gassma${schemaName}${sheetName}CreateData>(createdData: T): ${fr}<T["select"], T["omit"], GO>;
   findFirst<T extends Gassma${schemaName}${sheetName}FindData>(findData: T): ${fr}<T["select"], T["omit"], GO> | null;
   findFirstOrThrow<T extends Gassma${schemaName}${sheetName}FindData>(findData: T): ${fr}<T["select"], T["omit"], GO>;
   findMany<T extends Gassma${schemaName}${sheetName}FindManyData>(findData: T): ${fr}<T["select"], T["omit"], GO>[];
   update<T extends Gassma${schemaName}${sheetName}UpdateSingleData>(updateData: T): ${fr}<T["select"], T["omit"], GO> | null;
   updateMany(updateData: Gassma${schemaName}${sheetName}UpdateData): UpdateManyReturn;
-  updateManyAndReturn(updateData: Gassma${schemaName}${sheetName}UpdateData): Record<string, unknown>[];
+  updateManyAndReturn(updateData: Gassma${schemaName}${sheetName}UpdateData): Gassma${schemaName}${sheetName}DefaultFindResult[];
   upsert<T extends Gassma${schemaName}${sheetName}UpsertSingleData>(upsertData: T): ${fr}<T["select"], T["omit"], GO>;
   upsertMany(upsertData: Gassma${schemaName}${sheetName}UpsertData): UpsertManyReturn;
   delete<T extends Gassma${schemaName}${sheetName}DeleteSingleData>(deleteData: T): ${fr}<T["select"], T["omit"], GO> | null;

@@ -22,7 +22,7 @@ describe("getOneGassmaDeleteSingleData", () => {
   it("should include include property", () => {
     const result = getOneGassmaDeleteSingleData("", "User");
 
-    expect(result).toContain("include?: Gassma.IncludeData;");
+    expect(result).toContain("include?: GassmaUserInclude;");
   });
 
   it("should include omit property", () => {

@@ -6,7 +6,7 @@ const getOneGassmaUpsertSingleData = (
   sheetName: string,
   relations?: RelationsConfig,
 ) => {
-  const nestedFields = getNestedWriteFields(sheetName, relations);
+  const nestedFields = getNestedWriteFields(schemaName, sheetName, relations);
 
   const createType = nestedFields
     ? `Gassma${schemaName}${sheetName}Use & {\n${nestedFields}  }`
@@ -23,7 +23,7 @@ declare type Gassma${schemaName}${sheetName}UpsertSingleData = {
   create: ${createType};
   update: ${updateType};
   select?: Gassma${schemaName}${sheetName}Select;
-  include?: Gassma.IncludeData;
+  include?: Gassma${schemaName}${sheetName}Include;
   omit?: Gassma${schemaName}${sheetName}Omit;
 };
 `;

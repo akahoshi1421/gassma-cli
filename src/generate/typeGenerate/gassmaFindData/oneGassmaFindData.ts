@@ -33,9 +33,9 @@ const getOneGassmaFindData = (
   take?: number;
   skip?: number;
   distinct?: ${distinctData}(${distinctArrayData})[];
-  include?: Gassma.IncludeData;
+  include?: Gassma${schemaName}${sheetName}Include;
   cursor?: Partial<Gassma${schemaName}${sheetName}Use>;
-  _count?: Gassma.CountValue;
+  _count?: Gassma${schemaName}${sheetName}CountValue;
 };\n`;
 };
 

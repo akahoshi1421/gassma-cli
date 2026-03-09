@@ -27,7 +27,7 @@ describe("getOneGassmaOrderBy", () => {
     expect(result).not.toContain('"email?"');
   });
 
-  it("should add relation fields for ordering", () => {
+  it("should add relation fields with target model OrderBy type", () => {
     const relations: RelationsConfig = {
       User: {
         posts: {
@@ -41,10 +41,10 @@ describe("getOneGassmaOrderBy", () => {
 
     const result = getOneGassmaOrderBy(sheetContent, "", "User", relations);
 
-    expect(result).toContain('"posts"?: Gassma.RelationOrderBy;');
+    expect(result).toContain('"posts"?: GassmaPostOrderBy;');
   });
 
-  it("should add _count for relation count ordering", () => {
+  it("should add _count with relation name keys", () => {
     const relations: RelationsConfig = {
       User: {
         posts: {
@@ -53,12 +53,20 @@ describe("getOneGassmaOrderBy", () => {
           field: "id",
           reference: "authorId",
         },
+        profile: {
+          type: "oneToOne",
+          to: "Profile",
+          field: "id",
+          reference: "userId",
+        },
       },
     };
 
     const result = getOneGassmaOrderBy(sheetContent, "", "User", relations);
 
-    expect(result).toContain('"_count"?: Gassma.RelationOrderBy;');
+    expect(result).toContain(
+      '"_count"?: { "posts"?: "asc" | "desc"; "profile"?: "asc" | "desc" };',
+    );
   });
 
   it("should not add relation fields when no relations for model", () => {

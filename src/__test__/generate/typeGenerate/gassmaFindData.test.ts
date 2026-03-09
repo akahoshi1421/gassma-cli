@@ -25,10 +25,10 @@ describe("getOneGassmaFindData", () => {
     expect(result).toContain("distinct?:");
   });
 
-  it("should include include property", () => {
+  it("should include model-specific include property", () => {
     const result = getOneGassmaFindData(sheetContent, "", "User");
 
-    expect(result).toContain("include?: Gassma.IncludeData");
+    expect(result).toContain("include?: GassmaUserInclude");
   });
 
   it("should include cursor property", () => {
@@ -37,9 +37,9 @@ describe("getOneGassmaFindData", () => {
     expect(result).toContain("cursor?: Partial<GassmaUserUse>;");
   });
 
-  it("should include _count property", () => {
+  it("should include model-specific _count property", () => {
     const result = getOneGassmaFindData(sheetContent, "", "User");
 
-    expect(result).toContain("_count?: Gassma.CountValue;");
+    expect(result).toContain("_count?: GassmaUserCountValue;");
   });
 });
