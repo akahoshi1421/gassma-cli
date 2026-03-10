@@ -60,6 +60,8 @@ function generate(customDir?: string) {
       relations,
       schemaName,
       includeCommon,
+      defaults,
+      Object.keys(updatedAt),
     );
     writer(resultString, baseName, outputPath);
     const clientJs = generateClientJs(

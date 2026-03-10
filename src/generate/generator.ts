@@ -35,6 +35,7 @@ import { getGassmaUpdateSingleData } from "./typeGenerate/gassmaUpdateSingleData
 import { getGassmaUpsertData } from "./typeGenerate/gassmaUpsertData";
 import { getGassmaUpsertSingleData } from "./typeGenerate/gassmaUpsertSingleData";
 import { getGassmaWhereUse } from "./typeGenerate/gassmaWhereUse";
+import type { DefaultsConfig } from "./read/extractDefaults";
 import type { RelationsConfig } from "./read/extractRelations";
 
 const generater = (
@@ -42,10 +43,16 @@ const generater = (
   relations?: RelationsConfig,
   schemaName?: string,
   includeCommon?: boolean,
+  defaults?: DefaultsConfig,
+  updatedAtModels?: string[],
 ) => {
   const schema = schemaName ?? "";
   const sheetNames = Object.keys(dictYaml);
-  let result = getGassmaMain(sheetNames, schema, includeCommon);
+  let result = getGassmaMain(sheetNames, schema, includeCommon, {
+    dictYaml,
+    defaults: defaults ?? {},
+    updatedAtModels: updatedAtModels ?? [],
+  });
 
   result += getGassmaSheet(sheetNames, schema);
   result += getGassmaController(sheetNames, schema);

@@ -1,6 +1,9 @@
+import type { DefaultsConfig } from "../read/extractDefaults";
 import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getGassmaCommonTypes } from "./gassmaCommonTypes";
+import { getGassmaDefaultsType } from "./gassmaDefaultsType";
 import { getGassmaErrorClasses } from "./gassmaErrorClasses";
+import { getGassmaUpdatedAtType } from "./gassmaUpdatedAtType";
 
 const getGassmaGlobalOmitConfig = (
   sheetNames: string[],
@@ -19,9 +22,9 @@ const getGassmaClientOptions = (schemaName: string) => {
   id?: string;
   relations?: Gassma.RelationsConfig;
   omit?: O;
-  defaults?: Gassma.DefaultsConfig;
-  updatedAt?: Gassma.UpdatedAtConfig;
-};\n`;
+  defaults?: Gassma${schemaName}DefaultsConfig;
+  updatedAt?: Gassma${schemaName}UpdatedAtConfig;
+};\n\n`;
 };
 
 const getGassmaCommonNamespace = () => {
@@ -48,7 +51,17 @@ ${errorClasses}}
 `;
 };
 
-const getGassmaSchemaClient = (sheetNames: string[], schemaName: string) => {
+type GassmaMainOptions = {
+  dictYaml: Record<string, Record<string, unknown[]>>;
+  defaults: DefaultsConfig;
+  updatedAtModels: string[];
+};
+
+const getGassmaSchemaClient = (
+  sheetNames: string[],
+  schemaName: string,
+  options: GassmaMainOptions,
+) => {
   const clientMapEntry = `declare namespace Gassma {
   interface GassmaClientMap {
     "${schemaName}": {
@@ -64,6 +77,15 @@ const getGassmaSchemaClient = (sheetNames: string[], schemaName: string) => {
   return (
     clientMapEntry +
     getGassmaGlobalOmitConfig(sheetNames, schemaName) +
+    "\n" +
+    getGassmaDefaultsType(options.dictYaml, options.defaults, schemaName) +
+    "\n" +
+    getGassmaUpdatedAtType(
+      options.dictYaml,
+      options.updatedAtModels,
+      schemaName,
+    ) +
+    "\n" +
     getGassmaClientOptions(schemaName)
   );
 };
@@ -72,10 +94,16 @@ const getGassmaMain = (
   sheetNames: string[],
   schemaName: string,
   includeCommon?: boolean,
+  options?: GassmaMainOptions,
 ) => {
   const common = includeCommon !== false ? getGassmaCommonNamespace() : "";
+  const mainOptions = options ?? {
+    dictYaml: {},
+    defaults: {},
+    updatedAtModels: [],
+  };
 
-  return common + getGassmaSchemaClient(sheetNames, schemaName);
+  return common + getGassmaSchemaClient(sheetNames, schemaName, mainOptions);
 };
 
 export { getGassmaMain, getGassmaCommonNamespace };
