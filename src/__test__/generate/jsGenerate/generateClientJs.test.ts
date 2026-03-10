@@ -1,4 +1,5 @@
 import { generateClientJs } from "../../../generate/jsGenerate/generateClientJs";
+import type { DefaultsConfig } from "../../../generate/read/extractDefaults";
 
 describe("generateClientJs", () => {
   it("should generate GassmaClient class with embedded relations", () => {
@@ -93,5 +94,44 @@ describe("generateClientJs", () => {
     expect(result).toContain(
       "Object.assign({}, options, { relations: fugaRelations })",
     );
+  });
+
+  it("should embed defaults with static values", () => {
+    const defaults: DefaultsConfig = {
+      User: { isActive: { kind: "static", value: true } },
+      Post: { viewCount: { kind: "static", value: 0 } },
+    };
+
+    const result = generateClientJs({}, "Test", defaults);
+
+    expect(result).toContain("testDefaults =");
+    expect(result).toContain("defaults: testDefaults");
+  });
+
+  it("should embed now() as () => new Date()", () => {
+    const defaults: DefaultsConfig = {
+      User: { createdAt: { kind: "function", name: "now" } },
+    };
+
+    const result = generateClientJs({}, "Test", defaults);
+
+    expect(result).toContain("() => new Date()");
+  });
+
+  it("should embed uuid() as () => Utilities.getUuid()", () => {
+    const defaults: DefaultsConfig = {
+      User: { id: { kind: "function", name: "uuid" } },
+    };
+
+    const result = generateClientJs({}, "Test", defaults);
+
+    expect(result).toContain("() => Utilities.getUuid()");
+  });
+
+  it("should not embed defaults when config is empty", () => {
+    const result = generateClientJs({}, "Test", {});
+
+    expect(result).not.toContain("Defaults");
+    expect(result).not.toContain("defaults");
   });
 });
