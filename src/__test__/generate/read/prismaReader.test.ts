@@ -278,6 +278,21 @@ model User {
     expect(result.User.name).toEqual(["string"]);
   });
 
+  it("should make @updatedAt fields optional", () => {
+    const schema = `
+model User {
+  id        Int      @id
+  name      String
+  updatedAt DateTime @updatedAt
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.User["updatedAt?"]).toEqual(["Date"]);
+    expect(result.User.updatedAt).toBeUndefined();
+    expect(result.User.name).toEqual(["string"]);
+  });
+
   it("should ignore relation fields (list types referencing other models)", () => {
     const schema = `
 model User {

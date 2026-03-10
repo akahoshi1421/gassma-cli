@@ -1,5 +1,6 @@
 import { generateClientJs } from "../../../generate/jsGenerate/generateClientJs";
 import type { DefaultsConfig } from "../../../generate/read/extractDefaults";
+import type { UpdatedAtConfig } from "../../../generate/read/extractUpdatedAt";
 
 describe("generateClientJs", () => {
   it("should generate GassmaClient class with embedded relations", () => {
@@ -133,5 +134,44 @@ describe("generateClientJs", () => {
 
     expect(result).not.toContain("Defaults");
     expect(result).not.toContain("defaults");
+  });
+
+  it("should embed updatedAt config", () => {
+    const updatedAt: UpdatedAtConfig = {
+      User: ["updatedAt"],
+      Post: ["updatedAt", "modifiedAt"],
+    };
+
+    const result = generateClientJs({}, "Test", undefined, updatedAt);
+
+    expect(result).toContain("testUpdatedAt =");
+    expect(result).toContain("updatedAt: testUpdatedAt");
+    expect(result).toContain('"User"');
+    expect(result).toContain('"updatedAt"');
+    expect(result).toContain('"Post"');
+    expect(result).toContain('"modifiedAt"');
+  });
+
+  it("should not embed updatedAt when config is empty", () => {
+    const result = generateClientJs({}, "Test", undefined, {});
+
+    expect(result).not.toContain("UpdatedAt");
+    expect(result).not.toContain("updatedAt");
+  });
+
+  it("should embed both defaults and updatedAt", () => {
+    const defaults: DefaultsConfig = {
+      User: { isActive: { kind: "static", value: true } },
+    };
+    const updatedAt: UpdatedAtConfig = {
+      User: ["updatedAt"],
+    };
+
+    const result = generateClientJs({}, "Test", defaults, updatedAt);
+
+    expect(result).toContain("testDefaults");
+    expect(result).toContain("testUpdatedAt");
+    expect(result).toContain("defaults: testDefaults");
+    expect(result).toContain("updatedAt: testUpdatedAt");
   });
 });
