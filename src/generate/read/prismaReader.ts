@@ -26,6 +26,7 @@ function prismaReader(
 
       const isOptional = member.type.kind === "optional";
       const hasNonAutoDefault = hasNonAutoincrementDefault(member);
+      const isUpdatedAt = hasUpdatedAtAttribute(member);
       const baseType =
         member.type.kind === "optional" || member.type.kind === "required"
           ? member.type.type
@@ -34,7 +35,7 @@ function prismaReader(
 
       const typeName = baseType.name.value;
       const fieldName =
-        isOptional || hasNonAutoDefault
+        isOptional || hasNonAutoDefault || isUpdatedAt
           ? `${member.name.value}?`
           : member.name.value;
 
@@ -73,6 +74,15 @@ function hasNonAutoincrementDefault(
     return SKIP_DEFAULT_FUNCTIONS.indexOf(funcName) === -1;
   }
   return true;
+}
+
+function hasUpdatedAtAttribute(
+  member: Parameters<typeof findDefaultFieldAttribute>[0],
+): boolean {
+  return (member.attributes ?? []).some(
+    (attr) =>
+      attr.kind === "fieldAttribute" && attr.path.value[0] === "updatedAt",
+  );
 }
 
 export { prismaReader };

@@ -23,6 +23,10 @@ const getGassmaCommonTypes = () => {
     };
   };
 
+  type UpdatedAtConfig = {
+    [sheetName: string]: string | string[];
+  };
+
   type ManyReturn = {
     count: number;
   };

@@ -20,6 +20,7 @@ const getGassmaClientOptions = (schemaName: string) => {
   relations?: Gassma.RelationsConfig;
   omit?: O;
   defaults?: Gassma.DefaultsConfig;
+  updatedAt?: Gassma.UpdatedAtConfig;
 };\n`;
 };
 
