@@ -1,15 +1,15 @@
 import { generateColumnUnionConfig } from "./generateColumnUnionConfig";
 
-const getGassmaUpdatedAtType = (
+const getGassmaIgnoreType = (
   dictYaml: Record<string, Record<string, unknown[]>>,
-  updatedAtModels: string[],
   schemaName: string,
 ): string => {
+  const allModels = Object.keys(dictYaml);
   return generateColumnUnionConfig(
     dictYaml,
-    updatedAtModels,
-    `Gassma${schemaName}UpdatedAtConfig`,
+    allModels,
+    `Gassma${schemaName}IgnoreConfig`,
   );
 };
 
-export { getGassmaUpdatedAtType };
+export { getGassmaIgnoreType };

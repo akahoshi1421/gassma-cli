@@ -3,6 +3,7 @@ import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getGassmaCommonTypes } from "./gassmaCommonTypes";
 import { getGassmaDefaultsType } from "./gassmaDefaultsType";
 import { getGassmaErrorClasses } from "./gassmaErrorClasses";
+import { getGassmaIgnoreType } from "./gassmaIgnoreType";
 import { getGassmaUpdatedAtType } from "./gassmaUpdatedAtType";
 
 const getGassmaGlobalOmitConfig = (
@@ -24,6 +25,7 @@ const getGassmaClientOptions = (schemaName: string) => {
   omit?: O;
   defaults?: Gassma${schemaName}DefaultsConfig;
   updatedAt?: Gassma${schemaName}UpdatedAtConfig;
+  ignore?: Gassma${schemaName}IgnoreConfig;
 };\n\n`;
 };
 
@@ -85,6 +87,8 @@ const getGassmaSchemaClient = (
       options.updatedAtModels,
       schemaName,
     ) +
+    "\n" +
+    getGassmaIgnoreType(options.dictYaml, schemaName) +
     "\n" +
     getGassmaClientOptions(schemaName)
   );
