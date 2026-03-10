@@ -189,6 +189,41 @@ model User {
     expect(result.User.id).toEqual(["number", "string", "boolean"]);
   });
 
+  it("should convert enum fields to literal union types", () => {
+    const schema = `
+enum Role {
+  ADMIN
+  USER
+  MODERATOR
+}
+
+model User {
+  id   Int  @id
+  role Role
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.User.role).toEqual(["ADMIN", "USER", "MODERATOR"]);
+  });
+
+  it("should handle optional enum fields", () => {
+    const schema = `
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id     Int     @id
+  status Status?
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.User["status?"]).toEqual(["ACTIVE", "INACTIVE"]);
+  });
+
   it("should replace base type with @gassma.replaceType", () => {
     const schema = `
 model User {
