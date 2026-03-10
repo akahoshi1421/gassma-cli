@@ -251,6 +251,33 @@ model User {
     expect(result.User.status).toEqual(["active", "inactive"]);
   });
 
+  it("should make fields with @default() optional (except autoincrement)", () => {
+    const schema = `
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+`;
+    const result = prismaReader(schema);
+
+    // autoincrement() は除外 → 必須のまま
+    expect(result.User.id).toEqual(["number"]);
+    expect(result.User["id?"]).toBeUndefined();
+
+    // @default(true) → オプショナル
+    expect(result.User["isActive?"]).toEqual(["boolean"]);
+    expect(result.User.isActive).toBeUndefined();
+
+    // @default(now()) → オプショナル
+    expect(result.User["createdAt?"]).toEqual(["Date"]);
+    expect(result.User.createdAt).toBeUndefined();
+
+    // @default なし → 必須のまま
+    expect(result.User.name).toEqual(["string"]);
+  });
+
   it("should ignore relation fields (list types referencing other models)", () => {
     const schema = `
 model User {

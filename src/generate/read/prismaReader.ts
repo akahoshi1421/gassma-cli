@@ -1,4 +1,5 @@
 import { parsePrismaSchema } from "@loancrate/prisma-schema-parser";
+import { findDefaultFieldAttribute } from "@loancrate/prisma-schema-parser/dist/attributes";
 import { mapPrismaType } from "./mapPrismaType";
 import { isScalarField } from "./isScalarField";
 import { extractAddTypes, extractReplaceTypes } from "./extractAddTypes";
@@ -24,6 +25,7 @@ function prismaReader(
       if (!isScalarField(member, ast)) return;
 
       const isOptional = member.type.kind === "optional";
+      const hasNonAutoDefault = hasNonAutoincrementDefault(member);
       const baseType =
         member.type.kind === "optional" || member.type.kind === "required"
           ? member.type.type
@@ -31,9 +33,10 @@ function prismaReader(
       if (baseType.kind === "unsupported" || baseType.kind === "list") return;
 
       const typeName = baseType.name.value;
-      const fieldName = isOptional
-        ? `${member.name.value}?`
-        : member.name.value;
+      const fieldName =
+        isOptional || hasNonAutoDefault
+          ? `${member.name.value}?`
+          : member.name.value;
 
       const enumValues = enums[typeName];
       if (enumValues) {
@@ -56,6 +59,20 @@ function prismaReader(
   });
 
   return result;
+}
+
+const SKIP_DEFAULT_FUNCTIONS = ["autoincrement"];
+
+function hasNonAutoincrementDefault(
+  member: Parameters<typeof findDefaultFieldAttribute>[0],
+): boolean {
+  const attr = findDefaultFieldAttribute(member);
+  if (!attr) return false;
+  if (attr.expression.kind === "functionCall") {
+    const funcName = attr.expression.path.value[0];
+    return SKIP_DEFAULT_FUNCTIONS.indexOf(funcName) === -1;
+  }
+  return true;
 }
 
 export { prismaReader };
