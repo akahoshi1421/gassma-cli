@@ -4,6 +4,7 @@ import { generater } from "./generator";
 import { generateClientDts } from "./jsGenerate/generateClientDts";
 import { generateClientJs } from "./jsGenerate/generateClientJs";
 import { extractOutputPath } from "./read/extractOutputPath";
+import { extractDefaults } from "./read/extractDefaults";
 import { extractRelations } from "./read/extractRelations";
 import { prismaReader } from "./read/prismaReader";
 import { writer } from "./writer";
@@ -47,6 +48,7 @@ function generate(customDir?: string) {
 
     const parsed = prismaReader(schemaText);
     const relations = extractRelations(schemaText);
+    const defaults = extractDefaults(schemaText);
     const baseName = path.basename(file, ".prisma");
     const schemaName = baseName.charAt(0).toUpperCase() + baseName.slice(1);
     const includeCommon = !commonWritten.has(outputPath);
@@ -58,7 +60,7 @@ function generate(customDir?: string) {
       includeCommon,
     );
     writer(resultString, baseName, outputPath);
-    const clientJs = generateClientJs(relations, schemaName);
+    const clientJs = generateClientJs(relations, schemaName, defaults);
     jsWriter(clientJs, `${baseName}Client`, outputPath);
     const clientDts = generateClientDts(schemaName);
     writer(clientDts, `${baseName}Client`, outputPath);
