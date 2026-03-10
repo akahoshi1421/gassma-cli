@@ -17,6 +17,12 @@ const getGassmaCommonTypes = () => {
   type FalseKeys<T> = { [K in keyof T]: T[K] extends false ? K : never }[keyof T];
   type ResolveOmitKeys<GO, QO> = Exclude<TrueKeys<GO>, FalseKeys<QO>> | TrueKeys<QO>;
 
+  type MapConfig = {
+    [sheetName: string]: {
+      [codeName: string]: string;
+    };
+  };
+
   type ManyReturn = {
     count: number;
   };

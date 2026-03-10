@@ -23,6 +23,7 @@ function prismaReader(
     decl.members.forEach((member) => {
       if (member.kind !== "field") return;
       if (!isScalarField(member, ast)) return;
+      if (hasIgnoreAttribute(member)) return;
 
       const isOptional = member.type.kind === "optional";
       const hasNonAutoDefault = hasNonAutoincrementDefault(member);
@@ -82,6 +83,14 @@ function hasUpdatedAtAttribute(
   return (member.attributes ?? []).some(
     (attr) =>
       attr.kind === "fieldAttribute" && attr.path.value[0] === "updatedAt",
+  );
+}
+
+function hasIgnoreAttribute(
+  member: Parameters<typeof findDefaultFieldAttribute>[0],
+): boolean {
+  return (member.attributes ?? []).some(
+    (attr) => attr.kind === "fieldAttribute" && attr.path.value[0] === "ignore",
   );
 }
 

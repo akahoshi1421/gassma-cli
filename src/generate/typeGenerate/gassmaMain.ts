@@ -26,6 +26,7 @@ const getGassmaClientOptions = (schemaName: string) => {
   defaults?: Gassma${schemaName}DefaultsConfig;
   updatedAt?: Gassma${schemaName}UpdatedAtConfig;
   ignore?: Gassma${schemaName}IgnoreConfig;
+  map?: Gassma.MapConfig;
 };\n\n`;
 };
 
