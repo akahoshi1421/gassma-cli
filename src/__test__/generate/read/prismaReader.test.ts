@@ -189,6 +189,33 @@ model User {
     expect(result.User.id).toEqual(["number", "string", "boolean"]);
   });
 
+  it("should replace base type with @gassma.replaceType", () => {
+    const schema = `
+model User {
+  id   Int    @id
+  /// @gassma.replaceType "admin", "user", "moderator"
+  role String
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.User.role).toEqual(["admin", "user", "moderator"]);
+  });
+
+  it("should not include base type when using replaceType", () => {
+    const schema = `
+model User {
+  id   Int    @id
+  /// @gassma.replaceType "active", "inactive"
+  status String
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.User.status).not.toContain("string");
+    expect(result.User.status).toEqual(["active", "inactive"]);
+  });
+
   it("should ignore relation fields (list types referencing other models)", () => {
     const schema = `
 model User {

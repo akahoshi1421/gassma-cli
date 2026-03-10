@@ -8,22 +8,33 @@ type AddTypesConfig = {
 };
 
 const GASSMA_ADD_TYPE_PREFIX = "@gassma.addType ";
+const GASSMA_REPLACE_TYPE_PREFIX = "@gassma.replaceType ";
 
-const extractAddTypes = (schemaText: string): AddTypesConfig => {
+const extractAddTypes = (schemaText: string): AddTypesConfig =>
+  extractByPrefix(schemaText, GASSMA_ADD_TYPE_PREFIX);
+
+const extractByPrefix = (
+  schemaText: string,
+  prefix: string,
+): AddTypesConfig => {
   const ast = parsePrismaSchema(schemaText);
   const result: AddTypesConfig = {};
 
   ast.declarations.forEach((decl) => {
     if (decl.kind !== "model") return;
-    processModel(decl, result);
+    processModel(decl, result, prefix);
   });
 
   return result;
 };
 
+const extractReplaceTypes = (schemaText: string): AddTypesConfig =>
+  extractByPrefix(schemaText, GASSMA_REPLACE_TYPE_PREFIX);
+
 const processModel = (
   model: ModelDeclaration,
   result: AddTypesConfig,
+  prefix: string,
 ): void => {
   const members = model.members;
 
@@ -35,9 +46,9 @@ const processModel = (
 
     member.comments.forEach((comment) => {
       if (comment.kind !== "docComment") return;
-      if (!comment.text.startsWith(GASSMA_ADD_TYPE_PREFIX)) return;
+      if (!comment.text.startsWith(prefix)) return;
 
-      const typesString = comment.text.slice(GASSMA_ADD_TYPE_PREFIX.length);
+      const typesString = comment.text.slice(prefix.length);
       const types = typesString
         .split(",")
         .map((t) => t.trim().replace(/^"|"$/g, ""));
@@ -48,5 +59,5 @@ const processModel = (
   });
 };
 
-export { extractAddTypes };
+export { extractAddTypes, extractReplaceTypes };
 export type { AddTypesConfig };
