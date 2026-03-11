@@ -320,4 +320,38 @@ model Post {
       authorId: ["number"],
     });
   });
+
+  it("should exclude @ignore fields from result", () => {
+    const schema = `
+model User {
+  id       Int    @id
+  name     String
+  internal String @ignore
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.User).toEqual({
+      id: ["number"],
+      name: ["string"],
+    });
+    expect(result.User.internal).toBeUndefined();
+  });
+
+  it("should exclude @ignore optional fields from result", () => {
+    const schema = `
+model Post {
+  id       Int     @id
+  title    String
+  debugLog String? @ignore
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.Post).toEqual({
+      id: ["number"],
+      title: ["string"],
+    });
+    expect(result.Post["debugLog?"]).toBeUndefined();
+  });
 });

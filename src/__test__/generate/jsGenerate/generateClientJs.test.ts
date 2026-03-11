@@ -1,6 +1,8 @@
 import { generateClientJs } from "../../../generate/jsGenerate/generateClientJs";
 import type { DefaultsConfig } from "../../../generate/read/extractDefaults";
 import type { UpdatedAtConfig } from "../../../generate/read/extractUpdatedAt";
+import type { IgnoreConfig } from "../../../generate/read/extractIgnore";
+import type { MapConfig } from "../../../generate/read/extractMap";
 
 describe("generateClientJs", () => {
   it("should generate GassmaClient class with embedded relations", () => {
@@ -173,5 +175,86 @@ describe("generateClientJs", () => {
     expect(result).toContain("testUpdatedAt");
     expect(result).toContain("defaults: testDefaults");
     expect(result).toContain("updatedAt: testUpdatedAt");
+  });
+
+  it("should embed ignore config", () => {
+    const ignore: IgnoreConfig = {
+      User: ["internal", "debugLog"],
+      Post: ["tempData"],
+    };
+
+    const result = generateClientJs({}, "Test", undefined, undefined, ignore);
+
+    expect(result).toContain("testIgnore =");
+    expect(result).toContain("ignore: testIgnore");
+    expect(result).toContain('"User"');
+    expect(result).toContain('"internal"');
+    expect(result).toContain('"debugLog"');
+    expect(result).toContain('"Post"');
+    expect(result).toContain('"tempData"');
+  });
+
+  it("should not embed ignore when config is empty", () => {
+    const result = generateClientJs({}, "Test", undefined, undefined, {});
+
+    expect(result).not.toContain("Ignore");
+    expect(result).not.toContain("ignore");
+  });
+
+  it("should embed all configs together", () => {
+    const defaults: DefaultsConfig = {
+      User: { isActive: { kind: "static", value: true } },
+    };
+    const updatedAt: UpdatedAtConfig = {
+      User: ["updatedAt"],
+    };
+    const ignore: IgnoreConfig = {
+      User: ["internal"],
+    };
+
+    const result = generateClientJs({}, "Test", defaults, updatedAt, ignore);
+
+    expect(result).toContain("defaults: testDefaults");
+    expect(result).toContain("updatedAt: testUpdatedAt");
+    expect(result).toContain("ignore: testIgnore");
+  });
+
+  it("should embed map config", () => {
+    const map: MapConfig = {
+      User: { firstName: "first_name", lastName: "last_name" },
+      Post: { postTitle: "post_title" },
+    };
+
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      map,
+    );
+
+    expect(result).toContain("testMap =");
+    expect(result).toContain("map: testMap");
+    expect(result).toContain('"User"');
+    expect(result).toContain('"firstName"');
+    expect(result).toContain('"first_name"');
+    expect(result).toContain('"Post"');
+    expect(result).toContain('"postTitle"');
+    expect(result).toContain('"post_title"');
+  });
+
+  it("should not embed map when config is empty", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      {},
+    );
+
+    expect(result).not.toContain("Map");
+    expect(result).not.toContain("map:");
   });
 });
