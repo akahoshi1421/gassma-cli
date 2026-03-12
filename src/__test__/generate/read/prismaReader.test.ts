@@ -354,4 +354,24 @@ model Post {
     });
     expect(result.Post["debugLog?"]).toBeUndefined();
   });
+
+  it("should exclude @@ignore models from result", () => {
+    const schema = `
+model User {
+  id   Int    @id
+  name String
+}
+
+model InternalLog {
+  id      Int    @id
+  message String
+
+  @@ignore
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(Object.keys(result)).toEqual(["User"]);
+    expect(result.InternalLog).toBeUndefined();
+  });
 });
