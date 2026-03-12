@@ -3,6 +3,7 @@ import type { DefaultsConfig } from "../read/extractDefaults";
 import type { UpdatedAtConfig } from "../read/extractUpdatedAt";
 import type { IgnoreConfig } from "../read/extractIgnore";
 import type { MapConfig } from "../read/extractMap";
+import type { MapSheetsConfig } from "../read/extractMapSheets";
 
 const FUNCTION_MAP: Record<string, string> = {
   now: "() => new Date()",
@@ -43,6 +44,18 @@ const serializeIgnore = (ignore: IgnoreConfig): string => {
   return `{\n${entries.join(",\n")}\n  }`;
 };
 
+const serializeIgnoreSheets = (ignoreSheets: string[]): string => {
+  const values = ignoreSheets.map((s) => `"${s}"`).join(", ");
+  return `[${values}]`;
+};
+
+const serializeMapSheets = (mapSheets: MapSheetsConfig): string => {
+  const entries = Object.keys(mapSheets).map((modelName) => {
+    return `    "${modelName}": "${mapSheets[modelName]}"`;
+  });
+  return `{\n${entries.join(",\n")}\n  }`;
+};
+
 const serializeMap = (map: MapConfig): string => {
   const entries = Object.keys(map).map((modelName) => {
     const fields = map[modelName];
@@ -61,6 +74,8 @@ const generateClientJs = (
   updatedAt?: UpdatedAtConfig,
   ignore?: IgnoreConfig,
   map?: MapConfig,
+  ignoreSheets?: string[],
+  mapSheets?: MapSheetsConfig,
 ): string => {
   const lowerName = schemaName.charAt(0).toLowerCase() + schemaName.slice(1);
   const relationsJson =
@@ -72,6 +87,8 @@ const generateClientJs = (
   const hasUpdatedAt = updatedAt && Object.keys(updatedAt).length > 0;
   const hasIgnore = ignore && Object.keys(ignore).length > 0;
   const hasMap = map && Object.keys(map).length > 0;
+  const hasIgnoreSheets = ignoreSheets && ignoreSheets.length > 0;
+  const hasMapSheets = mapSheets && Object.keys(mapSheets).length > 0;
 
   const defaultsDecl = hasDefaults
     ? `const ${lowerName}Defaults = ${serializeDefaults(defaults)};\n\n`
@@ -89,16 +106,27 @@ const generateClientJs = (
     ? `const ${lowerName}Map = ${serializeMap(map)};\n\n`
     : "";
 
+  const ignoreSheetsDecl = hasIgnoreSheets
+    ? `const ${lowerName}IgnoreSheets = ${serializeIgnoreSheets(ignoreSheets)};\n\n`
+    : "";
+
+  const mapSheetsDecl = hasMapSheets
+    ? `const ${lowerName}MapSheets = ${serializeMapSheets(mapSheets)};\n\n`
+    : "";
+
   const mergeProps = [`relations: ${lowerName}Relations`];
   if (hasDefaults) mergeProps.push(`defaults: ${lowerName}Defaults`);
   if (hasUpdatedAt) mergeProps.push(`updatedAt: ${lowerName}UpdatedAt`);
   if (hasIgnore) mergeProps.push(`ignore: ${lowerName}Ignore`);
   if (hasMap) mergeProps.push(`map: ${lowerName}Map`);
+  if (hasIgnoreSheets)
+    mergeProps.push(`ignoreSheets: ${lowerName}IgnoreSheets`);
+  if (hasMapSheets) mergeProps.push(`mapSheets: ${lowerName}MapSheets`);
   const mergeExpr = `Object.assign({}, options, { ${mergeProps.join(", ")} })`;
 
   return `const ${lowerName}Relations = ${relationsJson};
 
-${defaultsDecl}${updatedAtDecl}${ignoreDecl}${mapDecl}class GassmaClient {
+${defaultsDecl}${updatedAtDecl}${ignoreDecl}${mapDecl}${ignoreSheetsDecl}${mapSheetsDecl}class GassmaClient {
   constructor(options) {
     const mergedOptions = ${mergeExpr};
     const client = new Gassma.GassmaClient(mergedOptions);

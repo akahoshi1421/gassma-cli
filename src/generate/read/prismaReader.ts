@@ -16,6 +16,7 @@ function prismaReader(
 
   ast.declarations.forEach((decl) => {
     if (decl.kind !== "model") return;
+    if (hasModelIgnoreAttribute(decl)) return;
 
     const modelName = decl.name.value;
     const fields: Record<string, unknown[]> = {};
@@ -83,6 +84,15 @@ function hasUpdatedAtAttribute(
   return (member.attributes ?? []).some(
     (attr) =>
       attr.kind === "fieldAttribute" && attr.path.value[0] === "updatedAt",
+  );
+}
+
+function hasModelIgnoreAttribute(decl: {
+  members?: ReadonlyArray<{ kind: string; path?: { value: string[] } }>;
+}): boolean {
+  return (decl.members ?? []).some(
+    (member) =>
+      member.kind === "blockAttribute" && member.path?.value[0] === "ignore",
   );
 }
 

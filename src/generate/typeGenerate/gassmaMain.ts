@@ -4,7 +4,9 @@ import { getGassmaCommonTypes } from "./gassmaCommonTypes";
 import { getGassmaDefaultsType } from "./gassmaDefaultsType";
 import { getGassmaErrorClasses } from "./gassmaErrorClasses";
 import { getGassmaIgnoreType } from "./gassmaIgnoreType";
+import { getGassmaIgnoreSheetsType } from "./gassmaIgnoreSheetsType";
 import { getGassmaMapType } from "./gassmaMapType";
+import { getGassmaMapSheetsType } from "./gassmaMapSheetsType";
 import { getGassmaUpdatedAtType } from "./gassmaUpdatedAtType";
 
 const getGassmaGlobalOmitConfig = (
@@ -27,7 +29,9 @@ const getGassmaClientOptions = (schemaName: string) => {
   defaults?: Gassma${schemaName}DefaultsConfig;
   updatedAt?: Gassma${schemaName}UpdatedAtConfig;
   ignore?: Gassma${schemaName}IgnoreConfig;
+  ignoreSheets?: Gassma${schemaName}IgnoreSheetsConfig;
   map?: Gassma${schemaName}MapConfig;
+  mapSheets?: Gassma${schemaName}MapSheetsConfig;
 };\n\n`;
 };
 
@@ -92,7 +96,11 @@ const getGassmaSchemaClient = (
     "\n" +
     getGassmaIgnoreType(options.dictYaml, schemaName) +
     "\n" +
+    getGassmaIgnoreSheetsType(options.dictYaml, schemaName) +
+    "\n" +
     getGassmaMapType(options.dictYaml, schemaName) +
+    "\n" +
+    getGassmaMapSheetsType(options.dictYaml, schemaName) +
     "\n" +
     getGassmaClientOptions(schemaName)
   );

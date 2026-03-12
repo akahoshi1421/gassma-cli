@@ -257,4 +257,70 @@ describe("generateClientJs", () => {
     expect(result).not.toContain("Map");
     expect(result).not.toContain("map:");
   });
+
+  it("should embed ignoreSheets config", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      ["InternalLog", "TempData"],
+    );
+
+    expect(result).toContain("testIgnoreSheets =");
+    expect(result).toContain("ignoreSheets: testIgnoreSheets");
+    expect(result).toContain('"InternalLog"');
+    expect(result).toContain('"TempData"');
+  });
+
+  it("should not embed ignoreSheets when empty", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      [],
+    );
+
+    expect(result).not.toContain("IgnoreSheets");
+    expect(result).not.toContain("ignoreSheets");
+  });
+
+  it("should embed mapSheets config", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      { User: "users", Post: "posts" },
+    );
+
+    expect(result).toContain("testMapSheets =");
+    expect(result).toContain("mapSheets: testMapSheets");
+    expect(result).toContain('"User": "users"');
+    expect(result).toContain('"Post": "posts"');
+  });
+
+  it("should not embed mapSheets when empty", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      {},
+    );
+
+    expect(result).not.toContain("MapSheets");
+    expect(result).not.toContain("mapSheets");
+  });
 });
