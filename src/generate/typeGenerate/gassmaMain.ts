@@ -7,6 +7,7 @@ import { getGassmaIgnoreType } from "./gassmaIgnoreType";
 import { getGassmaIgnoreSheetsType } from "./gassmaIgnoreSheetsType";
 import { getGassmaMapType } from "./gassmaMapType";
 import { getGassmaMapSheetsType } from "./gassmaMapSheetsType";
+import { getGassmaAutoincrementType } from "./gassmaAutoincrementType";
 import { getGassmaUpdatedAtType } from "./gassmaUpdatedAtType";
 
 const getGassmaGlobalOmitConfig = (
@@ -28,6 +29,7 @@ const getGassmaClientOptions = (schemaName: string) => {
   omit?: O;
   defaults?: Gassma${schemaName}DefaultsConfig;
   updatedAt?: Gassma${schemaName}UpdatedAtConfig;
+  autoincrement?: Gassma${schemaName}AutoincrementConfig;
   ignore?: Gassma${schemaName}IgnoreConfig;
   ignoreSheets?: Gassma${schemaName}IgnoreSheetsConfig;
   map?: Gassma${schemaName}MapConfig;
@@ -63,6 +65,7 @@ type GassmaMainOptions = {
   dictYaml: Record<string, Record<string, unknown[]>>;
   defaults: DefaultsConfig;
   updatedAtModels: string[];
+  autoincrementModels: string[];
 };
 
 const getGassmaSchemaClient = (
@@ -102,6 +105,12 @@ const getGassmaSchemaClient = (
     "\n" +
     getGassmaMapSheetsType(options.dictYaml, schemaName) +
     "\n" +
+    getGassmaAutoincrementType(
+      options.dictYaml,
+      options.autoincrementModels,
+      schemaName,
+    ) +
+    "\n" +
     getGassmaClientOptions(schemaName)
   );
 };
@@ -117,6 +126,7 @@ const getGassmaMain = (
     dictYaml: {},
     defaults: {},
     updatedAtModels: [],
+    autoincrementModels: [],
   };
 
   return common + getGassmaSchemaClient(sheetNames, schemaName, mainOptions);

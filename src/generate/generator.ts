@@ -45,6 +45,7 @@ const generater = (
   includeCommon?: boolean,
   defaults?: DefaultsConfig,
   updatedAtModels?: string[],
+  autoincrementModels?: string[],
 ) => {
   const schema = schemaName ?? "";
   const sheetNames = Object.keys(dictYaml);
@@ -52,6 +53,7 @@ const generater = (
     dictYaml,
     defaults: defaults ?? {},
     updatedAtModels: updatedAtModels ?? [],
+    autoincrementModels: autoincrementModels ?? [],
   });
 
   result += getGassmaSheet(sheetNames, schema);
