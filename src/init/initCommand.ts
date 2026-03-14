@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { generateTemplate } from "./generateTemplate";
+import { generateConfigTemplate } from "./generateConfigTemplate";
 
 type InitOptions = {
   output?: string;
@@ -10,6 +11,7 @@ type InitOptions = {
 function init(options?: InitOptions) {
   const gassmaDir = "./gassma";
   const schemaPath = path.join(gassmaDir, "schema.prisma");
+  const configPath = "./gassma.config.ts";
 
   if (fs.existsSync(schemaPath)) {
     throw new Error(
@@ -29,6 +31,15 @@ function init(options?: InitOptions) {
 
   fs.writeFileSync(schemaPath, template, "utf-8");
   console.log(`📄 Created ${schemaPath}`);
+
+  if (!fs.existsSync(configPath)) {
+    const configTemplate = generateConfigTemplate({
+      schemaPath: "gassma/schema.prisma",
+    });
+    fs.writeFileSync(configPath, configTemplate, "utf-8");
+    console.log(`📄 Created ${configPath}`);
+  }
+
   console.log(
     "\n✅ GASsma initialized. Edit gassma/schema.prisma to define your models.",
   );

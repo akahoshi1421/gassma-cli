@@ -14,7 +14,7 @@ import { extractMap } from "./read/extractMap";
 import { extractMapSheets } from "./read/extractMapSheets";
 import { extractEnums } from "./read/extractEnums";
 import { prismaReader } from "./read/prismaReader";
-import { parseSchemaPath } from "./parseSchemaPath";
+import { resolveSchemaFiles } from "../config/resolveSchemaFiles";
 import { writer } from "./writer";
 import { jsWriter } from "./jsWriter";
 
@@ -23,28 +23,10 @@ type GenerateOptions = {
 };
 
 function generate(options?: GenerateOptions) {
-  if (options?.schema) {
-    const { dir, file } = parseSchemaPath(options.schema);
-    return generateFromFiles(dir, [file]);
-  }
-
-  const gassmaDir = "./gassma";
-
-  if (!fs.existsSync(gassmaDir))
-    throw new Error(
-      `${gassmaDir}/ directory not found. Please create ${gassmaDir}/ directory with .prisma files.`,
-    );
-
-  const prismaFiles = fs
-    .readdirSync(gassmaDir)
-    .filter((file) => file.endsWith(".prisma"));
-
-  if (prismaFiles.length === 0)
-    throw new Error(
-      `No .prisma files found in ${gassmaDir}/ directory. Please create at least one .prisma file.`,
-    );
-
-  generateFromFiles(gassmaDir, prismaFiles);
+  const files = resolveSchemaFiles({ schema: options?.schema });
+  const dir = path.dirname(files[0].filePath);
+  const fileNames = files.map((f) => f.displayName);
+  generateFromFiles(dir, fileNames);
 }
 
 function generateFromFiles(gassmaDir: string, prismaFiles: string[]) {
