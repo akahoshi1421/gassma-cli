@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@loancrate/prisma-schema-parser": "^3.0.0",
+    "@prisma/internals": "^7.5.0",
     "@types/node": "^22.10.2",
     "commander": "^12.1.0"
   },
