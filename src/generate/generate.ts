@@ -4,6 +4,7 @@ import { generater } from "./generator";
 import { generateClientDts } from "./jsGenerate/generateClientDts";
 import { generateClientJs } from "./jsGenerate/generateClientJs";
 import { extractOutputPath } from "./read/extractOutputPath";
+import { extractAutoincrement } from "./read/extractAutoincrement";
 import { extractDefaults } from "./read/extractDefaults";
 import { extractRelations } from "./read/extractRelations";
 import { extractUpdatedAt } from "./read/extractUpdatedAt";
@@ -53,6 +54,7 @@ function generate(customDir?: string) {
 
     const parsed = prismaReader(schemaText);
     const relations = extractRelations(schemaText);
+    const autoincrement = extractAutoincrement(schemaText);
     const defaults = extractDefaults(schemaText);
     const updatedAt = extractUpdatedAt(schemaText);
     const ignore = extractIgnore(schemaText);
@@ -70,6 +72,7 @@ function generate(customDir?: string) {
       includeCommon,
       defaults,
       Object.keys(updatedAt),
+      Object.keys(autoincrement),
     );
     writer(resultString, baseName, outputPath);
     const clientJs = generateClientJs(
@@ -81,6 +84,7 @@ function generate(customDir?: string) {
       map,
       ignoreSheets,
       mapSheets,
+      autoincrement,
     );
     jsWriter(clientJs, `${baseName}Client`, outputPath);
     const clientDts = generateClientDts(schemaName);

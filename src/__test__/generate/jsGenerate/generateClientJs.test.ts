@@ -3,6 +3,7 @@ import type { DefaultsConfig } from "../../../generate/read/extractDefaults";
 import type { UpdatedAtConfig } from "../../../generate/read/extractUpdatedAt";
 import type { IgnoreConfig } from "../../../generate/read/extractIgnore";
 import type { MapConfig } from "../../../generate/read/extractMap";
+import type { AutoincrementConfig } from "../../../generate/read/extractAutoincrement";
 
 describe("generateClientJs", () => {
   it("should generate GassmaClient class with embedded relations", () => {
@@ -322,5 +323,64 @@ describe("generateClientJs", () => {
 
     expect(result).not.toContain("MapSheets");
     expect(result).not.toContain("mapSheets");
+  });
+
+  it("should embed autoincrement config with single field", () => {
+    const autoincrement: AutoincrementConfig = {
+      User: ["id"],
+    };
+
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      autoincrement,
+    );
+
+    expect(result).toContain("testAutoincrement =");
+    expect(result).toContain("autoincrement: testAutoincrement");
+    expect(result).toContain('"User": "id"');
+  });
+
+  it("should embed autoincrement config with multiple fields", () => {
+    const autoincrement: AutoincrementConfig = {
+      User: ["id", "seq"],
+    };
+
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      autoincrement,
+    );
+
+    expect(result).toContain('"User": ["id", "seq"]');
+  });
+
+  it("should not embed autoincrement when config is empty", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      {},
+    );
+
+    expect(result).not.toContain("Autoincrement");
+    expect(result).not.toContain("autoincrement");
   });
 });

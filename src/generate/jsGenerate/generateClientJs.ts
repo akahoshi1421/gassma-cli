@@ -3,6 +3,7 @@ import type { DefaultsConfig } from "../read/extractDefaults";
 import type { UpdatedAtConfig } from "../read/extractUpdatedAt";
 import type { IgnoreConfig } from "../read/extractIgnore";
 import type { MapConfig } from "../read/extractMap";
+import type { AutoincrementConfig } from "../read/extractAutoincrement";
 import type { MapSheetsConfig } from "../read/extractMapSheets";
 
 const FUNCTION_MAP: Record<string, string> = {
@@ -67,6 +68,18 @@ const serializeMap = (map: MapConfig): string => {
   return `{\n${entries.join(",\n")}\n  }`;
 };
 
+const serializeAutoincrement = (autoincrement: AutoincrementConfig): string => {
+  const entries = Object.keys(autoincrement).map((modelName) => {
+    const fields = autoincrement[modelName];
+    if (fields.length === 1) {
+      return `    "${modelName}": "${fields[0]}"`;
+    }
+    const values = fields.map((f) => `"${f}"`).join(", ");
+    return `    "${modelName}": [${values}]`;
+  });
+  return `{\n${entries.join(",\n")}\n  }`;
+};
+
 const generateClientJs = (
   relations: RelationsConfig,
   schemaName: string,
@@ -76,6 +89,7 @@ const generateClientJs = (
   map?: MapConfig,
   ignoreSheets?: string[],
   mapSheets?: MapSheetsConfig,
+  autoincrement?: AutoincrementConfig,
 ): string => {
   const lowerName = schemaName.charAt(0).toLowerCase() + schemaName.slice(1);
   const relationsJson =
@@ -89,6 +103,8 @@ const generateClientJs = (
   const hasMap = map && Object.keys(map).length > 0;
   const hasIgnoreSheets = ignoreSheets && ignoreSheets.length > 0;
   const hasMapSheets = mapSheets && Object.keys(mapSheets).length > 0;
+  const hasAutoincrement =
+    autoincrement && Object.keys(autoincrement).length > 0;
 
   const defaultsDecl = hasDefaults
     ? `const ${lowerName}Defaults = ${serializeDefaults(defaults)};\n\n`
@@ -114,6 +130,10 @@ const generateClientJs = (
     ? `const ${lowerName}MapSheets = ${serializeMapSheets(mapSheets)};\n\n`
     : "";
 
+  const autoincrementDecl = hasAutoincrement
+    ? `const ${lowerName}Autoincrement = ${serializeAutoincrement(autoincrement)};\n\n`
+    : "";
+
   const mergeProps = [`relations: ${lowerName}Relations`];
   if (hasDefaults) mergeProps.push(`defaults: ${lowerName}Defaults`);
   if (hasUpdatedAt) mergeProps.push(`updatedAt: ${lowerName}UpdatedAt`);
@@ -122,11 +142,13 @@ const generateClientJs = (
   if (hasIgnoreSheets)
     mergeProps.push(`ignoreSheets: ${lowerName}IgnoreSheets`);
   if (hasMapSheets) mergeProps.push(`mapSheets: ${lowerName}MapSheets`);
+  if (hasAutoincrement)
+    mergeProps.push(`autoincrement: ${lowerName}Autoincrement`);
   const mergeExpr = `Object.assign({}, options, { ${mergeProps.join(", ")} })`;
 
   return `const ${lowerName}Relations = ${relationsJson};
 
-${defaultsDecl}${updatedAtDecl}${ignoreDecl}${mapDecl}${ignoreSheetsDecl}${mapSheetsDecl}class GassmaClient {
+${defaultsDecl}${updatedAtDecl}${ignoreDecl}${mapDecl}${ignoreSheetsDecl}${mapSheetsDecl}${autoincrementDecl}class GassmaClient {
   constructor(options) {
     const mergedOptions = ${mergeExpr};
     const client = new Gassma.GassmaClient(mergedOptions);
