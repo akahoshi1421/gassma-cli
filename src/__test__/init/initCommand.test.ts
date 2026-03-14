@@ -65,4 +65,24 @@ describe("init", () => {
 
     expect(fs.existsSync(path.join(gassmaDir, "schema.prisma"))).toBe(true);
   });
+
+  it("should create gassma.config.ts", () => {
+    init();
+
+    const configPath = path.join(tmpDir, "gassma.config.ts");
+    expect(fs.existsSync(configPath)).toBe(true);
+
+    const content = fs.readFileSync(configPath, "utf-8");
+    expect(content).toContain("defineConfig");
+    expect(content).toContain('schema: "gassma/schema.prisma"');
+  });
+
+  it("should not overwrite existing gassma.config.ts", () => {
+    const configPath = path.join(tmpDir, "gassma.config.ts");
+    fs.writeFileSync(configPath, "existing config");
+
+    init();
+
+    expect(fs.readFileSync(configPath, "utf-8")).toBe("existing config");
+  });
 });
