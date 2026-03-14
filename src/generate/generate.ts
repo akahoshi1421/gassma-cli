@@ -22,13 +22,13 @@ type GenerateOptions = {
   schema?: string;
 };
 
-function generate(customDir?: string, options?: GenerateOptions) {
+function generate(options?: GenerateOptions) {
   if (options?.schema) {
     const { dir, file } = parseSchemaPath(options.schema);
     return generateFromFiles(dir, [file]);
   }
 
-  const gassmaDir = customDir || "./gassma";
+  const gassmaDir = "./gassma";
 
   if (!fs.existsSync(gassmaDir))
     throw new Error(

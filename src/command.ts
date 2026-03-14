@@ -11,11 +11,11 @@ program
   .description("A CLI for providing GASsma dynamic types from .prisma files");
 
 program
-  .command("generate [directory]")
+  .command("generate")
   .description("Generate type definitions from .prisma files")
   .option("--schema <path>", "Path to a specific .prisma file to generate")
-  .action((directory, options) => {
-    generate(directory, { schema: options.schema });
+  .action((options) => {
+    generate({ schema: options.schema });
   });
 
 program
