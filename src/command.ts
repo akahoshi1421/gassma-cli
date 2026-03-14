@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { ArgumentError } from "./error/mainError";
 import { generate } from "./generate/generate";
+import { init } from "./init/initCommand";
 import { validate } from "./validate/validateCommand";
 import { getVersion } from "./version/getVersion";
 
@@ -25,6 +26,15 @@ program
   .option("--schema <path>", "Path to a specific .prisma file to validate")
   .action((options) => {
     validate({ schema: options.schema });
+  });
+
+program
+  .command("init")
+  .description("Initialize a new GASsma project with a schema.prisma file")
+  .option("--output <path>", "Custom output path for generated files")
+  .option("--with-model", "Include a sample User model in the schema")
+  .action((options) => {
+    init({ output: options.output, withModel: options.withModel });
   });
 
 program
