@@ -29,11 +29,25 @@ function generate(options?: GenerateOptions) {
   generateFromFiles(dir, fileNames);
 }
 
+function findOutputPath(gassmaDir: string, prismaFiles: string[]): string {
+  for (let i = 0; i < prismaFiles.length; i++) {
+    const filePath = path.join(gassmaDir, prismaFiles[i]);
+    const schemaText = fs.readFileSync(filePath, "utf-8");
+    const outputPath = extractOutputPath(schemaText);
+    if (outputPath) return outputPath;
+  }
+  throw new Error(
+    "No output path found in any .prisma file. Please add 'output' to the generator block.\n" +
+      'Example:\n  generator client {\n    provider = "prisma-client-js"\n    output   = "./generated/gassma"\n  }',
+  );
+}
+
 function generateFromFiles(gassmaDir: string, prismaFiles: string[]) {
   console.log(
     `📁 Found ${prismaFiles.length} .prisma file(s) in ${path.basename(gassmaDir)} directory`,
   );
 
+  const sharedOutputPath = findOutputPath(gassmaDir, prismaFiles);
   const commonWritten = new Set<string>();
 
   prismaFiles.forEach((file) => {
@@ -42,12 +56,7 @@ function generateFromFiles(gassmaDir: string, prismaFiles: string[]) {
 
     const schemaText = fs.readFileSync(filePath, "utf-8");
 
-    const outputPath = extractOutputPath(schemaText);
-    if (!outputPath)
-      throw new Error(
-        `No output path found in ${file}. Please add 'output' to the generator block.\n` +
-          `Example:\n  generator client {\n    provider = "prisma-client-js"\n    output   = "./generated/gassma"\n  }`,
-      );
+    const outputPath = extractOutputPath(schemaText) ?? sharedOutputPath;
 
     const parsed = prismaReader(schemaText);
     const relations = extractRelations(schemaText);
