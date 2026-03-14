@@ -14,11 +14,21 @@ import { extractMap } from "./read/extractMap";
 import { extractMapSheets } from "./read/extractMapSheets";
 import { extractEnums } from "./read/extractEnums";
 import { prismaReader } from "./read/prismaReader";
+import { parseSchemaPath } from "./parseSchemaPath";
 import { writer } from "./writer";
 import { jsWriter } from "./jsWriter";
 
-function generate(customDir?: string) {
-  const gassmaDir = customDir || "./gassma";
+type GenerateOptions = {
+  schema?: string;
+};
+
+function generate(options?: GenerateOptions) {
+  if (options?.schema) {
+    const { dir, file } = parseSchemaPath(options.schema);
+    return generateFromFiles(dir, [file]);
+  }
+
+  const gassmaDir = "./gassma";
 
   if (!fs.existsSync(gassmaDir))
     throw new Error(
@@ -34,6 +44,10 @@ function generate(customDir?: string) {
       `No .prisma files found in ${gassmaDir}/ directory. Please create at least one .prisma file.`,
     );
 
+  generateFromFiles(gassmaDir, prismaFiles);
+}
+
+function generateFromFiles(gassmaDir: string, prismaFiles: string[]) {
   console.log(
     `📁 Found ${prismaFiles.length} .prisma file(s) in ${path.basename(gassmaDir)} directory`,
   );
@@ -98,3 +112,4 @@ function generate(customDir?: string) {
 }
 
 export { generate };
+export type { GenerateOptions };
