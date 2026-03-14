@@ -13,8 +13,9 @@ program
 program
   .command("generate [directory]")
   .description("Generate type definitions from .prisma files")
-  .action((directory) => {
-    generate(directory);
+  .option("--schema <path>", "Path to a specific .prisma file to generate")
+  .action((directory, options) => {
+    generate(directory, { schema: options.schema });
   });
 
 program
