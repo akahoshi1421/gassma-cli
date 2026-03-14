@@ -207,6 +207,24 @@ model User {
     expect(result.User.role).toEqual(["ADMIN", "USER", "MODERATOR"]);
   });
 
+  it("should use @map values for enum fields", () => {
+    const schema = `
+enum Role {
+  admin     @map("ADMIN")
+  user      @map("USER")
+  moderator @map("MODERATOR")
+}
+
+model User {
+  id   Int  @id
+  role Role
+}
+`;
+    const result = prismaReader(schema);
+
+    expect(result.User.role).toEqual(["ADMIN", "USER", "MODERATOR"]);
+  });
+
   it("should handle optional enum fields", () => {
     const schema = `
 enum Status {

@@ -12,6 +12,7 @@ import { extractIgnore } from "./read/extractIgnore";
 import { extractIgnoreSheets } from "./read/extractIgnoreSheets";
 import { extractMap } from "./read/extractMap";
 import { extractMapSheets } from "./read/extractMapSheets";
+import { extractEnums } from "./read/extractEnums";
 import { prismaReader } from "./read/prismaReader";
 import { writer } from "./writer";
 import { jsWriter } from "./jsWriter";
@@ -61,6 +62,7 @@ function generate(customDir?: string) {
     const ignoreSheets = extractIgnoreSheets(schemaText);
     const map = extractMap(schemaText);
     const mapSheets = extractMapSheets(schemaText);
+    const enums = extractEnums(schemaText);
     const baseName = path.basename(file, ".prisma");
     const schemaName = baseName.charAt(0).toUpperCase() + baseName.slice(1);
     const includeCommon = !commonWritten.has(outputPath);
@@ -85,9 +87,10 @@ function generate(customDir?: string) {
       ignoreSheets,
       mapSheets,
       autoincrement,
+      enums,
     );
     jsWriter(clientJs, `${baseName}Client`, outputPath);
-    const clientDts = generateClientDts(schemaName);
+    const clientDts = generateClientDts(schemaName, enums);
     writer(clientDts, `${baseName}Client`, outputPath);
   });
 

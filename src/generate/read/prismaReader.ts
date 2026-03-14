@@ -41,9 +41,9 @@ function prismaReader(
           ? `${member.name.value}?`
           : member.name.value;
 
-      const enumValues = enums[typeName];
-      if (enumValues) {
-        fields[fieldName] = enumValues;
+      const enumEntries = enums[typeName];
+      if (enumEntries) {
+        fields[fieldName] = enumEntries.map((e) => e.value);
         return;
       }
 

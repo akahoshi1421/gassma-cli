@@ -383,4 +383,108 @@ describe("generateClientJs", () => {
     expect(result).not.toContain("Autoincrement");
     expect(result).not.toContain("autoincrement");
   });
+
+  it("should export enum constants", () => {
+    const enums = {
+      Role: [
+        { name: "ADMIN", value: "ADMIN" },
+        { name: "USER", value: "USER" },
+        { name: "MODERATOR", value: "MODERATOR" },
+      ],
+    };
+
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      enums,
+    );
+
+    expect(result).toContain("const Role = {");
+    expect(result).toContain('  ADMIN: "ADMIN"');
+    expect(result).toContain('  USER: "USER"');
+    expect(result).toContain('  MODERATOR: "MODERATOR"');
+    expect(result).toContain("exports.Role = Role;");
+  });
+
+  it("should export enum constants with @map values", () => {
+    const enums = {
+      Role: [
+        { name: "admin", value: "ADMIN" },
+        { name: "user", value: "USER" },
+        { name: "moderator", value: "MODERATOR" },
+      ],
+    };
+
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      enums,
+    );
+
+    expect(result).toContain("const Role = {");
+    expect(result).toContain('  admin: "ADMIN"');
+    expect(result).toContain('  user: "USER"');
+    expect(result).toContain('  moderator: "MODERATOR"');
+    expect(result).toContain("exports.Role = Role;");
+  });
+
+  it("should export multiple enum constants", () => {
+    const enums = {
+      Role: [
+        { name: "ADMIN", value: "ADMIN" },
+        { name: "USER", value: "USER" },
+      ],
+      Status: [
+        { name: "ACTIVE", value: "ACTIVE" },
+        { name: "INACTIVE", value: "INACTIVE" },
+      ],
+    };
+
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      enums,
+    );
+
+    expect(result).toContain("exports.Role = Role;");
+    expect(result).toContain("exports.Status = Status;");
+  });
+
+  it("should not export enums when config is empty", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      {},
+    );
+
+    expect(result).not.toContain("exports.Role");
+  });
 });

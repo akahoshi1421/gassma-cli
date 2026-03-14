@@ -5,6 +5,7 @@ import type { IgnoreConfig } from "../read/extractIgnore";
 import type { MapConfig } from "../read/extractMap";
 import type { AutoincrementConfig } from "../read/extractAutoincrement";
 import type { MapSheetsConfig } from "../read/extractMapSheets";
+import type { EnumsConfig } from "../read/extractEnums";
 
 const FUNCTION_MAP: Record<string, string> = {
   now: "() => new Date()",
@@ -90,6 +91,7 @@ const generateClientJs = (
   ignoreSheets?: string[],
   mapSheets?: MapSheetsConfig,
   autoincrement?: AutoincrementConfig,
+  enums?: EnumsConfig,
 ): string => {
   const lowerName = schemaName.charAt(0).toLowerCase() + schemaName.slice(1);
   const relationsJson =
@@ -105,6 +107,7 @@ const generateClientJs = (
   const hasMapSheets = mapSheets && Object.keys(mapSheets).length > 0;
   const hasAutoincrement =
     autoincrement && Object.keys(autoincrement).length > 0;
+  const hasEnums = enums && Object.keys(enums).length > 0;
 
   const defaultsDecl = hasDefaults
     ? `const ${lowerName}Defaults = ${serializeDefaults(defaults)};\n\n`
@@ -134,6 +137,17 @@ const generateClientJs = (
     ? `const ${lowerName}Autoincrement = ${serializeAutoincrement(autoincrement)};\n\n`
     : "";
 
+  const enumDecls = hasEnums
+    ? Object.keys(enums)
+        .map((enumName) => {
+          const entries = enums[enumName]
+            .map((e) => `  ${e.name}: "${e.value}"`)
+            .join(",\n");
+          return `const ${enumName} = {\n${entries}\n};\nexports.${enumName} = ${enumName};\n`;
+        })
+        .join("\n")
+    : "";
+
   const mergeProps = [`relations: ${lowerName}Relations`];
   if (hasDefaults) mergeProps.push(`defaults: ${lowerName}Defaults`);
   if (hasUpdatedAt) mergeProps.push(`updatedAt: ${lowerName}UpdatedAt`);
@@ -157,7 +171,7 @@ ${defaultsDecl}${updatedAtDecl}${ignoreDecl}${mapDecl}${ignoreSheetsDecl}${mapSh
 }
 
 exports.GassmaClient = GassmaClient;
-`;
+${hasEnums ? "\n" + enumDecls : ""}`;
 };
 
 export { generateClientJs };
