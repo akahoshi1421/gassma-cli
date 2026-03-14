@@ -13,7 +13,7 @@ model User {
 
     expect(result).toEqual({
       User: {
-        id: ["number"],
+        "id?": ["number"],
         name: ["string"],
         "email?": ["string"],
       },
@@ -120,7 +120,7 @@ model User {
 `;
     const result = prismaReader(schema);
 
-    expect(result.User.id).toEqual(["number"]);
+    expect(result.User["id?"]).toEqual(["number"]);
     expect(result.User.email).toEqual(["string"]);
     expect(result.User.name).toEqual(["string"]);
   });
@@ -251,7 +251,7 @@ model User {
     expect(result.User.status).toEqual(["active", "inactive"]);
   });
 
-  it("should make fields with @default() optional (except autoincrement)", () => {
+  it("should make fields with @default() optional (including autoincrement)", () => {
     const schema = `
 model User {
   id        Int      @id @default(autoincrement())
@@ -262,9 +262,9 @@ model User {
 `;
     const result = prismaReader(schema);
 
-    // autoincrement() は除外 → 必須のまま
-    expect(result.User.id).toEqual(["number"]);
-    expect(result.User["id?"]).toBeUndefined();
+    // autoincrement() → オプショナル
+    expect(result.User["id?"]).toEqual(["number"]);
+    expect(result.User.id).toBeUndefined();
 
     // @default(true) → オプショナル
     expect(result.User["isActive?"]).toEqual(["boolean"]);
