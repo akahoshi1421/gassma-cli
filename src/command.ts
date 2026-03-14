@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { ArgumentError } from "./error/mainError";
+import { format } from "./format/formatCommand";
 import { generate } from "./generate/generate";
 import { init } from "./init/initCommand";
 import { validate } from "./validate/validateCommand";
@@ -26,6 +27,22 @@ program
   .option("--schema <path>", "Path to a specific .prisma file to validate")
   .action((options) => {
     validate({ schema: options.schema });
+  });
+
+program
+  .command("format")
+  .description("Format .prisma files in the gassma directory")
+  .option("--schema <path>", "Path to a specific .prisma file to format")
+  .option("--check", "Check if files are formatted without modifying them")
+  .action(async (options) => {
+    const result = await format({
+      schema: options.schema,
+      check: options.check,
+    });
+    if (options.check && !result) {
+      console.error("Some files are not formatted.");
+      process.exit(1);
+    }
   });
 
 program
