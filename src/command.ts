@@ -1,12 +1,13 @@
 import { Command } from "commander";
 import { ArgumentError } from "./error/mainError";
 import { generate } from "./generate/generate";
+import { getVersion } from "./version/getVersion";
 
 const program = new Command();
 
 program
   .name("gassma")
-  .version("1.0.0")
+  .version(getVersion())
   .description("A CLI for providing GASsma dynamic types from .prisma files");
 
 program
@@ -14,6 +15,13 @@ program
   .description("Generate type definitions from .prisma files")
   .action((directory) => {
     generate(directory);
+  });
+
+program
+  .command("version")
+  .description("Display the current version of GASsma CLI")
+  .action(() => {
+    console.log(`gassma v${getVersion()}`);
   });
 
 program.parse();
