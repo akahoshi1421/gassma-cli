@@ -15,6 +15,7 @@ import { extractMapSheets } from "./read/extractMapSheets";
 import { extractEnums } from "./read/extractEnums";
 import { prismaReader } from "./read/prismaReader";
 import { resolveSchemaFiles } from "../config/resolveSchemaFiles";
+import { loadConfig } from "../config/loadConfig";
 import { writer } from "./writer";
 import { jsWriter } from "./jsWriter";
 
@@ -26,7 +27,9 @@ function generate(options?: GenerateOptions) {
   const files = resolveSchemaFiles({ schema: options?.schema });
   const dir = path.dirname(files[0].filePath);
   const fileNames = files.map((f) => f.displayName);
-  generateFromFiles(dir, fileNames);
+  const config = loadConfig();
+  const datasourceUrl = config?.datasource?.url;
+  generateFromFiles(dir, fileNames, datasourceUrl);
 }
 
 function findOutputPath(gassmaDir: string, prismaFiles: string[]): string {
@@ -42,7 +45,11 @@ function findOutputPath(gassmaDir: string, prismaFiles: string[]): string {
   );
 }
 
-function generateFromFiles(gassmaDir: string, prismaFiles: string[]) {
+function generateFromFiles(
+  gassmaDir: string,
+  prismaFiles: string[],
+  datasourceUrl?: string,
+) {
   console.log(
     `📁 Found ${prismaFiles.length} .prisma file(s) in ${path.basename(gassmaDir)} directory`,
   );
@@ -93,6 +100,7 @@ function generateFromFiles(gassmaDir: string, prismaFiles: string[]) {
       mapSheets,
       autoincrement,
       enums,
+      datasourceUrl,
     );
     jsWriter(clientJs, `${baseName}Client`, outputPath);
     const clientDts = generateClientDts(schemaName, enums);

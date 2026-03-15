@@ -92,6 +92,7 @@ const generateClientJs = (
   mapSheets?: MapSheetsConfig,
   autoincrement?: AutoincrementConfig,
   enums?: EnumsConfig,
+  datasourceUrl?: string,
 ): string => {
   const lowerName = schemaName.charAt(0).toLowerCase() + schemaName.slice(1);
   const relationsJson =
@@ -148,7 +149,9 @@ const generateClientJs = (
         .join("\n")
     : "";
 
-  const mergeProps = [`relations: ${lowerName}Relations`];
+  const mergeProps: string[] = [];
+  if (datasourceUrl) mergeProps.push(`id: "${datasourceUrl}"`);
+  mergeProps.push(`relations: ${lowerName}Relations`);
   if (hasDefaults) mergeProps.push(`defaults: ${lowerName}Defaults`);
   if (hasUpdatedAt) mergeProps.push(`updatedAt: ${lowerName}UpdatedAt`);
   if (hasIgnore) mergeProps.push(`ignore: ${lowerName}Ignore`);

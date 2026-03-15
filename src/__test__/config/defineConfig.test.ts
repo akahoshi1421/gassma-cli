@@ -10,4 +10,13 @@ describe("defineConfig", () => {
     const config = defineConfig({});
     expect(config).toEqual({});
   });
+
+  it("should accept datasource url", () => {
+    const config = defineConfig({
+      datasource: { url: "https://docs.google.com/spreadsheets/d/abc123" },
+    });
+    expect(config.datasource?.url).toBe(
+      "https://docs.google.com/spreadsheets/d/abc123",
+    );
+  });
 });
