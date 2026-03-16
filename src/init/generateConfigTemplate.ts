@@ -9,6 +9,9 @@ const generateConfigTemplate = (options: ConfigTemplateOptions): string => {
 
 export default defineConfig({
   schema: "${schemaPath}",
+  datasource: {
+    url: "",
+  },
 });
 `;
 };

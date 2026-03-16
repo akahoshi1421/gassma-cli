@@ -487,4 +487,30 @@ describe("generateClientJs", () => {
 
     expect(result).not.toContain("exports.Role");
   });
+
+  it("should embed datasource url as id in constructor", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "https://docs.google.com/spreadsheets/d/abc123",
+    );
+
+    expect(result).toContain(
+      'id: "https://docs.google.com/spreadsheets/d/abc123"',
+    );
+  });
+
+  it("should not embed id when datasource url is undefined", () => {
+    const result = generateClientJs({}, "Test");
+
+    expect(result).not.toContain("id:");
+  });
 });

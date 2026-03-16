@@ -1,5 +1,8 @@
 type GassmaConfig = {
   schema?: string;
+  datasource?: {
+    url?: string;
+  };
 };
 
 const defineConfig = (config: GassmaConfig): GassmaConfig => {

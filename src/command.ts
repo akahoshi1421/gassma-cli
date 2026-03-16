@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { ArgumentError } from "./error/mainError";
 import { format } from "./format/formatCommand";
 import { generate } from "./generate/generate";
+import { watchGenerate } from "./generate/watchGenerate";
 import { init } from "./init/initCommand";
 import { validate } from "./validate/validateCommand";
 import { getVersion } from "./version/getVersion";
@@ -17,8 +18,13 @@ program
   .command("generate")
   .description("Generate type definitions from .prisma files")
   .option("--schema <path>", "Path to a specific .prisma file to generate")
+  .option("--watch", "Watch for changes and regenerate automatically")
   .action((options) => {
-    generate({ schema: options.schema });
+    if (options.watch) {
+      watchGenerate({ schema: options.schema });
+    } else {
+      generate({ schema: options.schema });
+    }
   });
 
 program

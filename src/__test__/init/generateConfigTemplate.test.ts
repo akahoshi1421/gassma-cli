@@ -14,4 +14,10 @@ describe("generateConfigTemplate", () => {
     });
     expect(result).toContain('schema: "custom/my.prisma"');
   });
+
+  it("should include empty datasource url", () => {
+    const result = generateConfigTemplate({});
+    expect(result).toContain('url: ""');
+    expect(result).toContain("datasource:");
+  });
 });
