@@ -50,6 +50,29 @@ const resolveFromDefaultDir = (): SchemaFile[] => {
   return resolveFromDir("./gassma");
 };
 
+const collectPrismaFiles = (
+  baseDir: string,
+  currentDir: string,
+): SchemaFile[] => {
+  const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+
+  return entries.flatMap((entry) => {
+    const fullPath = path.join(currentDir, entry.name);
+    if (entry.isDirectory()) {
+      return collectPrismaFiles(baseDir, fullPath);
+    }
+    if (entry.name.endsWith(".prisma")) {
+      return [
+        {
+          filePath: fullPath,
+          displayName: path.relative(baseDir, fullPath),
+        },
+      ];
+    }
+    return [];
+  });
+};
+
 const resolveFromDir = (dir: string): SchemaFile[] => {
   if (!fs.existsSync(dir)) {
     throw new Error(
@@ -57,18 +80,13 @@ const resolveFromDir = (dir: string): SchemaFile[] => {
     );
   }
 
-  const prismaFiles = fs
-    .readdirSync(dir)
-    .filter((file) => file.endsWith(".prisma"));
+  const files = collectPrismaFiles(dir, dir);
 
-  if (prismaFiles.length === 0) {
+  if (files.length === 0) {
     throw new Error(`No .prisma files found in ${dir}/ directory.`);
   }
 
-  return prismaFiles.map((file) => ({
-    filePath: path.join(dir, file),
-    displayName: file,
-  }));
+  return files;
 };
 
 export { resolveSchemaFiles };
