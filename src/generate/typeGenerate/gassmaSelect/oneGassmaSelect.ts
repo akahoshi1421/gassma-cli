@@ -10,7 +10,7 @@ const getOneGassmaSelect = (
       : columnName;
 
     return `${pre}  "${removedQuestionMark}"?: true;\n`;
-  }, `\ndeclare type Gassma${schemaName}${sheetName}Select = {\n`);
+  }, `\nexport type Gassma${schemaName}${sheetName}Select = {\n`);
 
   return `${oneSelct}};\n`;
 };

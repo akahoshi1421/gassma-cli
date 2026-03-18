@@ -15,7 +15,7 @@ describe("getGassmaMapType", () => {
     };
     const result = getGassmaMapType(dictYaml, "Test");
 
-    expect(result).toContain("declare type GassmaTestMapConfig");
+    expect(result).toContain("export type GassmaTestMapConfig");
     expect(result).toContain('"User"?:');
     expect(result).toContain('"Post"?:');
   });
@@ -39,7 +39,7 @@ describe("getGassmaMapType", () => {
     const dictYaml: Record<string, Record<string, unknown[]>> = {};
     const result = getGassmaMapType(dictYaml, "Test");
 
-    expect(result).toContain("declare type GassmaTestMapConfig = {}");
+    expect(result).toContain("export type GassmaTestMapConfig = {}");
   });
 
   it("should use schema name in type name", () => {
@@ -48,6 +48,6 @@ describe("getGassmaMapType", () => {
     };
     const result = getGassmaMapType(dictYaml, "Fuga");
 
-    expect(result).toContain("declare type GassmaFugaMapConfig");
+    expect(result).toContain("export type GassmaFugaMapConfig");
   });
 });

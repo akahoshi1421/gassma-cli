@@ -6,7 +6,7 @@ const getOneGassmaDeleteSingleData = (
   const o = `Gassma${schemaName}${sheetName}Omit`;
 
   return `
-declare type Gassma${schemaName}${sheetName}DeleteSingleData = {
+export type Gassma${schemaName}${sheetName}DeleteSingleData = {
   where: Gassma${schemaName}${sheetName}WhereUse;
   include?: Gassma${schemaName}${sheetName}Include;
 } & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });

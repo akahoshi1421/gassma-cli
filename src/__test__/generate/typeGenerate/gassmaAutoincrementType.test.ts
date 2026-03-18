@@ -12,7 +12,7 @@ describe("getGassmaAutoincrementType", () => {
       "Test",
     );
     expect(result).toBe(
-      `declare type GassmaTestAutoincrementConfig = {\n` +
+      `export type GassmaTestAutoincrementConfig = {\n` +
         `  "User"?: "id" | "name" | ("id" | "name")[];\n` +
         `  "Post"?: "id" | "title" | ("id" | "title")[];\n` +
         `};\n`,
@@ -21,7 +21,7 @@ describe("getGassmaAutoincrementType", () => {
 
   it("should generate empty object type when no models", () => {
     const result = getGassmaAutoincrementType({}, [], "Test");
-    expect(result).toBe(`declare type GassmaTestAutoincrementConfig = {};\n`);
+    expect(result).toBe(`export type GassmaTestAutoincrementConfig = {};\n`);
   });
 
   it("should handle single model", () => {
@@ -30,7 +30,7 @@ describe("getGassmaAutoincrementType", () => {
     };
     const result = getGassmaAutoincrementType(dictYaml, ["User"], "Test");
     expect(result).toBe(
-      `declare type GassmaTestAutoincrementConfig = {\n` +
+      `export type GassmaTestAutoincrementConfig = {\n` +
         `  "User"?: "id" | "name" | ("id" | "name")[];\n` +
         `};\n`,
     );

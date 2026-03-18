@@ -9,7 +9,7 @@ const getGassmaMapType = (
   const typeName = `Gassma${schemaName}MapConfig`;
 
   if (modelNames.length === 0) {
-    return `declare type ${typeName} = {};\n`;
+    return `export type ${typeName} = {};\n`;
   }
 
   const body = modelNames.reduce((pre, modelName) => {
@@ -23,7 +23,7 @@ const getGassmaMapType = (
     return `${pre}  "${modelName}"?: {\n${fieldEntries}\n  };\n`;
   }, "");
 
-  return `declare type ${typeName} = {\n${body}};\n`;
+  return `export type ${typeName} = {\n${body}};\n`;
 };
 
 export { getGassmaMapType };

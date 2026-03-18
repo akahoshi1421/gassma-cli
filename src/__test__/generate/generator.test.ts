@@ -17,12 +17,12 @@ describe("generater", () => {
   const result = generater(dictYaml);
 
   it("should include GassmaClient namespace", () => {
-    expect(result).toContain("declare namespace Gassma");
+    expect(result).toContain("export namespace Gassma");
   });
 
   it("should include GassmaSheet type", () => {
     expect(result).toContain(
-      "declare type GassmaSheet<O extends GassmaGlobalOmitConfig = {}> = {",
+      "export type GassmaSheet<O extends GassmaGlobalOmitConfig = {}> = {",
     );
     expect(result).toContain(
       '"User": GassmaUserController<O extends { "User": infer UO } ? UO extends GassmaUserOmit ? UO : {} : {}>;',
@@ -33,13 +33,13 @@ describe("generater", () => {
   });
 
   it("should include Controller for each sheet", () => {
-    expect(result).toContain("declare class GassmaUserController");
-    expect(result).toContain("declare class GassmaPostController");
+    expect(result).toContain("export declare class GassmaUserController");
+    expect(result).toContain("export declare class GassmaPostController");
   });
 
   it("should include Use type for each sheet", () => {
-    expect(result).toContain("declare type GassmaUserUse = {");
-    expect(result).toContain("declare type GassmaPostUse = {");
+    expect(result).toContain("export type GassmaUserUse = {");
+    expect(result).toContain("export type GassmaPostUse = {");
   });
 
   it("should include FilterConditions types", () => {

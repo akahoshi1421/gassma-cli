@@ -6,12 +6,12 @@ const getGassmaMapSheetsType = (
   const typeName = `Gassma${schemaName}MapSheetsConfig`;
 
   if (modelNames.length === 0) {
-    return `declare type ${typeName} = {};\n`;
+    return `export type ${typeName} = {};\n`;
   }
 
   const body = modelNames.map((name) => `  "${name}"?: string;`).join("\n");
 
-  return `declare type ${typeName} = {\n${body}\n};\n`;
+  return `export type ${typeName} = {\n${body}\n};\n`;
 };
 
 export { getGassmaMapSheetsType };

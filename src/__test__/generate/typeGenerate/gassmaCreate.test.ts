@@ -5,7 +5,7 @@ describe("getOneGassmaCreate", () => {
   it("should generate CreateData without relations", () => {
     const result = getOneGassmaCreate("", "User");
 
-    expect(result).toContain("declare type GassmaUserCreateData");
+    expect(result).toContain("export type GassmaUserCreateData");
     expect(result).toContain("data: GassmaUserUse");
   });
 

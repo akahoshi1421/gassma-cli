@@ -5,7 +5,7 @@ describe("getOneGassmaController", () => {
 
   it("should generate controller class declaration", () => {
     expect(result).toContain(
-      "declare class GassmaUserController<GO extends GassmaUserOmit = {}>",
+      "export declare class GassmaUserController<GO extends GassmaUserOmit = {}>",
     );
   });
 

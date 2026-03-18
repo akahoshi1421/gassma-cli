@@ -16,7 +16,7 @@ const getOneGassmaUpdateSingleData = (
   const o = `Gassma${schemaName}${sheetName}Omit`;
 
   return `
-declare type Gassma${schemaName}${sheetName}UpdateSingleData = {
+export type Gassma${schemaName}${sheetName}UpdateSingleData = {
   where: Gassma${schemaName}${sheetName}WhereUse;
   data: ${dataType};
 } & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });

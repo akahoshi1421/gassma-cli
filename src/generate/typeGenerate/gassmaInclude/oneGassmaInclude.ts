@@ -7,7 +7,7 @@ const getOneGassmaInclude = (
 ): string => {
   const modelRelations = relations?.[sheetName];
   if (!modelRelations || Object.keys(modelRelations).length === 0) {
-    return `\ndeclare type Gassma${schemaName}${sheetName}Include = {};\n`;
+    return `\nexport type Gassma${schemaName}${sheetName}Include = {};\n`;
   }
 
   const fields = Object.keys(modelRelations).reduce((pre, relationName) => {
@@ -19,7 +19,7 @@ const getOneGassmaInclude = (
 
   const countField = `  "_count"?: Gassma${schemaName}${sheetName}CountValue;\n`;
 
-  return `\ndeclare type Gassma${schemaName}${sheetName}Include = {\n${fields}${countField}};\n`;
+  return `\nexport type Gassma${schemaName}${sheetName}Include = {\n${fields}${countField}};\n`;
 };
 
 export { getOneGassmaInclude };

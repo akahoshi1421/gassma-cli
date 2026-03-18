@@ -19,11 +19,11 @@ const getGassmaGlobalOmitConfig = (
     return `${pre}  "${sheetName}"?: Gassma${schemaName}${cleanName}Omit;\n`;
   }, "");
 
-  return `declare type Gassma${schemaName}GlobalOmitConfig = {\n${body}};\n`;
+  return `export type Gassma${schemaName}GlobalOmitConfig = {\n${body}};\n`;
 };
 
 const getGassmaClientOptions = (schemaName: string) => {
-  return `declare type Gassma${schemaName}ClientOptions<O extends Gassma${schemaName}GlobalOmitConfig = {}> = {
+  return `export type Gassma${schemaName}ClientOptions<O extends Gassma${schemaName}GlobalOmitConfig = {}> = {
   id?: string;
   relations?: Gassma.RelationsConfig;
   omit?: O;
@@ -41,7 +41,7 @@ const getGassmaCommonNamespace = () => {
   const commonTypes = getGassmaCommonTypes();
   const errorClasses = getGassmaErrorClasses();
 
-  return `declare namespace Gassma {
+  return `export namespace Gassma {
 ${commonTypes}
   interface GassmaClientMap {}
 
@@ -73,7 +73,7 @@ const getGassmaSchemaClient = (
   schemaName: string,
   options: GassmaMainOptions,
 ) => {
-  const clientMapEntry = `declare namespace Gassma {
+  const clientMapEntry = `export namespace Gassma {
   interface GassmaClientMap {
     "${schemaName}": {
       sheets: Gassma${schemaName}Sheet;

@@ -22,7 +22,7 @@ describe("getOneGassmaCountValue", () => {
 
     const result = getOneGassmaCountValue("", "User", relations);
 
-    expect(result).toContain("declare type GassmaUserCountValue");
+    expect(result).toContain("export type GassmaUserCountValue");
     expect(result).toContain('"posts"?: true | { where?: GassmaPostWhereUse }');
     expect(result).toContain(
       '"comments"?: true | { where?: GassmaCommentWhereUse }',
@@ -34,7 +34,7 @@ describe("getOneGassmaCountValue", () => {
 
     const result = getOneGassmaCountValue("", "User", relations);
 
-    expect(result).toContain("declare type GassmaUserCountValue = true;");
+    expect(result).toContain("export type GassmaUserCountValue = true;");
   });
 
   it("should work with schemaName prefix", () => {
@@ -51,6 +51,6 @@ describe("getOneGassmaCountValue", () => {
 
     const result = getOneGassmaCountValue("Test", "User", relations);
 
-    expect(result).toContain("declare type GassmaTestUserCountValue");
+    expect(result).toContain("export type GassmaTestUserCountValue");
   });
 });

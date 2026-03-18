@@ -21,7 +21,7 @@ const getOneGassmaUpsertSingleData = (
   const o = `Gassma${schemaName}${sheetName}Omit`;
 
   return `
-declare type Gassma${schemaName}${sheetName}UpsertSingleData = {
+export type Gassma${schemaName}${sheetName}UpsertSingleData = {
   where: Gassma${schemaName}${sheetName}WhereUse;
   create: ${createType};
   update: ${updateType};

@@ -7,7 +7,7 @@ const getOneGassmaCountValue = (
 ): string => {
   const modelRelations = relations?.[sheetName];
   if (!modelRelations || Object.keys(modelRelations).length === 0) {
-    return `\ndeclare type Gassma${schemaName}${sheetName}CountValue = true;\n`;
+    return `\nexport type Gassma${schemaName}${sheetName}CountValue = true;\n`;
   }
 
   const fields = Object.keys(modelRelations).reduce((pre, relationName) => {
@@ -15,7 +15,7 @@ const getOneGassmaCountValue = (
     return `${pre}    "${relationName}"?: true | { where?: Gassma${schemaName}${targetModel}WhereUse };\n`;
   }, "");
 
-  return `\ndeclare type Gassma${schemaName}${sheetName}CountValue = true | { select: {\n${fields}  } };\n`;
+  return `\nexport type Gassma${schemaName}${sheetName}CountValue = true | { select: {\n${fields}  } };\n`;
 };
 
 export { getOneGassmaCountValue };

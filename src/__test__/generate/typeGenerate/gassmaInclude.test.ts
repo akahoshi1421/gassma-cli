@@ -22,7 +22,7 @@ describe("getOneGassmaInclude", () => {
 
     const result = getOneGassmaInclude("", "User", relations);
 
-    expect(result).toContain("declare type GassmaUserInclude");
+    expect(result).toContain("export type GassmaUserInclude");
     expect(result).toContain('"posts"?:');
     expect(result).toContain('"profile"?:');
   });
@@ -68,7 +68,7 @@ describe("getOneGassmaInclude", () => {
 
     const result = getOneGassmaInclude("", "User", relations);
 
-    expect(result).toContain("declare type GassmaUserInclude = {};");
+    expect(result).toContain("export type GassmaUserInclude = {};");
   });
 
   it("should work with schemaName prefix", () => {
@@ -85,7 +85,7 @@ describe("getOneGassmaInclude", () => {
 
     const result = getOneGassmaInclude("Test", "User", relations);
 
-    expect(result).toContain("declare type GassmaTestUserInclude");
+    expect(result).toContain("export type GassmaTestUserInclude");
     expect(result).toContain("GassmaTestPostSelect");
     expect(result).toContain("GassmaTestPostWhereUse");
   });

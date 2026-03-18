@@ -8,13 +8,13 @@ describe("getGassmaIgnoreSheetsType", () => {
     };
     const result = getGassmaIgnoreSheetsType(dictYaml, "Test");
     expect(result).toBe(
-      `declare type GassmaTestIgnoreSheetsConfig = "User" | "Post" | ("User" | "Post")[];\n`,
+      `export type GassmaTestIgnoreSheetsConfig = "User" | "Post" | ("User" | "Post")[];\n`,
     );
   });
 
   it("should generate empty object type when no models", () => {
     const result = getGassmaIgnoreSheetsType({}, "Test");
-    expect(result).toBe(`declare type GassmaTestIgnoreSheetsConfig = never;\n`);
+    expect(result).toBe(`export type GassmaTestIgnoreSheetsConfig = never;\n`);
   });
 
   it("should handle single model", () => {
@@ -23,7 +23,7 @@ describe("getGassmaIgnoreSheetsType", () => {
     };
     const result = getGassmaIgnoreSheetsType(dictYaml, "Test");
     expect(result).toBe(
-      `declare type GassmaTestIgnoreSheetsConfig = "User" | ("User")[];\n`,
+      `export type GassmaTestIgnoreSheetsConfig = "User" | ("User")[];\n`,
     );
   });
 });

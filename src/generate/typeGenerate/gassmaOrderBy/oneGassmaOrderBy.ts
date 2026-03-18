@@ -13,7 +13,7 @@ const getOneGassmaOrderBy = (
       : columnName;
 
     return `${pre}  "${removedQuestionMark}"?: "asc" | "desc" | Gassma.SortOrderInput;\n`;
-  }, `\ndeclare type Gassma${schemaName}${sheetName}OrderBy = {\n`);
+  }, `\nexport type Gassma${schemaName}${sheetName}OrderBy = {\n`);
 
   const modelRelations = relations?.[sheetName];
   const relationFields = modelRelations

@@ -5,7 +5,7 @@ describe("getOneGassmaUpsertSingleData", () => {
   it("should generate UpsertSingleData type", () => {
     const result = getOneGassmaUpsertSingleData("", "User");
 
-    expect(result).toContain("declare type GassmaUserUpsertSingleData");
+    expect(result).toContain("export type GassmaUserUpsertSingleData");
   });
 
   it("should include where property", () => {

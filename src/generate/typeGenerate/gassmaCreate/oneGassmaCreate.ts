@@ -15,7 +15,7 @@ const getOneGassmaCreate = (
   const o = `Gassma${schemaName}${sheetName}Omit`;
 
   return `
-declare type Gassma${schemaName}${sheetName}CreateData = {
+export type Gassma${schemaName}${sheetName}CreateData = {
   data: ${dataType};
 } & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });
 `;

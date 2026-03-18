@@ -94,7 +94,9 @@ function generateFromSchema(
     Object.keys(updatedAt),
     Object.keys(autoincrement),
   );
-  writer(resultString, baseName, outputPath);
+  const clientDts = generateClientDts(schemaName, enums);
+  const mergedDts = resultString + "\n" + clientDts;
+  writer(mergedDts, `${baseName}Client`, outputPath);
 
   const clientJs = generateClientJs(
     relations,
@@ -110,9 +112,6 @@ function generateFromSchema(
     datasourceUrl,
   );
   jsWriter(clientJs, `${baseName}Client`, outputPath);
-
-  const clientDts = generateClientDts(schemaName, enums);
-  writer(clientDts, `${baseName}Client`, outputPath);
 
   console.log("✅ Generated type definitions successfully");
 }

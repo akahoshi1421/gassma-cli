@@ -8,7 +8,7 @@ describe("getGassmaMapSheetsType", () => {
     };
     const result = getGassmaMapSheetsType(dictYaml, "Test");
     expect(result).toBe(
-      `declare type GassmaTestMapSheetsConfig = {\n` +
+      `export type GassmaTestMapSheetsConfig = {\n` +
         `  "User"?: string;\n` +
         `  "Post"?: string;\n` +
         `};\n`,
@@ -17,7 +17,7 @@ describe("getGassmaMapSheetsType", () => {
 
   it("should generate empty object type when no models", () => {
     const result = getGassmaMapSheetsType({}, "Test");
-    expect(result).toBe(`declare type GassmaTestMapSheetsConfig = {};\n`);
+    expect(result).toBe(`export type GassmaTestMapSheetsConfig = {};\n`);
   });
 
   it("should handle single model", () => {
@@ -26,7 +26,7 @@ describe("getGassmaMapSheetsType", () => {
     };
     const result = getGassmaMapSheetsType(dictYaml, "Test");
     expect(result).toBe(
-      `declare type GassmaTestMapSheetsConfig = {\n` +
+      `export type GassmaTestMapSheetsConfig = {\n` +
         `  "User"?: string;\n` +
         `};\n`,
     );

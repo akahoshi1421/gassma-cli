@@ -1,6 +1,6 @@
 const getOneGassmaByField = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${schemaName}${sheetName}ByField<T extends Gassma${schemaName}${sheetName}GroupByKeyOfBaseReturn | Gassma${schemaName}${sheetName}GroupByKeyOfBaseReturn[]> =
+export type Gassma${schemaName}${sheetName}ByField<T extends Gassma${schemaName}${sheetName}GroupByKeyOfBaseReturn | Gassma${schemaName}${sheetName}GroupByKeyOfBaseReturn[]> =
   T extends Gassma${schemaName}${sheetName}GroupByKeyOfBaseReturn[]
     ? {
         [K in T[number]]: Gassma${schemaName}${sheetName}GroupByBaseReturn[K & keyof Gassma${schemaName}${sheetName}GroupByBaseReturn];

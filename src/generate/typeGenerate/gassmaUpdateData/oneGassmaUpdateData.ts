@@ -13,7 +13,7 @@ const getOneGassmaUpdateData = (
     : baseDataType;
 
   return `
-declare type Gassma${schemaName}${sheetName}UpdateData = {
+export type Gassma${schemaName}${sheetName}UpdateData = {
   where?: Gassma${schemaName}${sheetName}WhereUse;
   data: ${dataType};
   limit?: number;

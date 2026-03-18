@@ -3,7 +3,7 @@ const getOneGassmaDefaultFindResult = (
   sheetName: string,
 ) => {
   return `
-declare type Gassma${schemaName}${sheetName}DefaultFindResult = Gassma${schemaName}${sheetName}CreateReturn;
+export type Gassma${schemaName}${sheetName}DefaultFindResult = Gassma${schemaName}${sheetName}CreateReturn;
 `;
 };
 

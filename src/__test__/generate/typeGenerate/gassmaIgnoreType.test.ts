@@ -15,7 +15,7 @@ describe("getGassmaIgnoreType", () => {
     };
     const result = getGassmaIgnoreType(dictYaml, "Test");
 
-    expect(result).toContain("declare type GassmaTestIgnoreConfig");
+    expect(result).toContain("export type GassmaTestIgnoreConfig");
     expect(result).toContain('"User"?:');
     expect(result).toContain('"Post"?:');
   });
@@ -52,6 +52,6 @@ describe("getGassmaIgnoreType", () => {
     const dictYaml: Record<string, Record<string, unknown[]>> = {};
     const result = getGassmaIgnoreType(dictYaml, "Test");
 
-    expect(result).toContain("declare type GassmaTestIgnoreConfig = {}");
+    expect(result).toContain("export type GassmaTestIgnoreConfig = {}");
   });
 });
