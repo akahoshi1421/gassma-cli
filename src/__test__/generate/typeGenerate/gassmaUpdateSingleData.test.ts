@@ -42,6 +42,12 @@ describe("getOneGassmaUpdateSingleData", () => {
     expect(result).toContain("select?: never; omit?: GassmaUserOmit");
   });
 
+  it("should include include property", () => {
+    const result = getOneGassmaUpdateSingleData("", "User");
+
+    expect(result).toContain("include?: GassmaUserInclude");
+  });
+
   it("should add nested write operations for relations", () => {
     const relations: RelationsConfig = {
       User: {

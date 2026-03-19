@@ -20,10 +20,10 @@ describe("getOneGassmaController", () => {
   it("should include CRUD methods", () => {
     expect(result).toContain("createMany(");
     expect(result).toContain("create<T extends GassmaUserCreateData>");
-    expect(result).toContain("findFirst<T extends GassmaUserFindData>");
+    expect(result).toContain("findFirst<T extends GassmaUserFindFirstData>");
     expect(result).toContain("findMany<T extends GassmaUserFindManyData>");
     expect(result).toContain("updateMany(");
-    expect(result).toContain("upsertMany(");
+    expect(result).not.toContain("upsertMany(");
     expect(result).toContain("deleteMany(");
   });
 
@@ -45,9 +45,9 @@ describe("getOneGassmaController", () => {
     );
   });
 
-  it("should include createManyAndReturn method", () => {
+  it("should include createManyAndReturn method with generic type", () => {
     expect(result).toContain(
-      "createManyAndReturn(createdData: GassmaUserCreateManyData): GassmaUserDefaultFindResult[]",
+      "createManyAndReturn<T extends GassmaUserCreateManyAndReturnData>",
     );
   });
 
@@ -57,8 +57,14 @@ describe("getOneGassmaController", () => {
     );
   });
 
-  it("should include findFirstOrThrow method", () => {
-    expect(result).toContain("findFirstOrThrow<T extends GassmaUserFindData>");
+  it("should use FindFirstData for findFirst", () => {
+    expect(result).toContain("findFirst<T extends GassmaUserFindFirstData>");
+  });
+
+  it("should use FindFirstData for findFirstOrThrow", () => {
+    expect(result).toContain(
+      "findFirstOrThrow<T extends GassmaUserFindFirstData>",
+    );
   });
 
   it("should have generic create method with FindResult return", () => {

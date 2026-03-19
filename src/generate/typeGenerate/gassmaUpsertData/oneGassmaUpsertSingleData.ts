@@ -17,8 +17,8 @@ const getOneGassmaUpsertSingleData = (
     ? `${baseUpdateType} & {\n${nestedFields}  }`
     : baseUpdateType;
 
-  const s = `Gassma${schemaName}${sheetName}Select`;
-  const o = `Gassma${schemaName}${sheetName}Omit`;
+  const selectType = `Gassma${schemaName}${sheetName}Select`;
+  const omitType = `Gassma${schemaName}${sheetName}Omit`;
 
   return `
 export type Gassma${schemaName}${sheetName}UpsertSingleData = {
@@ -26,7 +26,7 @@ export type Gassma${schemaName}${sheetName}UpsertSingleData = {
   create: ${createType};
   update: ${updateType};
   include?: Gassma${schemaName}${sheetName}Include;
-} & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });
+} & ({ select?: ${selectType}; omit?: never } | { select?: never; omit?: ${omitType} });
 `;
 };
 

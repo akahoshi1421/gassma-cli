@@ -27,7 +27,7 @@ describe("getGassmaCommonTypes", () => {
     expect(result).toContain("type CreateManyReturn = ManyReturn");
     expect(result).toContain("type UpdateManyReturn = ManyReturn");
     expect(result).toContain("type DeleteManyReturn = ManyReturn");
-    expect(result).toContain("type UpsertManyReturn = ManyReturn");
+    expect(result).not.toContain("type UpsertManyReturn = ManyReturn");
   });
 
   it("should not contain removed generic types", () => {

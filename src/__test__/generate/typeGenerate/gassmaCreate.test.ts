@@ -74,6 +74,12 @@ describe("getOneGassmaCreate", () => {
     expect(result).toContain("select?: never; omit?: GassmaUserOmit");
   });
 
+  it("should include include property", () => {
+    const result = getOneGassmaCreate("", "User");
+
+    expect(result).toContain("include?: GassmaUserInclude");
+  });
+
   it("should not add relation fields when no relations for model", () => {
     const relations: RelationsConfig = {
       Post: {

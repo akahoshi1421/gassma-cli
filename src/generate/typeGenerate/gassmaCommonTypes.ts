@@ -24,7 +24,6 @@ const getGassmaCommonTypes = () => {
   type CreateManyReturn = ManyReturn;
   type UpdateManyReturn = ManyReturn;
   type DeleteManyReturn = ManyReturn;
-  type UpsertManyReturn = ManyReturn;
 `;
 };
 

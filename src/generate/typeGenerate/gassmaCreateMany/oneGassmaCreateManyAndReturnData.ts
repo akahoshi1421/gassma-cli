@@ -1,4 +1,4 @@
-const getOneGassmaDeleteSingleData = (
+const getOneGassmaCreateManyAndReturnData = (
   schemaName: string,
   sheetName: string,
 ) => {
@@ -6,11 +6,11 @@ const getOneGassmaDeleteSingleData = (
   const omitType = `Gassma${schemaName}${sheetName}Omit`;
 
   return `
-export type Gassma${schemaName}${sheetName}DeleteSingleData = {
-  where: Gassma${schemaName}${sheetName}WhereUse;
+export type Gassma${schemaName}${sheetName}CreateManyAndReturnData = {
+  data: Gassma${schemaName}${sheetName}Use[];
   include?: Gassma${schemaName}${sheetName}Include;
 } & ({ select?: ${selectType}; omit?: never } | { select?: never; omit?: ${omitType} });
 `;
 };
 
-export { getOneGassmaDeleteSingleData };
+export { getOneGassmaCreateManyAndReturnData };

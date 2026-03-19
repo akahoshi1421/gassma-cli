@@ -11,13 +11,14 @@ const getOneGassmaCreate = (
     ? `Gassma${schemaName}${sheetName}Use & {\n${nestedFields}  }`
     : `Gassma${schemaName}${sheetName}Use`;
 
-  const s = `Gassma${schemaName}${sheetName}Select`;
-  const o = `Gassma${schemaName}${sheetName}Omit`;
+  const selectType = `Gassma${schemaName}${sheetName}Select`;
+  const omitType = `Gassma${schemaName}${sheetName}Omit`;
 
   return `
 export type Gassma${schemaName}${sheetName}CreateData = {
   data: ${dataType};
-} & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });
+  include?: Gassma${schemaName}${sheetName}Include;
+} & ({ select?: ${selectType}; omit?: never } | { select?: never; omit?: ${omitType} });
 `;
 };
 
