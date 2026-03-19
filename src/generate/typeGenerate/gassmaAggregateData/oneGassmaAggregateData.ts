@@ -5,6 +5,7 @@ export type Gassma${schemaName}${sheetName}AggregateData = {
   orderBy?: Gassma${schemaName}${sheetName}OrderBy;
   take?: number;
   skip?: number;
+  cursor?: Partial<Gassma${schemaName}${sheetName}Use>;
   _avg?: Gassma${schemaName}${sheetName}Select;
   _count?: Gassma${schemaName}${sheetName}Select;
   _max?: Gassma${schemaName}${sheetName}Select;
