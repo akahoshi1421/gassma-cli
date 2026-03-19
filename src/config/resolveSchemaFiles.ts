@@ -26,6 +26,13 @@ const resolveSchemaFiles = (options: SchemaOptions): SchemaFile[] => {
 };
 
 const resolveFromSchemaOption = (schema: string): SchemaFile[] => {
+  if (
+    !schema.endsWith(".prisma") &&
+    fs.existsSync(schema) &&
+    fs.statSync(schema).isDirectory()
+  ) {
+    return resolveFromDir(schema);
+  }
   const { dir, file } = parseSchemaPath(schema);
   const filePath = path.join(dir, file);
   if (!fs.existsSync(filePath)) {

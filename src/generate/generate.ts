@@ -12,10 +12,12 @@ import { extractIgnoreSheets } from "./read/extractIgnoreSheets";
 import { extractMap } from "./read/extractMap";
 import { extractMapSheets } from "./read/extractMapSheets";
 import { extractEnums } from "./read/extractEnums";
+import { extractDatasourceUrl } from "./read/extractDatasourceUrl";
 import { prismaReader } from "./read/prismaReader";
 import { resolveSchemaFiles } from "../config/resolveSchemaFiles";
 import { filterOutputFiles } from "../config/filterOutputFiles";
 import { loadConfig } from "../config/loadConfig";
+import { extractSpreadsheetId } from "../config/extractSpreadsheetId";
 import { mergeSchemaFiles } from "./mergeSchemaFiles";
 import { writer } from "./writer";
 import { jsWriter } from "./jsWriter";
@@ -29,7 +31,7 @@ function generate(options?: GenerateOptions) {
   const baseDir = findBaseDir(allFiles.map((f) => f.filePath));
   const files = filterOutputFiles(allFiles, baseDir);
   const config = loadConfig();
-  const datasourceUrl = config?.datasource?.url;
+  const datasourceUrl = extractSpreadsheetId(config?.datasource?.url);
 
   console.log(
     `📁 Found ${files.length} .prisma file(s) in ${path.basename(baseDir)} directory`,
@@ -38,7 +40,11 @@ function generate(options?: GenerateOptions) {
 
   const schemaText = mergeSchemaFiles(files.map((f) => f.filePath));
   const schemaName = deriveSchemaName(baseDir, files);
-  generateFromSchema(schemaText, schemaName, datasourceUrl);
+  const schemaDatasourceUrl = extractDatasourceUrl(schemaText);
+  const resolvedUrl = extractSpreadsheetId(
+    schemaDatasourceUrl ?? datasourceUrl,
+  );
+  generateFromSchema(schemaText, schemaName, resolvedUrl);
 }
 
 function findBaseDir(filePaths: string[]): string {
