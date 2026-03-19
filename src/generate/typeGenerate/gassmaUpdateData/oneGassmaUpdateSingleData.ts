@@ -19,6 +19,7 @@ const getOneGassmaUpdateSingleData = (
 export type Gassma${schemaName}${sheetName}UpdateSingleData = {
   where: Gassma${schemaName}${sheetName}WhereUse;
   data: ${dataType};
+  include?: Gassma${schemaName}${sheetName}Include;
 } & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });
 `;
 };

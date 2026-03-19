@@ -7,7 +7,6 @@ export type ManyReturn = {
 export type CreateManyReturn = ManyReturn;
 export type UpdateManyReturn = ManyReturn;
 export type DeleteManyReturn = ManyReturn;
-export type UpsertManyReturn = ManyReturn;
 `;
 };
 

@@ -17,6 +17,7 @@ const getOneGassmaCreate = (
   return `
 export type Gassma${schemaName}${sheetName}CreateData = {
   data: ${dataType};
+  include?: Gassma${schemaName}${sheetName}Include;
 } & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });
 `;
 };
