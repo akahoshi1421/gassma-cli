@@ -12,15 +12,15 @@ const getOneGassmaUpdateSingleData = (
     ? `${baseDataType} & {\n${nestedFields}  }`
     : baseDataType;
 
-  const s = `Gassma${schemaName}${sheetName}Select`;
-  const o = `Gassma${schemaName}${sheetName}Omit`;
+  const selectType = `Gassma${schemaName}${sheetName}Select`;
+  const omitType = `Gassma${schemaName}${sheetName}Omit`;
 
   return `
 export type Gassma${schemaName}${sheetName}UpdateSingleData = {
   where: Gassma${schemaName}${sheetName}WhereUse;
   data: ${dataType};
   include?: Gassma${schemaName}${sheetName}Include;
-} & ({ select?: ${s}; omit?: never } | { select?: never; omit?: ${o} });
+} & ({ select?: ${selectType}; omit?: never } | { select?: never; omit?: ${omitType} });
 `;
 };
 
