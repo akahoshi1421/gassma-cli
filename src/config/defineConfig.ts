@@ -10,4 +10,5 @@ const defineConfig = (config: GassmaConfig): GassmaConfig => {
 };
 
 export { defineConfig };
+export { env } from "./env";
 export type { GassmaConfig };
