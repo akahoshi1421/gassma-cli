@@ -5,6 +5,7 @@ export type Gassma${schemaName}${sheetName}CountData = {
   orderBy?: Gassma${schemaName}${sheetName}OrderBy;
   take?: number;
   skip?: number;
+  cursor?: Partial<Gassma${schemaName}${sheetName}Use>;
 };
 `;
 };
