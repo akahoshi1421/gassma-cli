@@ -18,7 +18,7 @@ const getOneSheetGassmaFilterConditions = (
       const isOneType = columnTypes.length === 1;
 
       const oneFilterConditionsType = `
-declare type Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions = {
+export type Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions = {
   equals?: ${now}${isQuestionMark ? " | null" : ""} | Gassma.FieldRef;
   not?: ${now}${isQuestionMark ? " | null" : ""};
   in?: ${isOneType ? `${now}[]` : `(${now})[]`};

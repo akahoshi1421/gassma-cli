@@ -11,7 +11,7 @@ describe("getOneGassmaOrderBy", () => {
   it("should generate OrderBy type", () => {
     const result = getOneGassmaOrderBy(sheetContent, "", "User");
 
-    expect(result).toContain("declare type GassmaUserOrderBy");
+    expect(result).toContain("export type GassmaUserOrderBy");
   });
 
   it("should support SortOrderInput with nulls option", () => {

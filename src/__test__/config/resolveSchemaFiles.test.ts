@@ -101,4 +101,52 @@ describe("resolveSchemaFiles", () => {
       expect(() => resolveSchemaFiles({})).toThrow("No .prisma files found");
     });
   });
+
+  describe("recursive subdirectory scanning", () => {
+    it("should find .prisma files in subdirectories", () => {
+      const dir = path.join(tmpDir, "gassma");
+      const subDir = path.join(dir, "models");
+      fs.mkdirSync(subDir, { recursive: true });
+      fs.writeFileSync(path.join(dir, "schema.prisma"), "content");
+      fs.writeFileSync(path.join(subDir, "user.prisma"), "content");
+
+      const files = resolveSchemaFiles({});
+      expect(files).toHaveLength(2);
+    });
+
+    it("should find .prisma files in deeply nested subdirectories", () => {
+      const dir = path.join(tmpDir, "gassma");
+      const deepDir = path.join(dir, "models", "detail");
+      fs.mkdirSync(deepDir, { recursive: true });
+      fs.writeFileSync(path.join(dir, "schema.prisma"), "content");
+      fs.writeFileSync(path.join(deepDir, "user.prisma"), "content");
+
+      const files = resolveSchemaFiles({});
+      expect(files).toHaveLength(2);
+    });
+
+    it("should ignore non-.prisma files in subdirectories", () => {
+      const dir = path.join(tmpDir, "gassma");
+      const subDir = path.join(dir, "models");
+      fs.mkdirSync(subDir, { recursive: true });
+      fs.writeFileSync(path.join(dir, "schema.prisma"), "content");
+      fs.writeFileSync(path.join(subDir, "readme.md"), "content");
+
+      const files = resolveSchemaFiles({});
+      expect(files).toHaveLength(1);
+    });
+
+    it("should include relative path in displayName for subdirectory files", () => {
+      const dir = path.join(tmpDir, "gassma");
+      const subDir = path.join(dir, "models");
+      fs.mkdirSync(subDir, { recursive: true });
+      fs.writeFileSync(path.join(dir, "schema.prisma"), "content");
+      fs.writeFileSync(path.join(subDir, "user.prisma"), "content");
+
+      const files = resolveSchemaFiles({});
+      const displayNames = files.map((f) => f.displayName);
+      expect(displayNames).toContain("schema.prisma");
+      expect(displayNames).toContain(path.join("models", "user.prisma"));
+    });
+  });
 });

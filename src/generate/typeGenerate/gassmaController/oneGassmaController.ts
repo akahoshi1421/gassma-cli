@@ -1,7 +1,7 @@
 const getOneGassmaController = (schemaName: string, sheetName: string) => {
   const fr = `Gassma${schemaName}${sheetName}FindResult`;
   return `
-declare class Gassma${schemaName}${sheetName}Controller<GO extends Gassma${schemaName}${sheetName}Omit = {}> {
+export declare class Gassma${schemaName}${sheetName}Controller<GO extends Gassma${schemaName}${sheetName}Omit = {}> {
   constructor(sheetName: string, id?: string);
 
   readonly fields: Record<string, Gassma.FieldRef>;

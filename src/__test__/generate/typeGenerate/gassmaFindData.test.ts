@@ -10,7 +10,7 @@ describe("getOneGassmaFindData", () => {
   it("should generate FindData type with where, select, omit, orderBy", () => {
     const result = getOneGassmaFindData(sheetContent, "", "User");
 
-    expect(result).toContain("declare type GassmaUserFindData");
+    expect(result).toContain("export type GassmaUserFindData");
     expect(result).toContain("where?: GassmaUserWhereUse");
     expect(result).toContain("select?: GassmaUserSelect");
     expect(result).toContain("omit?: GassmaUserOmit");

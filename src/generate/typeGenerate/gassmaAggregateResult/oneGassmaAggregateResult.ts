@@ -1,6 +1,6 @@
 const getOneGassmaAggregateResult = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${schemaName}${sheetName}AggregateResult<T extends Gassma${schemaName}${sheetName}AggregateData> = {
+export type Gassma${schemaName}${sheetName}AggregateResult<T extends Gassma${schemaName}${sheetName}AggregateData> = {
   [K in keyof T as K extends "_avg" | "_count" | "_max" | "_min" | "_sum"
     ? T[K] extends undefined
       ? never

@@ -11,7 +11,7 @@ describe("getGassmaUpdatedAtType", () => {
     };
     const result = getGassmaUpdatedAtType(dictYaml, ["Post"], "Test");
 
-    expect(result).toContain("declare type GassmaTestUpdatedAtConfig");
+    expect(result).toContain("export type GassmaTestUpdatedAtConfig");
     expect(result).toContain('"Post"?:');
   });
 
@@ -91,6 +91,6 @@ describe("getGassmaUpdatedAtType", () => {
     };
     const result = getGassmaUpdatedAtType(dictYaml, [], "Test");
 
-    expect(result).toContain("declare type GassmaTestUpdatedAtConfig = {}");
+    expect(result).toContain("export type GassmaTestUpdatedAtConfig = {}");
   });
 });

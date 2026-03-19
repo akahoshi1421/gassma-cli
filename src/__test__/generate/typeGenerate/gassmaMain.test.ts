@@ -4,7 +4,7 @@ describe("getGassmaMain", () => {
   it("should generate GassmaClient with type parameter via GassmaClientMap", () => {
     const result = getGassmaMain(["User", "Post"], "Test");
 
-    expect(result).toContain("declare namespace Gassma");
+    expect(result).toContain("export namespace Gassma");
     expect(result).toContain("interface GassmaClientMap");
     expect(result).toContain(
       "class GassmaClient<T extends keyof GassmaClientMap>",
@@ -24,7 +24,7 @@ describe("getGassmaMain", () => {
   it("should generate GassmaClientOptions type with schema prefix", () => {
     const result = getGassmaMain(["User", "Post"], "Test");
 
-    expect(result).toContain("declare type GassmaTestClientOptions");
+    expect(result).toContain("export type GassmaTestClientOptions");
     expect(result).toContain("id?: string");
     expect(result).toContain("relations?: Gassma.RelationsConfig");
     expect(result).toContain("omit?: O");
@@ -33,7 +33,7 @@ describe("getGassmaMain", () => {
   it("should generate GassmaGlobalOmitConfig with model-specific omit", () => {
     const result = getGassmaMain(["User", "Post"], "Test");
 
-    expect(result).toContain("declare type GassmaTestGlobalOmitConfig");
+    expect(result).toContain("export type GassmaTestGlobalOmitConfig");
     expect(result).toContain('"User"?: GassmaTestUserOmit');
     expect(result).toContain('"Post"?: GassmaTestPostOmit');
   });

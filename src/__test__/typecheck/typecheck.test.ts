@@ -97,6 +97,7 @@ describe("generated .d.ts type check", () => {
     const prismaPath = path.join(__dirname, "fixture.prisma");
     const generated = generateFromPrisma(prismaPath);
     const clientDts = generateClientDts("");
+    const mergedDts = generated + "\n" + clientDts;
 
     const tmpDir = fs.mkdtempSync(
       path.join(os.tmpdir(), "gassma-typecheck-omit-"),
@@ -104,7 +105,6 @@ describe("generated .d.ts type check", () => {
     const tsconfigPath = path.join(tmpDir, "tsconfig.json");
 
     const usageTs = `
-/// <reference path="./generated.d.ts" />
 import { GassmaClient } from "./client";
 
 // グローバルomitなし: 全フィールドアクセス可能
@@ -151,8 +151,7 @@ r6[0]?.email;
 `;
 
     try {
-      fs.writeFileSync(path.join(tmpDir, "generated.d.ts"), generated);
-      fs.writeFileSync(path.join(tmpDir, "client.d.ts"), clientDts);
+      fs.writeFileSync(path.join(tmpDir, "client.d.ts"), mergedDts);
       fs.writeFileSync(path.join(tmpDir, "usage.ts"), usageTs);
       writeTsconfigWithTs(tsconfigPath);
 
@@ -167,7 +166,9 @@ r6[0]?.email;
     const hogePath = path.join(__dirname, "fixture-hoge.prisma");
     const fugaPath = path.join(__dirname, "fixture-fuga.prisma");
     const hogeGenerated = generateFromPrisma(hogePath, "Hoge");
-    const fugaGenerated = generateFromPrisma(fugaPath, "Fuga", false);
+    const fugaGenerated = generateFromPrisma(fugaPath, "Fuga");
+    const hogeMerged = hogeGenerated + "\n" + generateClientDts("Hoge");
+    const fugaMerged = fugaGenerated + "\n" + generateClientDts("Fuga");
 
     const tmpDir = fs.mkdtempSync(
       path.join(os.tmpdir(), "gassma-typecheck-multi-"),
@@ -175,16 +176,8 @@ r6[0]?.email;
     const tsconfigPath = path.join(tmpDir, "tsconfig.json");
 
     try {
-      fs.writeFileSync(path.join(tmpDir, "hoge.d.ts"), hogeGenerated);
-      fs.writeFileSync(path.join(tmpDir, "fuga.d.ts"), fugaGenerated);
-      fs.writeFileSync(
-        path.join(tmpDir, "hogeClient.d.ts"),
-        generateClientDts("Hoge"),
-      );
-      fs.writeFileSync(
-        path.join(tmpDir, "fugaClient.d.ts"),
-        generateClientDts("Fuga"),
-      );
+      fs.writeFileSync(path.join(tmpDir, "hogeClient.d.ts"), hogeMerged);
+      fs.writeFileSync(path.join(tmpDir, "fugaClient.d.ts"), fugaMerged);
       writeTsconfig(tsconfigPath);
 
       const result = runTsc(tmpDir, tsconfigPath);

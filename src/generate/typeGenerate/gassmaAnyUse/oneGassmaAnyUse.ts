@@ -19,7 +19,7 @@ const getOneGassmaAnyUse = (
       : `"${removedQuestionMark}"`;
 
     return `${pre}  ${insertColumnName}: ${now};\n`;
-  }, `\ndeclare type Gassma${schemaName}${sheetName}Use = {\n`);
+  }, `\nexport type Gassma${schemaName}${sheetName}Use = {\n`);
 
   return `${oneAnyUse}};\n`;
 };

@@ -1,6 +1,6 @@
 const getOneGassmaFindManyData = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${schemaName}${sheetName}FindManyData = Gassma${schemaName}${sheetName}FindData;
+export type Gassma${schemaName}${sheetName}FindManyData = Gassma${schemaName}${sheetName}FindData;
 `;
 };
 

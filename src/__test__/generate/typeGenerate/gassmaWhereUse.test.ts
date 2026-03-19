@@ -10,7 +10,7 @@ describe("getOneGassmaWhereUse", () => {
   it("should generate WhereUse without relations", () => {
     const result = getOneGassmaWhereUse(sheetContent, "", "User");
 
-    expect(result).toContain("declare type GassmaUserWhereUse");
+    expect(result).toContain("export type GassmaUserWhereUse");
     expect(result).toContain('"id"?:');
     expect(result).toContain('"name"?:');
     expect(result).toContain("AND?: GassmaUserWhereUse[]");

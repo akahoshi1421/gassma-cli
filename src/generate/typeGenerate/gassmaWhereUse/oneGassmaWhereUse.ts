@@ -42,7 +42,7 @@ const getOneGassmaWhereUse = (
       : columnName;
 
     return `${pre}  "${removedQuestionMark}"?: ${now}${isQuestionMark ? " | null" : ""} | Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions;\n`;
-  }, `\ndeclare type Gassma${schemaName}${sheetName}WhereUse = {\n`);
+  }, `\nexport type Gassma${schemaName}${sheetName}WhereUse = {\n`);
 
   const relationFields = getRelationFields(schemaName, sheetName, relations);
 

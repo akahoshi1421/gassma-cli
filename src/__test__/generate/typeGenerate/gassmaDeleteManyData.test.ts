@@ -4,7 +4,7 @@ describe("getOneGassmaDeleteData", () => {
   it("should generate DeleteData type", () => {
     const result = getOneGassmaDeleteData("", "User");
 
-    expect(result).toContain("declare type GassmaUserDeleteData");
+    expect(result).toContain("export type GassmaUserDeleteData");
   });
 
   it("should include where property", () => {

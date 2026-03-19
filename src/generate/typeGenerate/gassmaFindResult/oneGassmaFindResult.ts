@@ -1,6 +1,6 @@
 const getOneGassmaFindResult = (schemaName: string, sheetName: string) => {
   return `
-declare type Gassma${schemaName}${sheetName}FindResult<S, QO = undefined, GO = {}> = S extends Gassma${schemaName}${sheetName}Select
+export type Gassma${schemaName}${sheetName}FindResult<S, QO = undefined, GO = {}> = S extends Gassma${schemaName}${sheetName}Select
   ? {
       [K in keyof S as S[K] extends true
         ? K & keyof Gassma${schemaName}${sheetName}DefaultFindResult

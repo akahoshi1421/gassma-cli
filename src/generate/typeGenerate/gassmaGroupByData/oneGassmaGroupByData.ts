@@ -25,7 +25,7 @@ const getOneGassmaGroupByData = (
     return `${pre}"${removedQuestionMark}" | `;
   }, "");
 
-  return `\ndeclare type Gassma${schemaName}${sheetName}GroupByData = Gassma${schemaName}${sheetName}AggregateData & {
+  return `\nexport type Gassma${schemaName}${sheetName}GroupByData = Gassma${schemaName}${sheetName}AggregateData & {
   by: ${byData}(${byArrayData})[];
   having?: Gassma${schemaName}${sheetName}HavingUse;
 };

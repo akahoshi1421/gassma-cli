@@ -28,7 +28,7 @@ const getOneGassmaFindData = (
   const s = `Gassma${schemaName}${sheetName}Select`;
   const o = `Gassma${schemaName}${sheetName}Omit`;
 
-  return `\ndeclare type Gassma${schemaName}${sheetName}FindData = {
+  return `\nexport type Gassma${schemaName}${sheetName}FindData = {
   where?: Gassma${schemaName}${sheetName}WhereUse;
   orderBy?: Gassma${schemaName}${sheetName}OrderBy;
   take?: number;

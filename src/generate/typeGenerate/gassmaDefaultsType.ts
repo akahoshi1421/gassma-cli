@@ -18,7 +18,7 @@ const getGassmaDefaultsType = (
 ): string => {
   const modelNames = Object.keys(defaults);
   if (modelNames.length === 0) {
-    return `declare type Gassma${schemaName}DefaultsConfig = {};\n`;
+    return `export type Gassma${schemaName}DefaultsConfig = {};\n`;
   }
 
   const body = modelNames.reduce((pre, modelName) => {
@@ -35,7 +35,7 @@ const getGassmaDefaultsType = (
     return `${pre}  "${modelName}"?: {\n${fieldEntries}  };\n`;
   }, "");
 
-  return `declare type Gassma${schemaName}DefaultsConfig = {\n${body}};\n`;
+  return `export type Gassma${schemaName}DefaultsConfig = {\n${body}};\n`;
 };
 
 export { getGassmaDefaultsType };

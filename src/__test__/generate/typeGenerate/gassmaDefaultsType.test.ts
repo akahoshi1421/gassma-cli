@@ -19,7 +19,7 @@ describe("getGassmaDefaultsType", () => {
     };
     const result = getGassmaDefaultsType(dictYaml, defaults, "Test");
 
-    expect(result).toContain("declare type GassmaTestDefaultsConfig");
+    expect(result).toContain("export type GassmaTestDefaultsConfig");
     expect(result).toContain('"User"?:');
     expect(result).toContain('"isActive"?: boolean | (() => boolean)');
     expect(result).toContain('"createdAt"?: Date | (() => Date)');
@@ -84,7 +84,7 @@ describe("getGassmaDefaultsType", () => {
     const defaults: DefaultsConfig = {};
     const result = getGassmaDefaultsType(dictYaml, defaults, "Test");
 
-    expect(result).toContain("declare type GassmaTestDefaultsConfig = {}");
+    expect(result).toContain("export type GassmaTestDefaultsConfig = {}");
   });
 
   it("should handle union types in field", () => {

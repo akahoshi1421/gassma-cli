@@ -5,7 +5,7 @@ describe("getOneGassmaUpdateSingleData", () => {
   it("should generate UpdateSingleData type", () => {
     const result = getOneGassmaUpdateSingleData("", "User");
 
-    expect(result).toContain("declare type GassmaUserUpdateSingleData");
+    expect(result).toContain("export type GassmaUserUpdateSingleData");
   });
 
   it("should include where property", () => {

@@ -5,7 +5,7 @@ describe("getGassmaSheet", () => {
     const result = getGassmaSheet(["User", "Post"], "");
 
     expect(result).toContain(
-      "declare type GassmaSheet<O extends GassmaGlobalOmitConfig = {}> = {",
+      "export type GassmaSheet<O extends GassmaGlobalOmitConfig = {}> = {",
     );
     expect(result).toContain(
       '"User": GassmaUserController<O extends { "User": infer UO } ? UO extends GassmaUserOmit ? UO : {} : {}>;',
@@ -28,7 +28,7 @@ describe("getGassmaSheet", () => {
     const result = getGassmaSheet([], "");
 
     expect(result).toBe(
-      "declare type GassmaSheet<O extends GassmaGlobalOmitConfig = {}> = {\n};\n",
+      "export type GassmaSheet<O extends GassmaGlobalOmitConfig = {}> = {\n};\n",
     );
   });
 });

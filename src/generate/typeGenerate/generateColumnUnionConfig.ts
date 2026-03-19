@@ -7,7 +7,7 @@ const generateColumnUnionConfig = (
   typeName: string,
 ): string => {
   if (modelNames.length === 0) {
-    return `declare type ${typeName} = {};\n`;
+    return `export type ${typeName} = {};\n`;
   }
 
   const body = modelNames.reduce((pre, modelName) => {
@@ -22,7 +22,7 @@ const generateColumnUnionConfig = (
     return `${pre}  "${modelName}"?: ${union} | (${union})[];\n`;
   }, "");
 
-  return `declare type ${typeName} = {\n${body}};\n`;
+  return `export type ${typeName} = {\n${body}};\n`;
 };
 
 export { generateColumnUnionConfig };
