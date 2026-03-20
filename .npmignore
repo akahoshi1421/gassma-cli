@@ -1,13 +1,23 @@
+# IDE・Editor
+.vscode/
 .claude/
-.vscode/*
+.mcp.json
+
+# CI・Git hooks
 .github/
-node_modules/
+.husky/
+
+# Source code, Dev tools
 src/
 devTypes/
 gassma/
+LLM/
+coverage/
 
-package-lock.json
-.gitignore
+# Setting
 tsconfig.json
 biome.json
-.mcp.json
+jest.config.ts
+.gitignore
+package-lock.json
+CLAUDE.md
