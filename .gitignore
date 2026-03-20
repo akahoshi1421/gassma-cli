@@ -21,3 +21,6 @@ CLAUDE.md
 indexDev.d.ts
 devTypes/
 gassma/
+
+# npm
+.npmrc
