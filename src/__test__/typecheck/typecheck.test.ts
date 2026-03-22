@@ -109,7 +109,7 @@ import { GassmaClient } from "./client";
 
 // グローバルomitなし: 全フィールドアクセス可能
 declare const client: GassmaClient;
-const r1 = client.sheets.User.findFirst({ where: { id: 1 } });
+const r1 = client.User.findFirst({ where: { id: 1 } });
 if (r1) {
   const email: string = r1.email;
   const name: string | null = r1.name;
@@ -117,7 +117,7 @@ if (r1) {
 
 // グローバルomitあり: email が返り値から除外される
 declare const clientOmit: GassmaClient<{ User: { email: true } }>;
-const r2 = clientOmit.sheets.User.findFirst({ where: { id: 1 } });
+const r2 = clientOmit.User.findFirst({ where: { id: 1 } });
 if (r2) {
   const name: string | null = r2.name;
   // @ts-expect-error email はグローバルomitで除外
@@ -125,19 +125,19 @@ if (r2) {
 }
 
 // omit: { email: false } でグローバルomitを解除
-const r3 = clientOmit.sheets.User.findFirst({ where: { id: 1 }, omit: { email: false } });
+const r3 = clientOmit.User.findFirst({ where: { id: 1 }, omit: { email: false } });
 if (r3) {
   const email: string = r3.email;
 }
 
 // select はグローバルomitを上書き
-const r4 = clientOmit.sheets.User.findFirst({ where: { id: 1 }, select: { email: true } });
+const r4 = clientOmit.User.findFirst({ where: { id: 1 }, select: { email: true } });
 if (r4) {
   const email: string = r4.email;
 }
 
 // クエリomitも返り値に反映
-const r5 = client.sheets.User.findFirst({ where: { id: 1 }, omit: { name: true } });
+const r5 = client.User.findFirst({ where: { id: 1 }, omit: { name: true } });
 if (r5) {
   const email: string = r5.email;
   // @ts-expect-error name はクエリomitで除外
@@ -145,7 +145,7 @@ if (r5) {
 }
 
 // findMany でも同様
-const r6 = clientOmit.sheets.User.findMany({ where: {} });
+const r6 = clientOmit.User.findMany({ where: {} });
 // @ts-expect-error email はグローバルomitで除外
 r6[0]?.email;
 `;

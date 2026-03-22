@@ -9,7 +9,7 @@ describe("getGassmaMain", () => {
     expect(result).toContain(
       "class GassmaClient<T extends keyof GassmaClientMap>",
     );
-    expect(result).toContain('GassmaClientMap[T]["sheets"]');
+    expect(result).not.toContain('GassmaClientMap[T]["sheets"]');
     expect(result).toContain('GassmaClientMap[T]["options"]');
   });
 
@@ -17,7 +17,7 @@ describe("getGassmaMain", () => {
     const result = getGassmaMain(["User", "Post"], "Test");
 
     expect(result).toContain('"Test": {');
-    expect(result).toContain("sheets: GassmaTestSheet");
+    expect(result).not.toContain("sheets: GassmaTestSheet");
     expect(result).toContain("options: GassmaTestClientOptions");
   });
 

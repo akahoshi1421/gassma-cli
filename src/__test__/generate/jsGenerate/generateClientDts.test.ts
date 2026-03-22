@@ -13,10 +13,13 @@ describe("generateClientDts", () => {
     expect(result).toContain("options?: GassmaHogeClientOptions");
   });
 
-  it("should have readonly sheets property with schema-specific type", () => {
+  it("should have interface merging with schema-specific Sheet type", () => {
     const result = generateClientDts("Hoge");
 
-    expect(result).toContain("readonly sheets: GassmaHogeSheet");
+    expect(result).toContain(
+      "export interface GassmaClient<O extends GassmaHogeGlobalOmitConfig = {}> extends GassmaHogeSheet<O>",
+    );
+    expect(result).not.toContain("readonly sheets");
   });
 
   it("should work with different schema names", () => {
@@ -24,7 +27,9 @@ describe("generateClientDts", () => {
 
     expect(result).toContain("export declare class GassmaClient");
     expect(result).toContain("options?: GassmaFugaClientOptions");
-    expect(result).toContain("readonly sheets: GassmaFugaSheet");
+    expect(result).toContain(
+      "export interface GassmaClient<O extends GassmaFugaGlobalOmitConfig = {}> extends GassmaFugaSheet<O>",
+    );
   });
 
   it("should export enum constants and types", () => {
