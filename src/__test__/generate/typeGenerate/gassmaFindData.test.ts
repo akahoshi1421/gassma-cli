@@ -12,7 +12,7 @@ describe("getOneGassmaFindData", () => {
 
     expect(result).toContain("export type GassmaUserFindData");
     expect(result).toContain("where?: GassmaUserWhereUse");
-    expect(result).toContain("select?: GassmaUserSelect");
+    expect(result).toContain("select?: GassmaUserFindSelect");
     expect(result).toContain("omit?: GassmaUserOmit");
     expect(result).toContain("orderBy?: GassmaUserOrderBy");
   });
@@ -20,7 +20,7 @@ describe("getOneGassmaFindData", () => {
   it("should make select and omit mutually exclusive", () => {
     const result = getOneGassmaFindData(sheetContent, "", "User");
 
-    expect(result).toContain("select?: GassmaUserSelect; omit?: never");
+    expect(result).toContain("select?: GassmaUserFindSelect; omit?: never");
     expect(result).toContain("select?: never; omit?: GassmaUserOmit");
   });
 

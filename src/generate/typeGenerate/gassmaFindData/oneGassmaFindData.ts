@@ -25,7 +25,7 @@ const getOneGassmaFindData = (
     return `${pre}"${removedQuestionMark}" | `;
   }, "");
 
-  const selectType = `Gassma${schemaName}${sheetName}Select`;
+  const selectType = `Gassma${schemaName}${sheetName}FindSelect`;
   const omitType = `Gassma${schemaName}${sheetName}Omit`;
 
   return `\nexport type Gassma${schemaName}${sheetName}FindData = {

@@ -33,7 +33,7 @@ describe("getOneGassmaFindFirstData", () => {
   it("should make select and omit mutually exclusive", () => {
     const result = getOneGassmaFindFirstData("", "User");
 
-    expect(result).toContain("select?: GassmaUserSelect; omit?: never");
+    expect(result).toContain("select?: GassmaUserFindSelect; omit?: never");
     expect(result).toContain("select?: never; omit?: GassmaUserOmit");
   });
 });
