@@ -1,5 +1,5 @@
 const getOneGassmaFindFirstData = (schemaName: string, sheetName: string) => {
-  const selectType = `Gassma${schemaName}${sheetName}Select`;
+  const selectType = `Gassma${schemaName}${sheetName}FindSelect`;
   const omitType = `Gassma${schemaName}${sheetName}Omit`;
 
   return `\nexport type Gassma${schemaName}${sheetName}FindFirstData = {
