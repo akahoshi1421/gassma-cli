@@ -47,7 +47,6 @@ ${commonTypes}
 
   class GassmaClient<T extends keyof GassmaClientMap> {
     constructor(idOrOptions?: string | GassmaClientMap[T]["options"]);
-    readonly sheets: GassmaClientMap[T]["sheets"];
   }
 
   class FieldRef {
@@ -76,7 +75,6 @@ const getGassmaSchemaClient = (
   const clientMapEntry = `export namespace Gassma {
   interface GassmaClientMap {
     "${schemaName}": {
-      sheets: Gassma${schemaName}Sheet;
       options: Gassma${schemaName}ClientOptions;
       globalOmitConfig: Gassma${schemaName}GlobalOmitConfig;
     };

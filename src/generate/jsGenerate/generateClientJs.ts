@@ -169,7 +169,7 @@ ${defaultsDecl}${updatedAtDecl}${ignoreDecl}${mapDecl}${ignoreSheetsDecl}${mapSh
   constructor(options) {
     const mergedOptions = ${mergeExpr};
     const client = new Gassma.GassmaClient(mergedOptions);
-    this.sheets = client.sheets;
+    Object.assign(this, client);
   }
 }
 
