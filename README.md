@@ -1,5 +1,7 @@
 # GASsma-cli
 
+[日本語](docs/README.ja.md) | English
+
 GASsma-cli is a CLI tool for [GASsma](https://github.com/akahoshi1421/gassma).
 
 It generates type files and client JS files for GASsma from `.prisma` files, similar to Prisma CLI.
