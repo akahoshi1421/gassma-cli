@@ -139,7 +139,7 @@ Validate .prisma files.
 
 ## Detail reference
 
-https://akahoshi1421.github.io/gassma-reference/docs/reference/type-generation/
+https://akahoshi1421.github.io/gassma-reference/en/docs/reference/type-generation/
 
 ## License
 
