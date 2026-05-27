@@ -4,5 +4,7 @@
     "noEmit": true
   },
   "include": ["src"],
-  "exclude": []
+  // .test-d.ts は vitest --typecheck（test:types）専用。
+  // expectTypeOf API は素の tsc では解釈できずエラーになるため除外する。
+  "exclude": ["src/__test__/types/**/*.test-d.ts"]
 }
