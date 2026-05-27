@@ -20,6 +20,7 @@
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
+    "pretest:types": "ts-node --transpile-only scripts/genFixtureTypes.ts",
     "test:types": "vitest --typecheck --run",
     "typecheck:test": "tsc --noEmit -p tsconfig.test.json",
     "format": "biome format --write src",
