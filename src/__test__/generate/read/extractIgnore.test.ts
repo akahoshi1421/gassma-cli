@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { extractIgnore } from "../../../generate/read/extractIgnore";
 
 describe("extractIgnore", () => {

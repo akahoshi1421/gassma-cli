@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { prismaReader } from "../../../generate/read/prismaReader";
 
 describe("prismaReader", () => {

@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { mapPrismaType } from "../../../generate/read/mapPrismaType";
 
 describe("mapPrismaType", () => {

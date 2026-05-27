@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getOneGassmaFindData } from "../../../generate/typeGenerate/gassmaFindData/oneGassmaFindData";
 
 describe("getOneGassmaFindData", () => {

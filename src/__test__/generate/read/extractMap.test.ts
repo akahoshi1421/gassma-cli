@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { extractMap } from "../../../generate/read/extractMap";
 
 describe("extractMap", () => {

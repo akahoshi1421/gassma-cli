@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { extractEnums } from "../../../generate/read/extractEnums";
 
 describe("extractEnums", () => {

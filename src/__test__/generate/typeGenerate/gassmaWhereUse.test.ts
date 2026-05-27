@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getOneGassmaWhereUse } from "../../../generate/typeGenerate/gassmaWhereUse/oneGassmaWhereUse";
 import type { RelationsConfig } from "../../../generate/read/extractRelations";
 
