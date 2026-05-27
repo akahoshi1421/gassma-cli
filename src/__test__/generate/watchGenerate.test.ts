@@ -1,30 +1,39 @@
 import fs from "fs";
 import path from "path";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+} from "vitest";
 import { watchGenerate } from "../../generate/watchGenerate";
 
-jest.mock("fs");
-jest.mock("../../generate/generate", () => ({
-  generate: jest.fn(),
+vi.mock("fs");
+vi.mock("../../generate/generate", () => ({
+  generate: vi.fn(),
 }));
-jest.mock("../../config/resolveSchemaFiles", () => ({
-  resolveSchemaFiles: jest.fn(),
+vi.mock("../../config/resolveSchemaFiles", () => ({
+  resolveSchemaFiles: vi.fn(),
 }));
 
-const mockFs = jest.mocked(fs);
+const mockFs = vi.mocked(fs);
 
 import { generate } from "../../generate/generate";
 import { resolveSchemaFiles } from "../../config/resolveSchemaFiles";
 
-const mockGenerate = jest.mocked(generate);
-const mockResolveSchemaFiles = jest.mocked(resolveSchemaFiles);
+const mockGenerate = vi.mocked(generate);
+const mockResolveSchemaFiles = vi.mocked(resolveSchemaFiles);
 
 describe("watchGenerate", () => {
-  let mockWatcher: { close: jest.Mock };
+  let mockWatcher: { close: Mock };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.spyOn(console, "log").mockImplementation();
-    mockWatcher = { close: jest.fn() };
+    vi.clearAllMocks();
+    vi.spyOn(console, "log").mockImplementation(() => undefined);
+    mockWatcher = { close: vi.fn() };
     mockFs.watch.mockReturnValue(mockWatcher as unknown as fs.FSWatcher);
     mockResolveSchemaFiles.mockReturnValue([
       { filePath: "gassma/schema.prisma", displayName: "schema.prisma" },
@@ -32,7 +41,7 @@ describe("watchGenerate", () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("should run generate once on start", () => {

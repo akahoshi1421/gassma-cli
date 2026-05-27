@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getGassmaIgnoreType } from "../../../generate/typeGenerate/gassmaIgnoreType";
 
 describe("getGassmaIgnoreType", () => {

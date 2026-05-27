@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getGassmaDefaultsType } from "../../../generate/typeGenerate/gassmaDefaultsType";
 import type { DefaultsConfig } from "../../../generate/read/extractDefaults";
 

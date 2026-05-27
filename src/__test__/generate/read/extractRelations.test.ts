@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { extractRelations } from "../../../generate/read/extractRelations";
 
 describe("extractRelations", () => {

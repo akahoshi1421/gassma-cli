@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getGassmaErrorClasses } from "../../../generate/typeGenerate/gassmaErrorClasses";
 
 describe("getGassmaErrorClasses", () => {

@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { generateTemplate } from "../../init/generateTemplate";
 
 describe("generateTemplate", () => {

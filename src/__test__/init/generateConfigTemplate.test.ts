@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { generateConfigTemplate } from "../../init/generateConfigTemplate";
 
 describe("generateConfigTemplate", () => {

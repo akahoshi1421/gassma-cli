@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getGassmaMapSheetsType } from "../../../generate/typeGenerate/gassmaMapSheetsType";
 
 describe("getGassmaMapSheetsType", () => {

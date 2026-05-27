@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import { env } from "../../config/env";
 
 describe("env", () => {

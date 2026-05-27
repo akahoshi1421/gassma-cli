@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getOneColumnType } from "../../../../generate/util/getColumnType/getOneColumnType";
 
 describe("getOneColumnType", () => {

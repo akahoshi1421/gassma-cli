@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { generateClientJs } from "../../../generate/jsGenerate/generateClientJs";
 import type { DefaultsConfig } from "../../../generate/read/extractDefaults";
 import type { UpdatedAtConfig } from "../../../generate/read/extractUpdatedAt";

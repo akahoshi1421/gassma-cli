@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { getOneGassmaUpsertSingleData } from "../../../generate/typeGenerate/gassmaUpsertData/oneGassmaUpsertSingleData";
 import type { RelationsConfig } from "../../../generate/read/extractRelations";
 

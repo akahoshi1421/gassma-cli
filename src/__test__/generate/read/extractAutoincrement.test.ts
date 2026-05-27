@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import { extractAutoincrement } from "../../../generate/read/extractAutoincrement";
 
 describe("extractAutoincrement", () => {
