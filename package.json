@@ -20,7 +20,7 @@
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
-    "pretest:types": "ts-node --transpile-only scripts/genFixtureTypes.ts",
+    "pretest:types": "tsx scripts/genFixtureTypes.ts",
     "test:types": "vitest --typecheck --run",
     "typecheck:test": "tsc --noEmit -p tsconfig.test.json",
     "format": "biome format --write src",
@@ -66,7 +66,7 @@
     "globals": "^15.13.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.22.3",
     "typescript": "^5.9.3",
     "vitest": "^4.1.7"
   },
