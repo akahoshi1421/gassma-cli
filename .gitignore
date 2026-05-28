@@ -22,5 +22,8 @@ indexDev.d.ts
 devTypes/
 gassma/
 
+# 型テスト用の生成物
+src/__test__/types/__generated__/
+
 # npm
 .npmrc
