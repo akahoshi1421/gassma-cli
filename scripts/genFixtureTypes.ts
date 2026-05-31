@@ -5,8 +5,6 @@ import { generateClientDts } from "../src/generate/jsGenerate/generateClientDts"
 import { prismaReader } from "../src/generate/read/prismaReader";
 import { extractRelations } from "../src/generate/read/extractRelations";
 
-// 型レベルテスト（*.test-d.ts）用に、fixture スキーマから型定義を生成して固定出力する。
-// vitest --typecheck の前（pretest:types）に実行される。
 const fixturePath = path.join(
   __dirname,
   "../src/__test__/types/fixtures/schema.prisma",

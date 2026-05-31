@@ -229,6 +229,7 @@ model Category {
       to: "Category",
       field: "parentId",
       reference: "id",
+      optional: true,
     });
     expect(result.Category.children).toEqual({
       type: "oneToMany",
