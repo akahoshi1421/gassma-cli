@@ -1,5 +1,5 @@
 import { expectTypeOf } from "vitest";
-import type { GassmaClient } from "./__generated__/client";
+import type { GassmaClient } from "../__generated__/client";
 
 declare const client: GassmaClient;
 
