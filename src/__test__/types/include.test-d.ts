@@ -50,8 +50,6 @@ declare const client: GassmaClient;
   expectTypeOf<U>().not.toHaveProperty("posts");
 }
 
-// === #17: ネスト include / include内 select / _count / self-relation ===
-
 // ネスト include: posts -> tags
 {
   const u = client.User.findFirst({
