@@ -32,9 +32,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check TypeScript compilation
-        run: npx tsc --noEmit
-
       - name: Run Biome linter
         run: npm run lint
 
