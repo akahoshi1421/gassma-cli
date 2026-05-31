@@ -41,3 +41,11 @@ model Tag {
   name  String @unique
   posts Post[]
 }
+
+model Category {
+  id       Int        @id @default(autoincrement())
+  name     String
+  parentId Int?
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+}

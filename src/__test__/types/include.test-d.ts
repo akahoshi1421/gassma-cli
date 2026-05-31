@@ -49,3 +49,71 @@ declare const client: GassmaClient;
   type U = NonNullable<typeof u>;
   expectTypeOf<U>().not.toHaveProperty("posts");
 }
+
+// === #17: ネスト include / include内 select / _count / self-relation ===
+
+// ネスト include: posts -> tags
+{
+  const u = client.User.findFirst({
+    where: { id: 1 },
+    include: { posts: { include: { tags: true } } },
+  });
+  type U = NonNullable<typeof u>;
+  expectTypeOf<U["posts"][number]["tags"]>().toBeArray();
+  expectTypeOf<
+    U["posts"][number]["tags"][number]["name"]
+  >().toEqualTypeOf<string>();
+}
+
+// include 内 select: posts を title だけに絞る
+{
+  const u = client.User.findFirst({
+    where: { id: 1 },
+    include: { posts: { select: { title: true } } },
+  });
+  type U = NonNullable<typeof u>;
+  expectTypeOf<U["posts"][number]["title"]>().toEqualTypeOf<string>();
+  // select で絞ったので id は含まれない
+  expectTypeOf<U["posts"][number]>().not.toHaveProperty("id");
+}
+
+// include の _count
+{
+  const u = client.User.findFirst({
+    where: { id: 1 },
+    include: { _count: { select: { posts: true } } },
+  });
+  type U = NonNullable<typeof u>;
+  expectTypeOf<U["_count"]["posts"]>().toEqualTypeOf<number>();
+}
+
+// self-relation: Category.children（oneToMany 自己参照）
+{
+  const c = client.Category.findFirst({
+    where: { id: 1 },
+    include: { children: true },
+  });
+  type C = NonNullable<typeof c>;
+  expectTypeOf<C["children"]>().toBeArray();
+  expectTypeOf<C["children"][number]["name"]>().toEqualTypeOf<string>();
+}
+
+// self-relation ネスト: Category.children -> children
+{
+  const c = client.Category.findFirst({
+    where: { id: 1 },
+    include: { children: { include: { children: true } } },
+  });
+  type C = NonNullable<typeof c>;
+  expectTypeOf<C["children"][number]["children"]>().toBeArray();
+}
+
+// self-relation: Category.parent（manyToOne 自己参照）→ null 許容
+{
+  const c = client.Category.findFirst({
+    where: { id: 1 },
+    include: { parent: true },
+  });
+  type C = NonNullable<typeof c>;
+  expectTypeOf<C["parent"]>().toBeNullable();
+}

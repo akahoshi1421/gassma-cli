@@ -72,8 +72,8 @@ jobs:
       - name: Run type-level tests (expectTypeOf)
         run: npm run test:types
 
-      - name: Typecheck test files
-        run: npm run typecheck:test
+      - name: Typecheck (tsc --noEmit, includes __test__)
+        run: npm run typecheck
 
   build:
     runs-on: ubuntu-latest
