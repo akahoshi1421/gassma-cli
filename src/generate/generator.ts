@@ -47,6 +47,7 @@ const generater = (
   defaults?: DefaultsConfig,
   updatedAtModels?: string[],
   autoincrementModels?: string[],
+  optionalFields?: Record<string, string[]>,
 ) => {
   const schema = schemaName ?? "";
   const sheetNames = Object.keys(dictYaml);
@@ -62,7 +63,7 @@ const generater = (
   if (includeCommon !== false) {
     result += getGassmaManyCount();
   }
-  result += getGassmaAnyUse(dictYaml, schema);
+  result += getGassmaAnyUse(dictYaml, schema, optionalFields ?? {});
   result += getGassmaCreate(sheetNames, schema, relations);
   result += getGassmaCreateMany(sheetNames, schema);
   result += getGassmaCreateManyAndReturnData(sheetNames, schema);

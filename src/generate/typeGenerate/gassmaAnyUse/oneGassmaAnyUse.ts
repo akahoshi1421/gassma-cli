@@ -4,21 +4,22 @@ const getOneGassmaAnyUse = (
   sheetContent: Record<string, unknown[]>,
   schemaName: string,
   sheetName: string,
+  optionalFields: string[] = [],
 ) => {
   const oneAnyUse = Object.keys(sheetContent).reduce((pre, columnName) => {
     const columnTypes = sheetContent[columnName];
 
     const now = getColumnType(columnTypes);
 
-    const isQuestionMark = columnName.at(-1) === "?";
-    const removedQuestionMark = isQuestionMark
+    const isNullable = columnName.at(-1) === "?";
+    const baseName = isNullable
       ? columnName.substring(0, columnName.length - 1)
       : columnName;
-    const insertColumnName = isQuestionMark
-      ? `"${removedQuestionMark}"?`
-      : `"${removedQuestionMark}"`;
+    const isOmittable = optionalFields.indexOf(baseName) !== -1;
+    const insertColumnName = isOmittable ? `"${baseName}"?` : `"${baseName}"`;
+    const valueType = isNullable ? `${now} | null` : now;
 
-    return `${pre}  ${insertColumnName}: ${now};\n`;
+    return `${pre}  ${insertColumnName}: ${valueType};\n`;
   }, `\nexport type Gassma${schemaName}${sheetName}Use = {\n`);
 
   return `${oneAnyUse}};\n`;

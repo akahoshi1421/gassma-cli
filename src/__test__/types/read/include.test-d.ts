@@ -25,14 +25,15 @@ declare const client: GassmaClient;
   expectTypeOf<NonNullable<U["profile"]>["bio"]>().toEqualTypeOf<string>();
 }
 
-// Post.author（manyToOne）→ User（null なし）
+// Post.author（manyToOne）→ User | null（スプレッドシートは FK 制約を持たないため常に null 許容）
 {
   const p = client.Post.findFirst({
     where: { id: 1 },
     include: { author: true },
   });
   type P = NonNullable<typeof p>;
-  expectTypeOf<P["author"]["email"]>().toEqualTypeOf<string>();
+  expectTypeOf<P["author"]>().toBeNullable();
+  expectTypeOf<NonNullable<P["author"]>["email"]>().toEqualTypeOf<string>();
 }
 
 // findMany でも posts は配列で返る

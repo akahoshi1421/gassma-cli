@@ -44,7 +44,7 @@ describe("getOneGassmaFindResult", () => {
     );
   });
 
-  it("should map required manyToOne to TargetFindResult without null", () => {
+  it("should map manyToOne to TargetFindResult | null (FK constraints not enforced in spreadsheets)", () => {
     const relations: RelationsConfig = {
       Post: {
         author: {
@@ -57,28 +57,7 @@ describe("getOneGassmaFindResult", () => {
     };
     const result = getOneGassmaFindResult("", "Post", relations);
     expect(result).toContain(
-      'K extends "author" ? GassmaUserFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, {}> :',
-    );
-    expect(result).not.toContain(
       'K extends "author" ? GassmaUserFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, {}> | null',
-    );
-  });
-
-  it("should map optional manyToOne to TargetFindResult | null", () => {
-    const relations: RelationsConfig = {
-      Category: {
-        parent: {
-          type: "manyToOne",
-          to: "Category",
-          field: "parentId",
-          reference: "id",
-          optional: true,
-        },
-      },
-    };
-    const result = getOneGassmaFindResult("", "Category", relations);
-    expect(result).toContain(
-      'K extends "parent" ? GassmaCategoryFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, {}> | null',
     );
   });
 

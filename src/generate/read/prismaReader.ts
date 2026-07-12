@@ -26,9 +26,7 @@ function prismaReader(
       if (!isScalarField(member, ast)) return;
       if (hasIgnoreAttribute(member)) return;
 
-      const isOptional = member.type.kind === "optional";
-      const hasDefaultValue = hasDefault(member);
-      const isUpdatedAt = hasUpdatedAtAttribute(member);
+      const isNullable = member.type.kind === "optional";
       const baseType =
         member.type.kind === "optional" || member.type.kind === "required"
           ? member.type.type
@@ -36,10 +34,9 @@ function prismaReader(
       if (baseType.kind === "unsupported" || baseType.kind === "list") return;
 
       const typeName = baseType.name.value;
-      const fieldName =
-        isOptional || hasDefaultValue || isUpdatedAt
-          ? `${member.name.value}?`
-          : member.name.value;
+      const fieldName = isNullable
+        ? `${member.name.value}?`
+        : member.name.value;
 
       const enumEntries = enums[typeName];
       if (enumEntries) {
@@ -62,22 +59,6 @@ function prismaReader(
   });
 
   return result;
-}
-
-function hasDefault(
-  member: Parameters<typeof findDefaultFieldAttribute>[0],
-): boolean {
-  const attr = findDefaultFieldAttribute(member);
-  return attr !== undefined;
-}
-
-function hasUpdatedAtAttribute(
-  member: Parameters<typeof findDefaultFieldAttribute>[0],
-): boolean {
-  return (member.attributes ?? []).some(
-    (attr) =>
-      attr.kind === "fieldAttribute" && attr.path.value[0] === "updatedAt",
-  );
 }
 
 function hasModelIgnoreAttribute(decl: {

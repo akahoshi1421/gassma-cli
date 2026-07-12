@@ -9,10 +9,22 @@ describe("getOneGassmaAnyUse", () => {
     expect(result).not.toContain('"id"?:');
   });
 
-  it("should mark optional columns (trailing ?) with ?", () => {
+  it("should append | null for nullable columns (trailing ?)", () => {
     const result = getOneGassmaAnyUse({ "name?": ["a"] }, "", "User");
-    expect(result).toContain('"name"?:');
+    expect(result).toContain("| null");
     expect(result).not.toContain('"name?"');
+  });
+
+  it("should mark omittable fields with ? (from optionalFields)", () => {
+    const result = getOneGassmaAnyUse({ isActive: ["boolean"] }, "", "User", [
+      "isActive",
+    ]);
+    expect(result).toContain('"isActive"?: boolean;');
+  });
+
+  it("should keep required fields without ? when not in optionalFields", () => {
+    const result = getOneGassmaAnyUse({ name: ["string"] }, "", "User", []);
+    expect(result).toContain('"name": string;');
   });
 
   it("should prepend schemaName", () => {

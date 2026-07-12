@@ -7,6 +7,7 @@ import { generater } from "../../generate/generator";
 import { generateClientDts } from "../../generate/jsGenerate/generateClientDts";
 import { prismaReader } from "../../generate/read/prismaReader";
 import { extractRelations } from "../../generate/read/extractRelations";
+import { extractOptionalFields } from "../../generate/read/extractOptionalFields";
 
 const tscPath = path.join(
   __dirname,
@@ -52,7 +53,17 @@ const generateFromPrisma = (
   const schemaText = fs.readFileSync(prismaPath, "utf-8");
   const parsed = prismaReader(schemaText);
   const relations = extractRelations(schemaText);
-  return generater(parsed, relations, schemaName);
+  const optionalFields = extractOptionalFields(schemaText);
+  return generater(
+    parsed,
+    relations,
+    schemaName,
+    true,
+    {},
+    [],
+    [],
+    optionalFields,
+  );
 };
 
 describe("schema name collision", () => {

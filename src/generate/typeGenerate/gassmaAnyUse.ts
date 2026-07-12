@@ -4,6 +4,7 @@ import { getOneGassmaAnyUse } from "./gassmaAnyUse/oneGassmaAnyUse";
 const getGassmaAnyUse = (
   dictYaml: Record<string, Record<string, unknown[]>>,
   schemaName: string,
+  optionalFields: Record<string, string[]> = {},
 ) => {
   const anyUseTypeDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -17,6 +18,7 @@ const getGassmaAnyUse = (
           sheetContent,
           schemaName,
           removedSpaceCurrentSheetName,
+          optionalFields[currentSheetName] ?? [],
         )
       );
     },

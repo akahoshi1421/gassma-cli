@@ -27,7 +27,6 @@ type RelationDefinition = {
   onDelete?: string;
   onUpdate?: string;
   through?: ThroughDefinition;
-  optional?: boolean;
 };
 
 type RelationsConfig = {
@@ -88,7 +87,6 @@ const buildRelationsConfig = (
       to: rel.toModel,
       field: rel.localField,
       reference: rel.foreignField,
-      ...(rel.isOptional ? { optional: true } : {}),
     };
 
     const inverseModel = models.find((m) => m.name.value === rel.toModel);

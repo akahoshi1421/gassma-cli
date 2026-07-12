@@ -32,12 +32,7 @@ const getOneGassmaFindResult = (
       const targetFR = `${prefix}${def.to}FindResult`;
       const inner = `${targetFR}<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, {}>`;
       const isList = def.type === "oneToMany" || def.type === "manyToMany";
-      const isRequiredSingle = def.type === "manyToOne" && !def.optional;
-      const result = isList
-        ? `${inner}[]`
-        : isRequiredSingle
-          ? inner
-          : `${inner} | null`;
+      const result = isList ? `${inner}[]` : `${inner} | null`;
       return `          K extends "${relationName}" ? ${result} :`;
     })
     .join("\n");
