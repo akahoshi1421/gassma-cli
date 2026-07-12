@@ -7,6 +7,7 @@ import { extractAutoincrement } from "./read/extractAutoincrement";
 import { extractDefaults } from "./read/extractDefaults";
 import { extractRelations } from "./read/extractRelations";
 import { extractUpdatedAt } from "./read/extractUpdatedAt";
+import { extractOptionalFields } from "./read/extractOptionalFields";
 import { extractIgnore } from "./read/extractIgnore";
 import { extractIgnoreSheets } from "./read/extractIgnoreSheets";
 import { extractMap } from "./read/extractMap";
@@ -85,6 +86,7 @@ function generateFromSchema(
   const autoincrement = extractAutoincrement(schemaText);
   const defaults = extractDefaults(schemaText);
   const updatedAt = extractUpdatedAt(schemaText);
+  const optionalFields = extractOptionalFields(schemaText);
   const ignore = extractIgnore(schemaText);
   const ignoreSheets = extractIgnoreSheets(schemaText);
   const map = extractMap(schemaText);
@@ -99,6 +101,7 @@ function generateFromSchema(
     defaults,
     Object.keys(updatedAt),
     Object.keys(autoincrement),
+    optionalFields,
   );
   const clientDts = generateClientDts(schemaName, enums);
   const mergedDts = resultString + "\n" + clientDts;

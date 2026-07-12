@@ -14,7 +14,7 @@ model User {
 
     expect(result).toEqual({
       User: {
-        "id?": ["number"],
+        id: ["number"],
         name: ["string"],
         "email?": ["string"],
       },
@@ -121,7 +121,7 @@ model User {
 `;
     const result = prismaReader(schema);
 
-    expect(result.User["id?"]).toEqual(["number"]);
+    expect(result.User.id).toEqual(["number"]);
     expect(result.User.email).toEqual(["string"]);
     expect(result.User.name).toEqual(["string"]);
   });
@@ -270,7 +270,7 @@ model User {
     expect(result.User.status).toEqual(["active", "inactive"]);
   });
 
-  it("should make fields with @default() optional (including autoincrement)", () => {
+  it("should not mark @default() fields as nullable (they are required but omittable on input)", () => {
     const schema = `
 model User {
   id        Int      @id @default(autoincrement())
@@ -281,23 +281,20 @@ model User {
 `;
     const result = prismaReader(schema);
 
-    // autoincrement() → オプショナル
-    expect(result.User["id?"]).toEqual(["number"]);
-    expect(result.User.id).toBeUndefined();
+    // "?" は nullable を意味する。@default は値が必ず入るので "?" を付けない
+    expect(result.User.id).toEqual(["number"]);
+    expect(result.User["id?"]).toBeUndefined();
 
-    // @default(true) → オプショナル
-    expect(result.User["isActive?"]).toEqual(["boolean"]);
-    expect(result.User.isActive).toBeUndefined();
+    expect(result.User.isActive).toEqual(["boolean"]);
+    expect(result.User["isActive?"]).toBeUndefined();
 
-    // @default(now()) → オプショナル
-    expect(result.User["createdAt?"]).toEqual(["Date"]);
-    expect(result.User.createdAt).toBeUndefined();
+    expect(result.User.createdAt).toEqual(["Date"]);
+    expect(result.User["createdAt?"]).toBeUndefined();
 
-    // @default なし → 必須のまま
     expect(result.User.name).toEqual(["string"]);
   });
 
-  it("should make @updatedAt fields optional", () => {
+  it("should not mark @updatedAt fields as nullable", () => {
     const schema = `
 model User {
   id        Int      @id
@@ -307,9 +304,29 @@ model User {
 `;
     const result = prismaReader(schema);
 
-    expect(result.User["updatedAt?"]).toEqual(["Date"]);
-    expect(result.User.updatedAt).toBeUndefined();
+    expect(result.User.updatedAt).toEqual(["Date"]);
+    expect(result.User["updatedAt?"]).toBeUndefined();
     expect(result.User.name).toEqual(["string"]);
+  });
+
+  it("should mark nullable fields (Type?) with ? suffix", () => {
+    const schema = `
+model User {
+  id   Int     @id
+  name String
+  age  Int?
+  bio  String? @default("hello")
+}
+`;
+    const result = prismaReader(schema);
+
+    // Int? は nullable
+    expect(result.User["age?"]).toEqual(["number"]);
+    expect(result.User.age).toBeUndefined();
+
+    // String? @default(...) は nullable かつ入力省略可
+    expect(result.User["bio?"]).toEqual(["string"]);
+    expect(result.User.bio).toBeUndefined();
   });
 
   it("should ignore relation fields (list types referencing other models)", () => {
