@@ -10,10 +10,30 @@ const getOneGassmaFindResult = (
   const modelRelations = relations?.[sheetName] ?? {};
   const relNames = Object.keys(modelRelations);
 
+  const relKeyUnion =
+    relNames.length > 0
+      ? `${relNames.map((r) => `"${r}"`).join(" | ")} | "_count"`
+      : `"_count"`;
+
+  const relationBranch = (source: string) =>
+    relNames
+      .map((relationName) => {
+        const def = modelRelations[relationName];
+        const targetFR = `${prefix}${def.to}FindResult`;
+        const inner = `${targetFR}<Gassma.SelectOf<${source}[K]>, Gassma.IncludeOf<${source}[K]>, Gassma.OmitOf<${source}[K]>, {}>`;
+        const isList = def.type === "oneToMany" || def.type === "manyToMany";
+        const result = isList ? `${inner}[]` : `${inner} | null`;
+        return `          K extends "${relationName}" ? ${result} :`;
+      })
+      .join("\n");
+
   const selectResult = `{
-      [K in keyof S as S[K] extends true
-        ? K & keyof ${self}DefaultFindResult
-        : never]: ${self}DefaultFindResult[K & keyof ${self}DefaultFindResult];
+      [K in keyof S as S[K] extends false | undefined
+        ? never
+        : K & (keyof ${self}DefaultFindResult | ${relKeyUnion})]:
+${relationBranch("S")}
+          K extends "_count" ? Gassma.CountResult<S[K]> :
+          ${self}DefaultFindResult[K & keyof ${self}DefaultFindResult];
     }`;
 
   const omitResult = `{
@@ -22,25 +42,11 @@ const getOneGassmaFindResult = (
         : K]: ${self}DefaultFindResult[K];
     }`;
 
-  const baseResult = `(S extends ${self}Select
+  const baseResult = `(S extends ${self}FindSelect
   ? ${selectResult}
   : ${omitResult})`;
 
-  const includeBranches = relNames
-    .map((relationName) => {
-      const def = modelRelations[relationName];
-      const targetFR = `${prefix}${def.to}FindResult`;
-      const inner = `${targetFR}<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, {}>`;
-      const isList = def.type === "oneToMany" || def.type === "manyToMany";
-      const result = isList ? `${inner}[]` : `${inner} | null`;
-      return `          K extends "${relationName}" ? ${result} :`;
-    })
-    .join("\n");
-
-  const relKeyUnion =
-    relNames.length > 0
-      ? `${relNames.map((r) => `"${r}"`).join(" | ")} | "_count"`
-      : `"_count"`;
+  const includeBranches = relationBranch("I");
 
   const includePart = `(I extends undefined
     ? {}
