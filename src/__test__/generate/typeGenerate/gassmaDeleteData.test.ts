@@ -16,4 +16,9 @@ describe("getGassmaDeleteData", () => {
   it("should produce empty string for empty sheet list", () => {
     expect(getGassmaDeleteData([], "")).toBe("");
   });
+
+  it("should make where optional (deleteMany without where targets all rows)", () => {
+    const result = getGassmaDeleteData(["User"], "");
+    expect(result).toContain("where?: GassmaUserWhereUse;");
+  });
 });

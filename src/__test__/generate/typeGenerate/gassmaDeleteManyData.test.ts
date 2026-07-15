@@ -8,10 +8,10 @@ describe("getOneGassmaDeleteData", () => {
     expect(result).toContain("export type GassmaUserDeleteData");
   });
 
-  it("should include where property", () => {
+  it("should have optional where property (deleteMany without where targets all rows)", () => {
     const result = getOneGassmaDeleteData("", "User");
 
-    expect(result).toContain("where: GassmaUserWhereUse;");
+    expect(result).toContain("where?: GassmaUserWhereUse;");
   });
 
   it("should include limit property", () => {
