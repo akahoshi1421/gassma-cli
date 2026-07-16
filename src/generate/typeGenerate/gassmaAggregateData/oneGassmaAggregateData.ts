@@ -6,11 +6,11 @@ export type Gassma${schemaName}${sheetName}AggregateData = {
   take?: number;
   skip?: number;
   cursor?: Partial<Gassma${schemaName}${sheetName}Use>;
-  _avg?: Gassma${schemaName}${sheetName}Select;
+  _avg?: Gassma${schemaName}${sheetName}NumberSelect;
   _count?: Gassma${schemaName}${sheetName}Select;
   _max?: Gassma${schemaName}${sheetName}Select;
   _min?: Gassma${schemaName}${sheetName}Select;
-  _sum?: Gassma${schemaName}${sheetName}Select;
+  _sum?: Gassma${schemaName}${sheetName}NumberSelect;
 };
 `;
 };

@@ -2,7 +2,7 @@ const getOneGassmaAggregateField = (schemaName: string, sheetName: string) => {
   return `
 export type Gassma${schemaName}${sheetName}AggregateField<T, K extends string> = T extends undefined
   ? never
-  : K extends "_count"
+  : K extends "_count" | "_avg" | "_sum"
     ? { [P in keyof T as T[P] extends true ? P : never]: number | null }
     : {
         [P in keyof T as T[P] extends true

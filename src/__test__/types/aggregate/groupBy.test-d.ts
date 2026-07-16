@@ -61,3 +61,18 @@ declare const client: GassmaClient;
     orderBy: [{ isActive: "asc" }],
   });
 }
+
+// groupBy: _avg / _sum の数値フィールド限定が AggregateData から波及する
+{
+  client.User.groupBy({ by: ["isActive"], _sum: { age: true } });
+  // @ts-expect-error _sum は数値フィールド限定（name は string）
+  client.User.groupBy({ by: ["isActive"], _sum: { name: true } });
+}
+
+// groupBy: _min / _max の enum 型保持が波及する
+{
+  const r = client.Member.groupBy({ by: ["role"], _min: { role: true } });
+  expectTypeOf<(typeof r)[number]["_min"]["role"]>().toEqualTypeOf<
+    "ADMIN" | "USER" | "MODERATOR" | null
+  >();
+}
