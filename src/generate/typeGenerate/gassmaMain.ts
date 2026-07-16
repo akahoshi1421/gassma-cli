@@ -23,7 +23,7 @@ const getGassmaGlobalOmitConfig = (
 };
 
 const getGassmaClientOptions = (schemaName: string) => {
-  return `export type Gassma${schemaName}ClientOptions<O extends Gassma${schemaName}GlobalOmitConfig = {}> = {
+  return `export type Gassma${schemaName}ClientOptions<O extends Gassma.StrictGlobalOmit<O, Gassma${schemaName}GlobalOmitConfig> = {}> = {
   id?: string;
   relations?: Gassma.RelationsConfig;
   omit?: O;

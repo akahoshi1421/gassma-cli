@@ -18,9 +18,17 @@ describe("generateClientDts", () => {
     const result = generateClientDts("Hoge");
 
     expect(result).toContain(
-      "export interface GassmaClient<O extends GassmaHogeGlobalOmitConfig = {}> extends GassmaHogeSheet<O>",
+      "export interface GassmaClient<O extends Gassma.StrictGlobalOmit<O, GassmaHogeGlobalOmitConfig> = {}> extends GassmaHogeSheet<O>",
     );
     expect(result).not.toContain("readonly sheets");
+  });
+
+  it("should constrain class type parameter with StrictGlobalOmit to reject unknown keys", () => {
+    const result = generateClientDts("Hoge");
+
+    expect(result).toContain(
+      "export declare class GassmaClient<O extends Gassma.StrictGlobalOmit<O, GassmaHogeGlobalOmitConfig> = {}>",
+    );
   });
 
   it("should work with different schema names", () => {
@@ -29,7 +37,7 @@ describe("generateClientDts", () => {
     expect(result).toContain("export declare class GassmaClient");
     expect(result).toContain("options?: GassmaFugaClientOptions");
     expect(result).toContain(
-      "export interface GassmaClient<O extends GassmaFugaGlobalOmitConfig = {}> extends GassmaFugaSheet<O>",
+      "export interface GassmaClient<O extends Gassma.StrictGlobalOmit<O, GassmaFugaGlobalOmitConfig> = {}> extends GassmaFugaSheet<O>",
     );
   });
 

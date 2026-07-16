@@ -31,6 +31,14 @@ describe("getGassmaMain", () => {
     expect(result).toContain("omit?: O");
   });
 
+  it("should constrain GassmaClientOptions omit with StrictGlobalOmit to reject unknown keys", () => {
+    const result = getGassmaMain(["User", "Post"], "Test");
+
+    expect(result).toContain(
+      "export type GassmaTestClientOptions<O extends Gassma.StrictGlobalOmit<O, GassmaTestGlobalOmitConfig> = {}>",
+    );
+  });
+
   it("should generate GassmaGlobalOmitConfig with model-specific omit", () => {
     const result = getGassmaMain(["User", "Post"], "Test");
 
@@ -60,6 +68,13 @@ describe("getGassmaMain", () => {
     expect(result).toContain("type NumberOperation =");
     expect(result).toContain("type ManyReturn =");
     expect(result).toContain("type SortOrderInput =");
+  });
+
+  it("should include ExactKeys and StrictGlobalOmit in common types", () => {
+    const result = getGassmaMain(["User"], "");
+
+    expect(result).toContain("type ExactKeys<T, Shape> =");
+    expect(result).toContain("type StrictGlobalOmit<O, Config> =");
   });
 
   it("should exclude common types when includeCommon is false", () => {

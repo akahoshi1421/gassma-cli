@@ -26,10 +26,10 @@ describe("generater", () => {
       "export type GassmaSheet<O extends GassmaGlobalOmitConfig = {}> = {",
     );
     expect(result).toContain(
-      '"User": GassmaUserController<O extends { "User": infer UO } ? UO extends GassmaUserOmit ? UO : {} : {}>;',
+      '"User": GassmaUserController<O extends { "User": infer UO } ? UO extends GassmaUserOmit ? UO : {} : {}, O>;',
     );
     expect(result).toContain(
-      '"Post": GassmaPostController<O extends { "Post": infer UO } ? UO extends GassmaPostOmit ? UO : {} : {}>;',
+      '"Post": GassmaPostController<O extends { "Post": infer UO } ? UO extends GassmaPostOmit ? UO : {} : {}, O>;',
     );
   });
 

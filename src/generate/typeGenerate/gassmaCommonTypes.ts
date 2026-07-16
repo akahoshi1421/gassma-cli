@@ -17,6 +17,13 @@ const getGassmaCommonTypes = () => {
   type FalseKeys<T> = { [K in keyof T]: T[K] extends false ? K : never }[keyof T];
   type ResolveOmitKeys<GO, QO> = Exclude<TrueKeys<GO>, FalseKeys<QO>> | TrueKeys<QO>;
 
+  type ExactKeys<T, Shape> = Shape & { [K in Exclude<keyof T, keyof Shape>]?: never };
+  type StrictGlobalOmit<O, Config> = Config & {
+    [K in keyof O]?: K extends keyof Config
+      ? ExactKeys<NonNullable<O[K]>, NonNullable<Config[K]>>
+      : never;
+  };
+
   type SelectOf<X> = X extends { select: infer S } ? S : undefined;
   type IncludeOf<X> = X extends { include: infer I } ? I : undefined;
   type OmitOf<X> = X extends { omit: infer O } ? O : undefined;
