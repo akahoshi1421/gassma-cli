@@ -36,13 +36,11 @@ declare const okOmitEmpty: GassmaClient<{}>;
 
 // コンストラクタの型推論経路でも同様に判定される
 {
-  const okCtor = new GassmaClient({ omit: { User: { email: true } } });
-  okCtor;
-  const ngCtor = new GassmaClient({
+  void new GassmaClient({ omit: { User: { email: true } } });
+  void new GassmaClient({
     // @ts-expect-error コンストラクタの omit でも未知フィールドは拒否される
     omit: { User: { email: true, typo: true } },
   });
-  ngCtor;
 }
 
 // 複数モデル同時指定: 各モデルへ独立に適用される
