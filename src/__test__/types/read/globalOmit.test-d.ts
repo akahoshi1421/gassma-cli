@@ -1,5 +1,5 @@
 import { expectTypeOf } from "vitest";
-import type { GassmaClient } from "../__generated__/client";
+import { GassmaClient } from "../__generated__/client";
 
 declare const client: GassmaClient;
 declare const clientOmit: GassmaClient<{
@@ -9,6 +9,41 @@ declare const clientOmit: GassmaClient<{
 
 // @ts-expect-error モデルに存在しないフィールドのみの globalOmit 設定は拒否される
 declare const badOmitClient: GassmaClient<{ User: { nonexistent: true } }>;
+
+// @ts-expect-error 既知フィールドと混在していても未知フィールドは拒否される
+declare const mixedBadOmitClient: GassmaClient<{
+  User: { email: true; typo: true };
+}>;
+
+// @ts-expect-error 未知モデル名は既知モデルと混在していても拒否される
+declare const unknownModelOmitClient: GassmaClient<{
+  User: { email: true };
+  Nope: { id: true };
+}>;
+
+// 既知フィールドのみの設定は通る（true / false / 混在・複数モデル・空）
+declare const okOmitTrue: GassmaClient<{ User: { email: true } }>;
+declare const okOmitFalse: GassmaClient<{ User: { email: false } }>;
+declare const okOmitMixed: GassmaClient<{
+  User: { email: true; name: false };
+}>;
+declare const okOmitMultiModel: GassmaClient<{
+  User: { email: true };
+  Post: { content: true };
+}>;
+declare const okOmitEmptyModel: GassmaClient<{ User: {} }>;
+declare const okOmitEmpty: GassmaClient<{}>;
+
+// コンストラクタの型推論経路でも同様に判定される
+{
+  const okCtor = new GassmaClient({ omit: { User: { email: true } } });
+  okCtor;
+  const ngCtor = new GassmaClient({
+    // @ts-expect-error コンストラクタの omit でも未知フィールドは拒否される
+    omit: { User: { email: true, typo: true } },
+  });
+  ngCtor;
+}
 
 // 複数モデル同時指定: 各モデルへ独立に適用される
 {
@@ -153,9 +188,9 @@ declare const badOmitClient: GassmaClient<{ User: { nonexistent: true } }>;
   expectTypeOf<P["id"]>().toEqualTypeOf<number>();
 }
 
-// include と併用してもトップレベルにはグローバル omit が効く
-// NOTE: ランタイムは include 先にも各モデルの globalOmit を適用するが、
-// 生成型は未反映（要設計判断のため本テストでは include 先を検証しない）
+// include 先レコードにも関連モデル自身の globalOmit が効く
+// （ランタイムは include 先を関連モデルの findMany で取得するため、
+//   関連モデルの globalOmit がそのまま適用される）
 {
   const u = clientOmit.User.findFirst({
     where: { id: 1 },
@@ -164,7 +199,66 @@ declare const badOmitClient: GassmaClient<{ User: { nonexistent: true } }>;
   type U = NonNullable<typeof u>;
   expectTypeOf<U>().not.toHaveProperty("email");
   expectTypeOf<U["posts"]>().toBeArray();
-  expectTypeOf<U["posts"][number]["title"]>().toEqualTypeOf<string>();
+  type P = U["posts"][number];
+  expectTypeOf<P>().not.toHaveProperty("content");
+  expectTypeOf<P["title"]>().toEqualTypeOf<string>();
+  expectTypeOf<P["id"]>().toEqualTypeOf<number>();
+}
+
+// 複数モデル globalOmit + include: 各 include 先へ独立に効く
+{
+  const p = clientOmit.Post.findFirst({
+    where: { id: 1 },
+    include: { author: true, tags: true },
+  });
+  type P = NonNullable<typeof p>;
+  expectTypeOf<P>().not.toHaveProperty("content");
+  type A = NonNullable<P["author"]>;
+  expectTypeOf<A>().not.toHaveProperty("email");
+  expectTypeOf<A["name"]>().toEqualTypeOf<string | null>();
+  expectTypeOf<P["tags"][number]["name"]>().toEqualTypeOf<string>();
+}
+
+// globalOmit 未設定モデルの include 先には影響しない
+{
+  const u = client.User.findFirst({
+    where: { id: 1 },
+    include: { posts: true },
+  });
+  type P = NonNullable<typeof u>["posts"][number];
+  expectTypeOf<P["content"]>().toEqualTypeOf<string | number | null>();
+}
+
+// ネスト include: 2段先のモデルにも各モデルの globalOmit が効く
+declare const clientOmitNested: GassmaClient<{
+  Post: { published: true };
+  Tag: { name: true };
+}>;
+{
+  const u = clientOmitNested.User.findFirst({
+    where: { id: 1 },
+    include: { posts: { include: { tags: true } } },
+  });
+  type U = NonNullable<typeof u>;
+  expectTypeOf<U["email"]>().toEqualTypeOf<string>();
+  type P = U["posts"][number];
+  expectTypeOf<P>().not.toHaveProperty("published");
+  expectTypeOf<P["content"]>().toEqualTypeOf<string | number | null>();
+  type T = P["tags"][number];
+  expectTypeOf<T>().not.toHaveProperty("name");
+  expectTypeOf<T["id"]>().toEqualTypeOf<number>();
+}
+
+// include-level omit は include 先の globalOmit へ追加でマージされる
+{
+  const u = clientOmit.User.findFirst({
+    where: { id: 1 },
+    include: { posts: { omit: { title: true } } },
+  });
+  type P = NonNullable<typeof u>["posts"][number];
+  expectTypeOf<P>().not.toHaveProperty("content");
+  expectTypeOf<P>().not.toHaveProperty("title");
+  expectTypeOf<P["id"]>().toEqualTypeOf<number>();
 }
 
 // aggregate / groupBy / count には効かない（本体は集計結果に omit を適用しない）

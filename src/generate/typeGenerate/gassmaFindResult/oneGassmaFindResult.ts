@@ -20,7 +20,8 @@ const getOneGassmaFindResult = (
       .map((relationName) => {
         const def = modelRelations[relationName];
         const targetFR = `${prefix}${def.to}FindResult`;
-        const inner = `${targetFR}<Gassma.SelectOf<${source}[K]>, Gassma.IncludeOf<${source}[K]>, Gassma.OmitOf<${source}[K]>, {}>`;
+        const targetGO = `O extends { "${def.to}": infer TO } ? TO extends ${prefix}${def.to}Omit ? TO : {} : {}`;
+        const inner = `${targetFR}<Gassma.SelectOf<${source}[K]>, Gassma.IncludeOf<${source}[K]>, Gassma.OmitOf<${source}[K]>, ${targetGO}, O>`;
         const isList = def.type === "oneToMany" || def.type === "manyToMany";
         const result = isList ? `${inner}[]` : `${inner} | null`;
         return `          K extends "${relationName}" ? ${result} :`;
@@ -58,7 +59,7 @@ ${includeBranches}
       })`;
 
   return `
-export type ${self}FindResult<S, I = undefined, QO = undefined, GO = {}> = ${baseResult} &
+export type ${self}FindResult<S, I = undefined, QO = undefined, GO = {}, O = {}> = ${baseResult} &
   ${includePart};
 `;
 };

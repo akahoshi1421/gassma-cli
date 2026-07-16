@@ -3,10 +3,10 @@ import { getOneGassmaFindResult } from "../../../generate/typeGenerate/gassmaFin
 import type { RelationsConfig } from "../../../generate/read/extractRelations";
 
 describe("getOneGassmaFindResult", () => {
-  it("should generate FindResult with 4 type parameters <S, I, QO, GO>", () => {
+  it("should generate FindResult with 5 type parameters <S, I, QO, GO, O>", () => {
     const result = getOneGassmaFindResult("", "User");
     expect(result).toContain(
-      "export type GassmaUserFindResult<S, I = undefined, QO = undefined, GO = {}>",
+      "export type GassmaUserFindResult<S, I = undefined, QO = undefined, GO = {}, O = {}>",
     );
   });
 
@@ -23,7 +23,7 @@ describe("getOneGassmaFindResult", () => {
     };
     const result = getOneGassmaFindResult("", "User", relations);
     expect(result).toContain(
-      'K extends "posts" ? GassmaPostFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, {}>[]',
+      'K extends "posts" ? GassmaPostFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "Post": infer TO } ? TO extends GassmaPostOmit ? TO : {} : {}, O>[]',
     );
   });
 
@@ -40,7 +40,7 @@ describe("getOneGassmaFindResult", () => {
     };
     const result = getOneGassmaFindResult("", "User", relations);
     expect(result).toContain(
-      'K extends "profile" ? GassmaProfileFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, {}> | null',
+      'K extends "profile" ? GassmaProfileFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "Profile": infer TO } ? TO extends GassmaProfileOmit ? TO : {} : {}, O> | null',
     );
   });
 
@@ -57,7 +57,24 @@ describe("getOneGassmaFindResult", () => {
     };
     const result = getOneGassmaFindResult("", "Post", relations);
     expect(result).toContain(
-      'K extends "author" ? GassmaUserFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, {}> | null',
+      'K extends "author" ? GassmaUserFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "User": infer TO } ? TO extends GassmaUserOmit ? TO : {} : {}, O> | null',
+    );
+  });
+
+  it("should pass target model globalOmit and full config to select-relation branches", () => {
+    const relations: RelationsConfig = {
+      User: {
+        posts: {
+          type: "oneToMany",
+          to: "Post",
+          field: "id",
+          reference: "authorId",
+        },
+      },
+    };
+    const result = getOneGassmaFindResult("", "User", relations);
+    expect(result).toContain(
+      'K extends "posts" ? GassmaPostFindResult<Gassma.SelectOf<S[K]>, Gassma.IncludeOf<S[K]>, Gassma.OmitOf<S[K]>, O extends { "Post": infer TO } ? TO extends GassmaPostOmit ? TO : {} : {}, O>[]',
     );
   });
 

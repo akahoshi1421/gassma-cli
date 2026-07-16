@@ -4,9 +4,9 @@ import { getOneGassmaController } from "../../../generate/typeGenerate/gassmaCon
 describe("getOneGassmaController", () => {
   const result = getOneGassmaController("", "User");
 
-  it("should generate controller class declaration", () => {
+  it("should generate controller class declaration with GO and full omit config O", () => {
     expect(result).toContain(
-      "export declare class GassmaUserController<GO extends GassmaUserOmit = {}>",
+      "export declare class GassmaUserController<GO extends GassmaUserOmit = {}, O = {}>",
     );
   });
 
@@ -36,13 +36,13 @@ describe("getOneGassmaController", () => {
 
   it("should have generic delete method with model-specific type", () => {
     expect(result).toContain(
-      'delete<T extends GassmaUserDeleteSingleData>(deleteData: T): GassmaUserFindResult<T["select"], T["include"], T["omit"], GO> | null',
+      'delete<T extends GassmaUserDeleteSingleData>(deleteData: T): GassmaUserFindResult<T["select"], T["include"], T["omit"], GO, O> | null',
     );
   });
 
   it("should have generic upsert method with model-specific type", () => {
     expect(result).toContain(
-      'upsert<T extends GassmaUserUpsertSingleData>(upsertData: T): GassmaUserFindResult<T["select"], T["include"], T["omit"], GO>',
+      'upsert<T extends GassmaUserUpsertSingleData>(upsertData: T): GassmaUserFindResult<T["select"], T["include"], T["omit"], GO, O>',
     );
   });
 
@@ -54,7 +54,7 @@ describe("getOneGassmaController", () => {
 
   it("should include updateManyAndReturn method with globalOmit applied", () => {
     expect(result).toContain(
-      "updateManyAndReturn(updateData: GassmaUserUpdateData): GassmaUserFindResult<undefined, undefined, undefined, GO>[]",
+      "updateManyAndReturn(updateData: GassmaUserUpdateData): GassmaUserFindResult<undefined, undefined, undefined, GO, O>[]",
     );
   });
 
@@ -70,13 +70,13 @@ describe("getOneGassmaController", () => {
 
   it("should have generic create method with FindResult return", () => {
     expect(result).toContain(
-      'create<T extends GassmaUserCreateData>(createdData: T): GassmaUserFindResult<T["select"], T["include"], T["omit"], GO>',
+      'create<T extends GassmaUserCreateData>(createdData: T): GassmaUserFindResult<T["select"], T["include"], T["omit"], GO, O>',
     );
   });
 
   it("should have generic update method with model-specific type", () => {
     expect(result).toContain(
-      'update<T extends GassmaUserUpdateSingleData>(updateData: T): GassmaUserFindResult<T["select"], T["include"], T["omit"], GO> | null',
+      'update<T extends GassmaUserUpdateSingleData>(updateData: T): GassmaUserFindResult<T["select"], T["include"], T["omit"], GO, O> | null',
     );
   });
 
