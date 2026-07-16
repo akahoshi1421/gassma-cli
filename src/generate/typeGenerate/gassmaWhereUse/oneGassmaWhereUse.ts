@@ -19,7 +19,7 @@ const getRelationFields = (
     const targetWhere = `Gassma${schemaName}${rel.to}WhereUse`;
     const filterType = isListRelation(rel.type)
       ? `{ some?: ${targetWhere}; every?: ${targetWhere}; none?: ${targetWhere} }`
-      : `{ is?: ${targetWhere}; isNot?: ${targetWhere} }`;
+      : `{ is?: ${targetWhere} | null; isNot?: ${targetWhere} | null }`;
 
     return `${pre}  "${relationName}"?: ${filterType};\n`;
   }, "");

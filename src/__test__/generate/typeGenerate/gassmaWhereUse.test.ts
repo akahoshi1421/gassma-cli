@@ -53,7 +53,7 @@ describe("getOneGassmaWhereUse", () => {
     const result = getOneGassmaWhereUse(sheetContent, "", "Post", relations);
 
     expect(result).toContain(
-      '"author"?: { is?: GassmaUserWhereUse; isNot?: GassmaUserWhereUse }',
+      '"author"?: { is?: GassmaUserWhereUse | null; isNot?: GassmaUserWhereUse | null }',
     );
   });
 
@@ -72,7 +72,7 @@ describe("getOneGassmaWhereUse", () => {
     const result = getOneGassmaWhereUse(sheetContent, "", "User", relations);
 
     expect(result).toContain(
-      '"profile"?: { is?: GassmaProfileWhereUse; isNot?: GassmaProfileWhereUse }',
+      '"profile"?: { is?: GassmaProfileWhereUse | null; isNot?: GassmaProfileWhereUse | null }',
     );
   });
 

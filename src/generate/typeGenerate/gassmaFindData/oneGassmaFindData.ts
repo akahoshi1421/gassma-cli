@@ -30,7 +30,7 @@ const getOneGassmaFindData = (
 
   return `\nexport type Gassma${schemaName}${sheetName}FindData = {
   where?: Gassma${schemaName}${sheetName}WhereUse;
-  orderBy?: Gassma${schemaName}${sheetName}OrderBy;
+  orderBy?: Gassma${schemaName}${sheetName}OrderBy | Gassma${schemaName}${sheetName}OrderBy[];
   take?: number;
   skip?: number;
   distinct?: ${distinctData}(${distinctArrayData})[];

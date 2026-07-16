@@ -40,6 +40,19 @@ declare const client: GassmaClient;
   });
 }
 
+// orderBy: 配列形式（複数キーソート）
+{
+  client.User.findMany({
+    where: {},
+    orderBy: [{ id: "asc" }, { email: "desc" }],
+  });
+  // relation ソートとの併用も配列で
+  client.User.findMany({
+    where: {},
+    orderBy: [{ posts: { _count: "desc" } }, { name: "asc" }],
+  });
+}
+
 // orderBy: 不正な方向は拒否
 {
   // @ts-expect-error "ascending" は無効（asc | desc のみ）

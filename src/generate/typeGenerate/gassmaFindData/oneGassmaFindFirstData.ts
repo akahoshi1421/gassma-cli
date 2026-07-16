@@ -4,7 +4,7 @@ const getOneGassmaFindFirstData = (schemaName: string, sheetName: string) => {
 
   return `\nexport type Gassma${schemaName}${sheetName}FindFirstData = {
   where?: Gassma${schemaName}${sheetName}WhereUse;
-  orderBy?: Gassma${schemaName}${sheetName}OrderBy;
+  orderBy?: Gassma${schemaName}${sheetName}OrderBy | Gassma${schemaName}${sheetName}OrderBy[];
   include?: Gassma${schemaName}${sheetName}Include;
   cursor?: Partial<Gassma${schemaName}${sheetName}Use>;
   _count?: Gassma${schemaName}${sheetName}CountValue;
