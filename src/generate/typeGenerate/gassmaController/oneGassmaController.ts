@@ -18,7 +18,7 @@ export declare class Gassma${schemaName}${sheetName}Controller<GO extends Gassma
   findMany<T extends Gassma${schemaName}${sheetName}FindManyData>(findData: T): ${fr}<T["select"], T["include"], T["omit"], GO>[];
   update<T extends Gassma${schemaName}${sheetName}UpdateSingleData>(updateData: T): ${fr}<T["select"], T["include"], T["omit"], GO> | null;
   updateMany(updateData: Gassma${schemaName}${sheetName}UpdateData): UpdateManyReturn;
-  updateManyAndReturn(updateData: Gassma${schemaName}${sheetName}UpdateData): Gassma${schemaName}${sheetName}DefaultFindResult[];
+  updateManyAndReturn(updateData: Gassma${schemaName}${sheetName}UpdateData): ${fr}<undefined, undefined, undefined, GO>[];
   upsert<T extends Gassma${schemaName}${sheetName}UpsertSingleData>(upsertData: T): ${fr}<T["select"], T["include"], T["omit"], GO>;
   delete<T extends Gassma${schemaName}${sheetName}DeleteSingleData>(deleteData: T): ${fr}<T["select"], T["include"], T["omit"], GO> | null;
   deleteMany(deleteData: Gassma${schemaName}${sheetName}DeleteData): DeleteManyReturn;

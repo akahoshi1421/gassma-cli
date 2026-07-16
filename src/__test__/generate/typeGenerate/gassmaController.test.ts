@@ -52,9 +52,9 @@ describe("getOneGassmaController", () => {
     );
   });
 
-  it("should include updateManyAndReturn method", () => {
+  it("should include updateManyAndReturn method with globalOmit applied", () => {
     expect(result).toContain(
-      "updateManyAndReturn(updateData: GassmaUserUpdateData): GassmaUserDefaultFindResult[]",
+      "updateManyAndReturn(updateData: GassmaUserUpdateData): GassmaUserFindResult<undefined, undefined, undefined, GO>[]",
     );
   });
 
