@@ -30,21 +30,22 @@ declare const client: GassmaClient;
     _max: { age: true },
     _count: { id: true },
   });
-  expectTypeOf<(typeof r)["_avg"]["age"]>().toEqualTypeOf<number>();
-  expectTypeOf<(typeof r)["_sum"]["age"]>().toEqualTypeOf<number>();
-  // _count は常に number
-  expectTypeOf<(typeof r)["_count"]["id"]>().toEqualTypeOf<number>();
+  // 0件ヒット時に null を返すため、集計値は | null（本体実装に一致）
+  expectTypeOf<(typeof r)["_avg"]["age"]>().toEqualTypeOf<number | null>();
+  expectTypeOf<(typeof r)["_sum"]["age"]>().toEqualTypeOf<number | null>();
+  // _count も 0件時 null（本体挙動。Prisma は 0 だが本体差異は別タスク）
+  expectTypeOf<(typeof r)["_count"]["id"]>().toEqualTypeOf<number | null>();
 }
 
-// aggregate: _min / _max は元のフィールド型を保つ
+// aggregate: _min / _max は元のフィールド型 | null
 {
   const r = client.User.aggregate({
     where: {},
     _min: { createdAt: true },
     _max: { email: true },
   });
-  expectTypeOf<(typeof r)["_min"]["createdAt"]>().toEqualTypeOf<Date>();
-  expectTypeOf<(typeof r)["_max"]["email"]>().toEqualTypeOf<string>();
+  expectTypeOf<(typeof r)["_min"]["createdAt"]>().toEqualTypeOf<Date | null>();
+  expectTypeOf<(typeof r)["_max"]["email"]>().toEqualTypeOf<string | null>();
 }
 
 // aggregate: 集計キー内で指定していないフィールドは出ない

@@ -9,11 +9,11 @@ describe("getOneGassmaAggregateField", () => {
     );
   });
 
-  it("should map _count keys to number", () => {
+  it("should map _count keys to number | null", () => {
     const result = getOneGassmaAggregateField("", "User");
     expect(result).toContain('K extends "_count"');
     expect(result).toContain(
-      "{ [P in keyof T as T[P] extends true ? P : never]: number }",
+      "{ [P in keyof T as T[P] extends true ? P : never]: number | null }",
     );
   });
 

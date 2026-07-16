@@ -31,8 +31,12 @@ declare const client: GassmaClient;
     _count: { id: true },
   });
   expectTypeOf<(typeof r)[number]["isActive"]>().toEqualTypeOf<boolean>();
-  expectTypeOf<(typeof r)[number]["_avg"]["age"]>().toEqualTypeOf<number>();
-  expectTypeOf<(typeof r)[number]["_count"]["id"]>().toEqualTypeOf<number>();
+  expectTypeOf<(typeof r)[number]["_avg"]["age"]>().toEqualTypeOf<
+    number | null
+  >();
+  expectTypeOf<(typeof r)[number]["_count"]["id"]>().toEqualTypeOf<
+    number | null
+  >();
 }
 
 // groupBy: having を受け付ける
