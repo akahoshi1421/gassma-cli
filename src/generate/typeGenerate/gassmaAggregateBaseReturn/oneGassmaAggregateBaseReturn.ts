@@ -1,4 +1,4 @@
-import { getAggregateColumnType } from "../../util/getAggregateColumnType";
+import { getColumnType } from "../../util/getColumnType";
 import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
 
 const getOneGassmaAggregateBaseReturn = (
@@ -9,8 +9,7 @@ const getOneGassmaAggregateBaseReturn = (
   const oneAggregateBaseReturn = Object.keys(sheetContent).reduce(
     (pre, columnName) => {
       const columnTypes = sheetContent[columnName];
-      const now = getAggregateColumnType(columnTypes);
-      if (now === "") return "";
+      const now = getColumnType(columnTypes);
 
       const removedSpaceCurrentColumnName =
         getRemovedCantUseVarChar(columnName);

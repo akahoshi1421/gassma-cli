@@ -9,15 +9,15 @@ describe("getOneGassmaAggregateField", () => {
     );
   });
 
-  it("should map _count keys to number", () => {
+  it("should map _count, _avg and _sum keys to number | null", () => {
     const result = getOneGassmaAggregateField("", "User");
-    expect(result).toContain('K extends "_count"');
+    expect(result).toContain('K extends "_count" | "_avg" | "_sum"');
     expect(result).toContain(
-      "{ [P in keyof T as T[P] extends true ? P : never]: number }",
+      "{ [P in keyof T as T[P] extends true ? P : never]: number | null }",
     );
   });
 
-  it("should resolve non _count keys via AggregateBaseReturn", () => {
+  it("should resolve _min and _max keys via AggregateBaseReturn", () => {
     const result = getOneGassmaAggregateField("", "User");
     expect(result).toContain("P & keyof GassmaUserAggregateBaseReturn");
   });

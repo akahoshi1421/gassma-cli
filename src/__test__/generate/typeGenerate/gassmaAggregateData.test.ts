@@ -15,4 +15,19 @@ describe("getOneGassmaAggregateData", () => {
     expect(result).toContain("export type GassmaAppUserAggregateData");
     expect(result).toContain("cursor?: Partial<GassmaAppUserUse>;");
   });
+
+  it("should restrict _avg and _sum to numeric fields via NumberSelect", () => {
+    const result = getOneGassmaAggregateData("", "User");
+
+    expect(result).toContain("_avg?: GassmaUserNumberSelect;");
+    expect(result).toContain("_sum?: GassmaUserNumberSelect;");
+  });
+
+  it("should keep _count, _max and _min as full Select", () => {
+    const result = getOneGassmaAggregateData("", "User");
+
+    expect(result).toContain("_count?: GassmaUserSelect;");
+    expect(result).toContain("_max?: GassmaUserSelect;");
+    expect(result).toContain("_min?: GassmaUserSelect;");
+  });
 });
