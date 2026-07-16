@@ -43,7 +43,7 @@ const getNestedWriteFields = (
         `disconnect?: boolean | ${target}WhereUse | ${target}WhereUse[]`,
       );
       ops.push(`set?: ${target}WhereUse[]`);
-    } else if (rel.type === "oneToOne") {
+    } else if (rel.type === "oneToOne" || rel.type === "manyToOne") {
       ops.push(`update?: Partial<${target}Use>`);
       ops.push("delete?: true");
       ops.push("disconnect?: true");
