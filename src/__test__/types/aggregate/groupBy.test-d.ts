@@ -46,15 +46,41 @@ declare const client: GassmaClient;
   });
 }
 
-// groupBy: having の _count / _avg / _sum は数値 Filter（フィールド型に依らない）
+// groupBy: having の _count は全フィールドで使える（数値 Filter）
 {
   client.User.groupBy({
     by: ["email"],
     having: { email: { _count: { gt: 2 } } },
   });
+}
+
+// groupBy: having の _avg / _sum は数値フィールドで使える
+{
+  client.User.groupBy({
+    by: ["age"],
+    having: { age: { _avg: { gte: 1 }, _sum: { lt: 10 } } },
+  });
+}
+
+// groupBy: having の _avg / _sum は addType 複合型（number を含む）でも使える
+{
+  client.User.groupBy({
+    by: ["rating"],
+    having: { rating: { _avg: { gte: 1 }, _sum: { lt: 10 } } },
+  });
+}
+
+// groupBy: having の _avg / _sum は数値フィールド限定（Prisma パリティ）
+{
   client.User.groupBy({
     by: ["email"],
-    having: { email: { _avg: { gte: 1 }, _sum: { lt: 10 } } },
+    // @ts-expect-error _avg は数値フィールド限定（email は string）
+    having: { email: { _avg: { gte: 1 } } },
+  });
+  client.User.groupBy({
+    by: ["email"],
+    // @ts-expect-error _sum は数値フィールド限定（email は string）
+    having: { email: { _sum: { lt: 10 } } },
   });
 }
 
@@ -66,14 +92,14 @@ declare const client: GassmaClient;
     having: { email: { _count: { gt: "x" } } },
   });
   client.User.groupBy({
-    by: ["email"],
+    by: ["age"],
     // @ts-expect-error _avg は数値 Filter（string は不可）
-    having: { email: { _avg: { gte: "x" } } },
+    having: { age: { _avg: { gte: "x" } } },
   });
   client.User.groupBy({
-    by: ["email"],
+    by: ["age"],
     // @ts-expect-error _sum は数値 Filter（string は不可）
-    having: { email: { _sum: { lt: "x" } } },
+    having: { age: { _sum: { lt: "x" } } },
   });
 }
 

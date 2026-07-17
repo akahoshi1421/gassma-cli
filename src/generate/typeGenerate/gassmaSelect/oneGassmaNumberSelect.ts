@@ -1,10 +1,12 @@
+import { isNumberColumn } from "../../util/isNumberColumn";
+
 const getOneGassmaNumberSelect = (
   sheetContent: Record<string, unknown[]>,
   schemaName: string,
   sheetName: string,
 ) => {
   const numberColumnNames = Object.keys(sheetContent).filter((columnName) =>
-    sheetContent[columnName].some((oneType) => oneType === "number"),
+    isNumberColumn(sheetContent[columnName]),
   );
 
   const typeName = `Gassma${schemaName}${sheetName}NumberSelect`;
