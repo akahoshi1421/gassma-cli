@@ -22,6 +22,18 @@ describe("getGassmaCommonTypes", () => {
     expect(result).toContain('nulls?: "first" | "last"');
   });
 
+  it("should generate generic FilterConditions type", () => {
+    expect(result).toContain("type FilterConditions<T> =");
+    expect(result).toContain("equals?: T | FieldRef");
+    expect(result).toContain("not?: T");
+    expect(result).toContain("in?: T[]");
+    expect(result).toContain("notIn?: T[]");
+    expect(result).toContain("lt?: T | FieldRef");
+    expect(result).toContain("lte?: T | FieldRef");
+    expect(result).toContain("gt?: T | FieldRef");
+    expect(result).toContain("gte?: T | FieldRef");
+  });
+
   it("should generate ManyReturn types", () => {
     expect(result).toContain("type ManyReturn =");
     expect(result).toContain("count: number");

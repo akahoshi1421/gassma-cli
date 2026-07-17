@@ -46,6 +46,55 @@ declare const client: GassmaClient;
   });
 }
 
+// groupBy: having の _count / _avg / _sum は数値 Filter（フィールド型に依らない）
+{
+  client.User.groupBy({
+    by: ["email"],
+    having: { email: { _count: { gt: 2 } } },
+  });
+  client.User.groupBy({
+    by: ["email"],
+    having: { email: { _avg: { gte: 1 }, _sum: { lt: 10 } } },
+  });
+}
+
+// groupBy: having の _count / _avg / _sum に文字列は拒否
+{
+  client.User.groupBy({
+    by: ["email"],
+    // @ts-expect-error _count は数値 Filter（string は不可）
+    having: { email: { _count: { gt: "x" } } },
+  });
+  client.User.groupBy({
+    by: ["email"],
+    // @ts-expect-error _avg は数値 Filter（string は不可）
+    having: { email: { _avg: { gte: "x" } } },
+  });
+  client.User.groupBy({
+    by: ["email"],
+    // @ts-expect-error _sum は数値 Filter（string は不可）
+    having: { email: { _sum: { lt: "x" } } },
+  });
+}
+
+// groupBy: having の _min / _max はフィールド型 Filter のまま
+{
+  client.User.groupBy({
+    by: ["email"],
+    having: { email: { _min: { equals: "a@b.com" }, _max: { gt: "a" } } },
+  });
+  client.User.groupBy({
+    by: ["email"],
+    // @ts-expect-error _min は email のフィールド型 Filter（number は不可）
+    having: { email: { _min: { equals: 5 } } },
+  });
+  client.User.groupBy({
+    by: ["email"],
+    // @ts-expect-error _max は email のフィールド型 Filter（number は不可）
+    having: { email: { _max: { gt: 5 } } },
+  });
+}
+
 // groupBy: by に存在しないフィールドは拒否
 {
   // @ts-expect-error "nonexistent" は User のフィールドでない
