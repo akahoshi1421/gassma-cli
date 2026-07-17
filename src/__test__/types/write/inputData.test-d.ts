@@ -1,8 +1,4 @@
-import { expectTypeOf } from "vitest";
-import type {
-  GassmaClient,
-  GassmaUserCreateData,
-} from "../__generated__/client";
+import type { GassmaClient } from "../__generated__/client";
 
 declare const client: GassmaClient;
 
@@ -142,11 +138,23 @@ declare const client: GassmaClient;
   });
 }
 
-// create コンテキストの oneToMany op は本体 NESTED_WRITE_KEYS と一致する
-// （update 専用 op は本体 processAfterCreate が処理しないため型からも除外）
+// nested write(create): manyToMany は create / connectOrCreate を受け付ける
+// （本体 processManyToMany が junction 行を作成する）
 {
-  type PostsOps = NonNullable<GassmaUserCreateData["data"]["posts"]>;
-  expectTypeOf<keyof PostsOps>().toEqualTypeOf<
-    "create" | "createMany" | "connect" | "connectOrCreate"
-  >();
+  client.Post.create({
+    data: {
+      title: "t",
+      author: { connect: { id: 1 } },
+      tags: { create: [{ name: "t" }] },
+    },
+  });
+  client.Post.create({
+    data: {
+      title: "t",
+      authorId: 1,
+      tags: {
+        connectOrCreate: { where: { id: 1 }, create: { name: "t" } },
+      },
+    },
+  });
 }

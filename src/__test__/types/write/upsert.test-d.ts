@@ -1,5 +1,19 @@
 import { expectTypeOf } from "vitest";
-import type { GassmaClient } from "../__generated__/client";
+import type {
+  GassmaCategoryCreateData,
+  GassmaCategoryUpdateSingleData,
+  GassmaCategoryUpsertSingleData,
+  GassmaClient,
+  GassmaPostCreateData,
+  GassmaPostUpdateSingleData,
+  GassmaPostUpsertSingleData,
+  GassmaProfileCreateData,
+  GassmaProfileUpdateSingleData,
+  GassmaProfileUpsertSingleData,
+  GassmaUserCreateData,
+  GassmaUserUpdateSingleData,
+  GassmaUserUpsertSingleData,
+} from "../__generated__/client";
 
 declare const client: GassmaClient;
 
@@ -92,4 +106,33 @@ expectTypeOf<(typeof u)["posts"][number]["title"]>().toEqualTypeOf<string>();
     create: { email: "x@example.com", score: 0 },
     update: { posts: { createMany: { data: [{ title: "t" }] } } },
   });
+}
+
+// upsert.create ≡ create の data、upsert.update ≡ update の data（文脈恒等）
+// （本体 upsertFunc は create 分岐 / update 分岐で本体処理をそのまま通す）
+{
+  expectTypeOf<GassmaUserUpsertSingleData["create"]>().toEqualTypeOf<
+    GassmaUserCreateData["data"]
+  >();
+  expectTypeOf<GassmaUserUpsertSingleData["update"]>().toEqualTypeOf<
+    GassmaUserUpdateSingleData["data"]
+  >();
+  expectTypeOf<GassmaPostUpsertSingleData["create"]>().toEqualTypeOf<
+    GassmaPostCreateData["data"]
+  >();
+  expectTypeOf<GassmaPostUpsertSingleData["update"]>().toEqualTypeOf<
+    GassmaPostUpdateSingleData["data"]
+  >();
+  expectTypeOf<GassmaProfileUpsertSingleData["create"]>().toEqualTypeOf<
+    GassmaProfileCreateData["data"]
+  >();
+  expectTypeOf<GassmaProfileUpsertSingleData["update"]>().toEqualTypeOf<
+    GassmaProfileUpdateSingleData["data"]
+  >();
+  expectTypeOf<GassmaCategoryUpsertSingleData["create"]>().toEqualTypeOf<
+    GassmaCategoryCreateData["data"]
+  >();
+  expectTypeOf<GassmaCategoryUpsertSingleData["update"]>().toEqualTypeOf<
+    GassmaCategoryUpdateSingleData["data"]
+  >();
 }
