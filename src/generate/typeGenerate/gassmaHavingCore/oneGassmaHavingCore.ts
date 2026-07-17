@@ -10,11 +10,11 @@ const getOneGassmaHavingCore = (
 
     const oneHavingCoreType = `
 export type Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}HavingCore = {
-  _avg?: Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions;
-  _count?: Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions;
+  _avg?: Gassma.FilterConditions<number>;
+  _count?: Gassma.FilterConditions<number>;
   _max?: Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions;
   _min?: Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions;
-  _sum?: Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions;
+  _sum?: Gassma.FilterConditions<number>;
 } & Gassma${schemaName}${sheetName}${removedSpaceCurrentColumnName}FilterConditions;
 `;
 

@@ -13,6 +13,21 @@ const getGassmaCommonTypes = () => {
     nulls?: "first" | "last";
   };
 
+  type FilterConditions<T> = {
+    equals?: T | FieldRef;
+    not?: T;
+    in?: T[];
+    notIn?: T[];
+    lt?: T | FieldRef;
+    lte?: T | FieldRef;
+    gt?: T | FieldRef;
+    gte?: T | FieldRef;
+    contains?: string | FieldRef;
+    startsWith?: string | FieldRef;
+    endsWith?: string | FieldRef;
+    mode?: "default" | "insensitive";
+  };
+
   type TrueKeys<T> = { [K in keyof T]: T[K] extends true ? K : never }[keyof T];
   type FalseKeys<T> = { [K in keyof T]: T[K] extends false ? K : never }[keyof T];
   type ResolveOmitKeys<GO, QO> = Exclude<TrueKeys<GO>, FalseKeys<QO>> | TrueKeys<QO>;

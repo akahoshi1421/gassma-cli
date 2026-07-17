@@ -20,6 +20,21 @@ describe("getOneGassmaHavingCore", () => {
     expect(result).toContain("} & GassmaUseridFilterConditions;");
   });
 
+  it("should use numeric FilterConditions for _avg / _count / _sum", () => {
+    const result = getOneGassmaHavingCore({ name: ["a"] }, "", "User");
+    expect(result).toContain("_avg?: Gassma.FilterConditions<number>;");
+    expect(result).toContain("_count?: Gassma.FilterConditions<number>;");
+    expect(result).toContain("_sum?: Gassma.FilterConditions<number>;");
+  });
+
+  it("should keep field FilterConditions for _min / _max", () => {
+    const result = getOneGassmaHavingCore({ name: ["a"] }, "", "User");
+    expect(result).toContain("_max?: GassmaUsernameFilterConditions;");
+    expect(result).toContain("_min?: GassmaUsernameFilterConditions;");
+    expect(result).not.toContain("_max?: Gassma.FilterConditions<number>;");
+    expect(result).not.toContain("_min?: Gassma.FilterConditions<number>;");
+  });
+
   it("should prepend schemaName", () => {
     const result = getOneGassmaHavingCore({ id: [1] }, "Test", "User");
     expect(result).toContain("GassmaTestUseridHavingCore");
