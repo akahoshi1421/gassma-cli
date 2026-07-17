@@ -34,9 +34,7 @@ declare const client: GassmaClient;
   expectTypeOf<(typeof r)[number]["_avg"]["age"]>().toEqualTypeOf<
     number | null
   >();
-  expectTypeOf<(typeof r)[number]["_count"]["id"]>().toEqualTypeOf<
-    number | null
-  >();
+  expectTypeOf<(typeof r)[number]["_count"]["id"]>().toEqualTypeOf<number>();
 }
 
 // groupBy: having を受け付ける
