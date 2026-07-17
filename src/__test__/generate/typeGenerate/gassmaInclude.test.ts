@@ -43,7 +43,7 @@ describe("getOneGassmaInclude", () => {
     const result = getOneGassmaInclude("", "User", relations);
 
     expect(result).toContain(
-      '"posts"?: true | { select?: GassmaPostSelect; omit?: GassmaPostOmit; where?: GassmaPostWhereUse; orderBy?: GassmaPostOrderBy; take?: number; skip?: number; include?: GassmaPostInclude; _count?: GassmaPostCountValue };',
+      '"posts"?: true | { select?: GassmaPostFindSelect; omit?: GassmaPostOmit; where?: GassmaPostWhereUse; orderBy?: GassmaPostOrderBy; take?: number; skip?: number; include?: GassmaPostInclude; _count?: GassmaPostCountValue };',
     );
   });
 
@@ -87,7 +87,7 @@ describe("getOneGassmaInclude", () => {
     const result = getOneGassmaInclude("Test", "User", relations);
 
     expect(result).toContain("export type GassmaTestUserInclude");
-    expect(result).toContain("GassmaTestPostSelect");
+    expect(result).toContain("GassmaTestPostFindSelect");
     expect(result).toContain("GassmaTestPostWhereUse");
   });
 });

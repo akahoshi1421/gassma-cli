@@ -79,6 +79,95 @@ declare const client: GassmaClient;
   expectTypeOf<R["_count"]["posts"]>().toEqualTypeOf<number>();
 }
 
+// 深いネスト select（reference の findMany 例相当）: posts -> tags
+{
+  const r = client.User.findFirstOrThrow({
+    where: {},
+    select: {
+      posts: {
+        select: {
+          title: true,
+          tags: { select: { name: true } },
+        },
+      },
+    },
+  });
+  type R = typeof r;
+  expectTypeOf<R>().not.toHaveProperty("email");
+  type P = R["posts"][number];
+  expectTypeOf<P["title"]>().toEqualTypeOf<string>();
+  expectTypeOf<P["tags"]>().toBeArray();
+  expectTypeOf<P>().not.toHaveProperty("id");
+  expectTypeOf<P>().not.toHaveProperty("content");
+  expectTypeOf<P>().not.toHaveProperty("author");
+  expectTypeOf<P["tags"][number]["name"]>().toEqualTypeOf<string>();
+  expectTypeOf<P["tags"][number]>().not.toHaveProperty("id");
+}
+
+// ネスト select 内の relation true: 対象の全スカラー（manyToOne は | null）
+{
+  const r = client.User.findFirstOrThrow({
+    where: {},
+    select: { posts: { select: { author: true } } },
+  });
+  type P = (typeof r)["posts"][number];
+  expectTypeOf<P>().not.toHaveProperty("title");
+  expectTypeOf<P["author"]>().toBeNullable();
+  type A = NonNullable<P["author"]>;
+  expectTypeOf<keyof A>().toEqualTypeOf<
+    | "id"
+    | "email"
+    | "name"
+    | "age"
+    | "isActive"
+    | "score"
+    | "rating"
+    | "createdAt"
+  >();
+  expectTypeOf<A["email"]>().toEqualTypeOf<string>();
+  expectTypeOf<A["name"]>().toEqualTypeOf<string | null>();
+}
+
+// 3階層の深いネスト select: posts -> tags -> posts
+{
+  const r = client.User.findFirstOrThrow({
+    where: {},
+    select: {
+      posts: {
+        select: {
+          tags: {
+            select: {
+              posts: { select: { title: true } },
+            },
+          },
+        },
+      },
+    },
+  });
+  type P = (typeof r)["posts"][number];
+  expectTypeOf<P>().not.toHaveProperty("title");
+  type T = P["tags"][number];
+  expectTypeOf<T>().not.toHaveProperty("name");
+  type PP = T["posts"][number];
+  expectTypeOf<keyof PP>().toEqualTypeOf<"title">();
+  expectTypeOf<PP["title"]>().toEqualTypeOf<string>();
+}
+
+// 深いネスト select でも存在しないキーは拒否される
+{
+  void client.User.findFirstOrThrow({
+    where: {},
+    select: {
+      posts: {
+        select: {
+          // @ts-expect-error 存在しないキーは指定できない
+          nonexistent: true,
+        },
+      },
+    },
+  });
+}
+
 // self-relation の select
 {
   const r = client.Category.findFirstOrThrow({

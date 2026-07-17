@@ -76,6 +76,22 @@ declare const client: GassmaClient;
   expectTypeOf<U["posts"][number]>().not.toHaveProperty("id");
 }
 
+// include 内の深いネスト select: posts -> tags
+{
+  const u = client.User.findFirst({
+    where: { id: 1 },
+    include: {
+      posts: { select: { tags: { select: { name: true } } } },
+    },
+  });
+  type U = NonNullable<typeof u>;
+  expectTypeOf<U["id"]>().toEqualTypeOf<number>();
+  type P = U["posts"][number];
+  expectTypeOf<P>().not.toHaveProperty("title");
+  expectTypeOf<P["tags"][number]["name"]>().toEqualTypeOf<string>();
+  expectTypeOf<P["tags"][number]>().not.toHaveProperty("id");
+}
+
 // include の _count
 {
   const u = client.User.findFirst({
