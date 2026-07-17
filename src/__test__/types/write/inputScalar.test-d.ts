@@ -46,15 +46,26 @@ declare const client: GassmaClient;
   >();
 }
 
-// enum / replaceType は入力型でもリテラルユニオン
+// enum / replaceType は入力型でもリテラルユニオン（enum @default あり → 省略可）
 {
   expectTypeOf<GassmaMemberUse["role"]>().toEqualTypeOf<
-    "ADMIN" | "USER" | "MODERATOR"
+    "ADMIN" | "USER" | "MODERATOR" | undefined
   >();
   expectTypeOf<GassmaMemberUse["status"]>().toEqualTypeOf<
-    "ACTIVE" | "ARCHIVED"
+    "ACTIVE" | "ARCHIVED" | undefined
   >();
   expectTypeOf<GassmaMemberUse["size"]>().toEqualTypeOf<"small" | "large">();
+}
+
+// enum @default: create で role / status を省略でき、結果は非 null
+{
+  const r = client.Member.create({
+    data: { firstName: "田中", size: "small" },
+  });
+  expectTypeOf<(typeof r)["role"]>().toEqualTypeOf<
+    "ADMIN" | "USER" | "MODERATOR"
+  >();
+  expectTypeOf<(typeof r)["status"]>().toEqualTypeOf<"ACTIVE" | "ARCHIVED">();
 }
 
 // @ignore は入力型からも除外される

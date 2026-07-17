@@ -113,6 +113,21 @@ describe("generateClientJs", () => {
     expect(result).toContain("defaults: testDefaults");
   });
 
+  it("should embed enum defaults as mapped static string values", () => {
+    const defaults: DefaultsConfig = {
+      Member: {
+        role: { kind: "static", value: "ADMIN" },
+        status: { kind: "static", value: "ACTIVE" },
+      },
+    };
+
+    const result = generateClientJs({}, "Test", defaults);
+
+    expect(result).toContain('"role": "ADMIN"');
+    expect(result).toContain('"status": "ACTIVE"');
+    expect(result).toContain("defaults: testDefaults");
+  });
+
   it("should embed now() as () => new Date()", () => {
     const defaults: DefaultsConfig = {
       User: { createdAt: { kind: "function", name: "now" } },
