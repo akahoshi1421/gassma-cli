@@ -72,3 +72,22 @@ declare const client: GassmaClient;
     ],
   });
 }
+
+// nested write(create): oneToMany の子は自動セットされる FK(authorId)を省略できる
+// （本体 processAfterCreate が [reference]: parentValue で上書きするため）
+{
+  client.User.create({
+    data: {
+      email: "a@example.com",
+      score: 0,
+      posts: { create: [{ title: "t" }] },
+    },
+  });
+  client.User.create({
+    data: {
+      email: "a@example.com",
+      score: 0,
+      posts: { create: { title: "t" } },
+    },
+  });
+}

@@ -17,15 +17,19 @@ const getNestedWriteFields = (
     const target = `Gassma${schemaName}${rel.to}`;
     const isList = isListRelation(rel.type);
 
+    const childCreateUse =
+      rel.type === "oneToMany"
+        ? `Omit<${target}Use, "${rel.reference}">`
+        : `${target}Use`;
     const createType = isList
-      ? `${target}Use | ${target}Use[]`
-      : `${target}Use`;
+      ? `${childCreateUse} | ${childCreateUse}[]`
+      : childCreateUse;
     const connectType = isList
       ? `${target}WhereUse | ${target}WhereUse[]`
       : `${target}WhereUse`;
     const connectOrCreateType = isList
-      ? `{ where: ${target}WhereUse; create: ${target}Use } | { where: ${target}WhereUse; create: ${target}Use }[]`
-      : `{ where: ${target}WhereUse; create: ${target}Use }`;
+      ? `{ where: ${target}WhereUse; create: ${childCreateUse} } | { where: ${target}WhereUse; create: ${childCreateUse} }[]`
+      : `{ where: ${target}WhereUse; create: ${childCreateUse} }`;
 
     const ops = [
       `create?: ${createType}`,

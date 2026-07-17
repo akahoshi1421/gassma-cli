@@ -25,12 +25,14 @@ describe("getOneGassmaCreate", () => {
     const result = getOneGassmaCreate("", "User", relations);
 
     expect(result).toContain('"posts"?:');
-    expect(result).toContain("create?: GassmaPostUse | GassmaPostUse[]");
+    expect(result).toContain(
+      'create?: Omit<GassmaPostUse, "authorId"> | Omit<GassmaPostUse, "authorId">[]',
+    );
     expect(result).toContain(
       "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
     );
     expect(result).toContain(
-      "connectOrCreate?: { where: GassmaPostWhereUse; create: GassmaPostUse }",
+      'connectOrCreate?: { where: GassmaPostWhereUse; create: Omit<GassmaPostUse, "authorId"> }',
     );
   });
 

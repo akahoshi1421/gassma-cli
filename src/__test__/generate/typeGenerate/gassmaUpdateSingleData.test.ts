@@ -64,7 +64,9 @@ describe("getOneGassmaUpdateSingleData", () => {
     const result = getOneGassmaUpdateSingleData("", "User", relations);
 
     expect(result).toContain('"posts"?:');
-    expect(result).toContain("create?: GassmaPostUse | GassmaPostUse[]");
+    expect(result).toContain(
+      'create?: Omit<GassmaPostUse, "authorId"> | Omit<GassmaPostUse, "authorId">[]',
+    );
     expect(result).toContain(
       "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
     );
