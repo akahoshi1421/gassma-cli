@@ -1,4 +1,5 @@
 import type { RelationsConfig } from "../../read/extractRelations";
+import { buildCreateDataType } from "../util/buildCreateDataType";
 import { getNestedWriteFields } from "../util/getNestedWriteFields";
 
 const getOneGassmaUpsertSingleData = (
@@ -6,12 +7,14 @@ const getOneGassmaUpsertSingleData = (
   sheetName: string,
   relations?: RelationsConfig,
 ) => {
-  const nestedFields = getNestedWriteFields(schemaName, sheetName, relations);
+  const createType = buildCreateDataType(schemaName, sheetName, relations);
 
-  const createType = nestedFields
-    ? `Gassma${schemaName}${sheetName}Use & {\n${nestedFields}  }`
-    : `Gassma${schemaName}${sheetName}Use`;
-
+  const nestedFields = getNestedWriteFields(
+    schemaName,
+    sheetName,
+    relations,
+    "update",
+  );
   const baseUpdateType = `Partial<{ [K in keyof Gassma${schemaName}${sheetName}Use]: Gassma${schemaName}${sheetName}Use[K] | Gassma.NumberOperation }>`;
   const updateType = nestedFields
     ? `${baseUpdateType} & {\n${nestedFields}  }`

@@ -26,6 +26,7 @@ model Post {
           to: "Post",
           field: "id",
           reference: "authorId",
+          ownsFk: false,
         },
       },
       Post: {
@@ -34,6 +35,7 @@ model Post {
           to: "User",
           field: "authorId",
           reference: "id",
+          ownsFk: true,
         },
       },
     });
@@ -61,6 +63,7 @@ model Profile {
           to: "Profile",
           field: "id",
           reference: "userId",
+          ownsFk: false,
         },
       },
       Profile: {
@@ -69,6 +72,7 @@ model Profile {
           to: "User",
           field: "userId",
           reference: "id",
+          ownsFk: true,
         },
       },
     });
@@ -131,18 +135,21 @@ model Post {
       to: "Post",
       field: "id",
       reference: "authorId",
+      ownsFk: false,
     });
     expect(result.User.favoritePosts).toEqual({
       type: "oneToMany",
       to: "Post",
       field: "id",
       reference: "favoritedById",
+      ownsFk: false,
     });
     expect(result.Post.author).toEqual({
       type: "manyToOne",
       to: "User",
       field: "authorId",
       reference: "id",
+      ownsFk: true,
     });
   });
 
@@ -167,6 +174,7 @@ model Tag {
       to: "Tag",
       field: "id",
       reference: "id",
+      ownsFk: false,
       through: {
         sheet: "_PostToTag",
         field: "postId",
@@ -178,6 +186,7 @@ model Tag {
       to: "Post",
       field: "id",
       reference: "id",
+      ownsFk: false,
       through: {
         sheet: "_PostToTag",
         field: "tagId",
@@ -229,12 +238,14 @@ model Category {
       to: "Category",
       field: "parentId",
       reference: "id",
+      ownsFk: true,
     });
     expect(result.Category.children).toEqual({
       type: "oneToMany",
       to: "Category",
       field: "id",
       reference: "parentId",
+      ownsFk: false,
     });
   });
 
@@ -268,24 +279,28 @@ model PostTag {
       to: "PostTag",
       field: "id",
       reference: "postId",
+      ownsFk: false,
     });
     expect(result.Tag.postTags).toEqual({
       type: "oneToMany",
       to: "PostTag",
       field: "id",
       reference: "tagId",
+      ownsFk: false,
     });
     expect(result.PostTag.post).toEqual({
       type: "manyToOne",
       to: "Post",
       field: "postId",
       reference: "id",
+      ownsFk: true,
     });
     expect(result.PostTag.tag).toEqual({
       type: "manyToOne",
       to: "Tag",
       field: "tagId",
       reference: "id",
+      ownsFk: true,
     });
   });
 });

@@ -50,6 +50,28 @@ model Category {
   children Category[] @relation("CategoryTree")
 }
 
+/// 複数FK（XOR 交差）の検証用
+model Student {
+  id          Int          @id @default(autoincrement())
+  name        String
+  enrollments Enrollment[]
+}
+
+model Course {
+  id          Int          @id @default(autoincrement())
+  title       String
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  studentId Int
+  courseId  Int
+  student   Student @relation(fields: [studentId], references: [id])
+  course    Course  @relation(fields: [courseId], references: [id])
+
+  @@id([studentId, courseId])
+}
+
 enum Role {
   ADMIN
   USER

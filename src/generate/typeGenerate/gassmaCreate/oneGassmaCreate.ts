@@ -1,15 +1,12 @@
 import type { RelationsConfig } from "../../read/extractRelations";
-import { getNestedWriteFields } from "../util/getNestedWriteFields";
+import { buildCreateDataType } from "../util/buildCreateDataType";
 
 const getOneGassmaCreate = (
   schemaName: string,
   sheetName: string,
   relations?: RelationsConfig,
 ) => {
-  const nestedFields = getNestedWriteFields(schemaName, sheetName, relations);
-  const dataType = nestedFields
-    ? `Gassma${schemaName}${sheetName}Use & {\n${nestedFields}  }`
-    : `Gassma${schemaName}${sheetName}Use`;
+  const dataType = buildCreateDataType(schemaName, sheetName, relations);
 
   const selectType = `Gassma${schemaName}${sheetName}Select`;
   const omitType = `Gassma${schemaName}${sheetName}Omit`;

@@ -1,16 +1,5 @@
-import type { RelationsConfig } from "../../read/extractRelations";
-import { getNestedWriteFields } from "../util/getNestedWriteFields";
-
-const getOneGassmaUpdateData = (
-  schemaName: string,
-  sheetName: string,
-  relations?: RelationsConfig,
-) => {
-  const nestedFields = getNestedWriteFields(schemaName, sheetName, relations);
-  const baseDataType = `Partial<{ [K in keyof Gassma${schemaName}${sheetName}Use]: Gassma${schemaName}${sheetName}Use[K] | Gassma.NumberOperation }>`;
-  const dataType = nestedFields
-    ? `${baseDataType} & {\n${nestedFields}  }`
-    : baseDataType;
+const getOneGassmaUpdateData = (schemaName: string, sheetName: string) => {
+  const dataType = `Partial<{ [K in keyof Gassma${schemaName}${sheetName}Use]: Gassma${schemaName}${sheetName}Use[K] | Gassma.NumberOperation }>`;
 
   return `
 export type Gassma${schemaName}${sheetName}UpdateData = {

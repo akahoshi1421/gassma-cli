@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { getOneGassmaUpdateData } from "../../../generate/typeGenerate/gassmaUpdateData/oneGassmaUpdateData";
-import type { RelationsConfig } from "../../../generate/read/extractRelations";
 
 describe("getOneGassmaUpdateData", () => {
   it("should generate UpdateData with Partial NumberOperation support", () => {
@@ -13,25 +12,12 @@ describe("getOneGassmaUpdateData", () => {
     );
   });
 
-  it("should add nested write operations for relations", () => {
-    const relations: RelationsConfig = {
-      User: {
-        posts: {
-          type: "oneToMany",
-          to: "Post",
-          field: "id",
-          reference: "authorId",
-        },
-      },
-    };
+  it("should not add nested writes (core updateManyFunc handles scalars only)", () => {
+    const result = getOneGassmaUpdateData("", "User");
 
-    const result = getOneGassmaUpdateData("", "User", relations);
-
-    expect(result).toContain('"posts"?:');
-    expect(result).toContain("create?: GassmaPostUse | GassmaPostUse[]");
-    expect(result).toContain(
-      "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
-    );
+    expect(result).not.toContain('"posts"?:');
+    expect(result).not.toContain("create?:");
+    expect(result).not.toContain("connect?:");
   });
 
   it("should include limit property", () => {
