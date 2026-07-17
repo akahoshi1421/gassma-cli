@@ -41,3 +41,55 @@ expectTypeOf<(typeof u)["posts"][number]["title"]>().toEqualTypeOf<string>();
     },
   });
 }
+
+// upsert.create は create 文脈の nested write を受け付ける
+// （本体 upsertFunc の create 分岐は resolveNestedCreate を通る）
+{
+  client.Post.upsert({
+    where: { id: 1 },
+    create: { title: "t", author: { connect: { id: 1 } } },
+    update: { title: "u" },
+  });
+  client.Post.upsert({
+    where: { id: 1 },
+    create: { title: "t", authorId: 1 },
+    update: {},
+  });
+  client.User.upsert({
+    where: { id: 1 },
+    create: {
+      email: "x@example.com",
+      score: 0,
+      posts: { createMany: { data: [{ title: "t" }] } },
+    },
+    update: {},
+  });
+  client.Post.upsert({
+    where: { id: 1 },
+    // @ts-expect-error create に author も authorId も無いとエラー
+    create: { title: "t" },
+    update: {},
+  });
+  client.User.upsert({
+    where: { id: 1 },
+    create: {
+      email: "x@example.com",
+      score: 0,
+      posts: {
+        // @ts-expect-error upsert.create は create 文脈のみ（deleteMany は update 専用）
+        deleteMany: { published: false },
+      },
+    },
+    update: {},
+  });
+}
+
+// upsert.update の oneToMany は createMany を受け付ける
+// （本体 resolveNestedUpdate は processAfterCreate を呼ぶ）
+{
+  client.User.upsert({
+    where: { id: 1 },
+    create: { email: "x@example.com", score: 0 },
+    update: { posts: { createMany: { data: [{ title: "t" }] } } },
+  });
+}

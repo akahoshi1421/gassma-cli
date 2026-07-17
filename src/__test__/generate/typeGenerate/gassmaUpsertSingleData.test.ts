@@ -77,4 +77,78 @@ describe("getOneGassmaUpsertSingleData", () => {
       "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
     );
   });
+
+  it("should build create with the FK XOR (same shape as CreateData)", () => {
+    const relations: RelationsConfig = {
+      Post: {
+        author: {
+          type: "manyToOne",
+          to: "User",
+          field: "authorId",
+          reference: "id",
+          ownsFk: true,
+        },
+      },
+    };
+
+    const result = getOneGassmaUpsertSingleData("", "Post", relations);
+
+    expect(result).toContain(
+      'create: Omit<GassmaPostUse, "authorId"> & (Pick<GassmaPostUse, "authorId"> | { "author": { create?: GassmaUserUse; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: GassmaUserUse } } });',
+    );
+  });
+
+  it("should emit only create-context ops in create for oneToMany", () => {
+    const relations: RelationsConfig = {
+      User: {
+        posts: {
+          type: "oneToMany",
+          to: "Post",
+          field: "id",
+          reference: "authorId",
+          ownsFk: false,
+        },
+      },
+    };
+
+    const result = getOneGassmaUpsertSingleData("", "User", relations);
+    const createPart = result.slice(
+      result.indexOf("create:"),
+      result.indexOf("update:"),
+    );
+
+    expect(createPart).toContain(
+      'createMany?: { data: Omit<GassmaPostUse, "authorId">[] }',
+    );
+    expect(createPart).not.toContain("update?:");
+    expect(createPart).not.toContain("delete?:");
+    expect(createPart).not.toContain("deleteMany?:");
+    expect(createPart).not.toContain("disconnect?:");
+    expect(createPart).not.toContain("set?:");
+  });
+
+  it("should keep update-context ops (including createMany) in update for oneToMany", () => {
+    const relations: RelationsConfig = {
+      User: {
+        posts: {
+          type: "oneToMany",
+          to: "Post",
+          field: "id",
+          reference: "authorId",
+          ownsFk: false,
+        },
+      },
+    };
+
+    const result = getOneGassmaUpsertSingleData("", "User", relations);
+    const updatePart = result.slice(result.indexOf("update:"));
+
+    expect(updatePart).toContain(
+      'createMany?: { data: Omit<GassmaPostUse, "authorId">[] }',
+    );
+    expect(updatePart).toContain(
+      "deleteMany?: GassmaPostWhereUse | GassmaPostWhereUse[]",
+    );
+    expect(updatePart).toContain("set?: GassmaPostWhereUse[]");
+  });
 });

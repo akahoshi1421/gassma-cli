@@ -105,11 +105,24 @@ describe("getNestedWriteFields", () => {
       expect(result).not.toContain("Omit<");
     });
 
-    it("should not emit createMany even for oneToMany", () => {
+    it("should emit createMany for oneToMany (core update path runs processAfterCreate)", () => {
       const result = getNestedWriteFields(
         "",
         "User",
         oneToManyRelations,
+        "update",
+      );
+
+      expect(result).toContain(
+        'createMany?: { data: Omit<GassmaPostUse, "authorId">[] }',
+      );
+    });
+
+    it("should not emit createMany for to-one relations", () => {
+      const result = getNestedWriteFields(
+        "",
+        "Post",
+        manyToOneRelations,
         "update",
       );
 
@@ -158,6 +171,7 @@ describe("getNestedWriteFields", () => {
       );
       expect(result).toContain("set?: GassmaTagWhereUse[]");
       expect(result).not.toContain("boolean");
+      expect(result).not.toContain("createMany?:");
       expect(result).not.toContain("update?:");
       expect(result).not.toContain("delete?:");
       expect(result).not.toContain("deleteMany?:");

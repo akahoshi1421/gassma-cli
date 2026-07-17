@@ -82,6 +82,33 @@ expectTypeOf<U["posts"][number]["title"]>().toEqualTypeOf<string>();
   });
 }
 
+// update 文脈の oneToMany は createMany を受け付ける
+// （本体 resolveNestedUpdate は processAfterCreate を呼び createMany を処理する）
+{
+  client.User.update({
+    where: { id: 1 },
+    data: { posts: { createMany: { data: [{ title: "t" }] } } },
+  });
+  client.Post.update({
+    where: { id: 1 },
+    data: {
+      author: {
+        // @ts-expect-error manyToOne は createMany を受け付けない
+        createMany: { data: [{ email: "a@e.com", score: 0 }] },
+      },
+    },
+  });
+  client.Post.update({
+    where: { id: 1 },
+    data: {
+      tags: {
+        // @ts-expect-error manyToMany は createMany を受け付けない
+        createMany: { data: [{ name: "x" }] },
+      },
+    },
+  });
+}
+
 // manyToMany の update 文脈: disconnect は where 指定のみ、set は where 配列
 // （本体 processManyToManyUpdate は disconnect === true を無視する）
 {

@@ -83,16 +83,10 @@ const buildUpdateOnlyOps = (
 const buildUpdateContextOps = (
   rel: RelationDefinition,
   target: string,
-): string[] => {
-  const base = buildBaseOpTypes(rel, target);
-
-  return [
-    `create?: ${base.createType}`,
-    `connect?: ${base.connectType}`,
-    `connectOrCreate?: ${base.connectOrCreateType}`,
-    ...buildUpdateOnlyOps(rel, target),
-  ];
-};
+): string[] => [
+  ...buildCreateContextOps(rel, target),
+  ...buildUpdateOnlyOps(rel, target),
+];
 
 const getNestedWriteFields = (
   schemaName: string,
