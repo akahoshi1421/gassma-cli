@@ -20,7 +20,7 @@ declare const client: GassmaClient;
   expectTypeOf<typeof r>().toHaveProperty("_avg");
 }
 
-// aggregate: _avg / _sum は数値、_count は number
+// aggregate: _avg / _sum は 0件時 null、_count は 0件時も 0（Prisma 準拠）
 {
   const r = client.User.aggregate({
     where: {},
@@ -30,11 +30,9 @@ declare const client: GassmaClient;
     _max: { age: true },
     _count: { id: true },
   });
-  // 0件ヒット時に null を返すため、集計値は | null（本体実装に一致）
   expectTypeOf<(typeof r)["_avg"]["age"]>().toEqualTypeOf<number | null>();
   expectTypeOf<(typeof r)["_sum"]["age"]>().toEqualTypeOf<number | null>();
-  // _count も 0件時 null（本体挙動。Prisma は 0 だが本体差異は別タスク）
-  expectTypeOf<(typeof r)["_count"]["id"]>().toEqualTypeOf<number | null>();
+  expectTypeOf<(typeof r)["_count"]["id"]>().toEqualTypeOf<number>();
 }
 
 // aggregate: _min / _max は元のフィールド型 | null
