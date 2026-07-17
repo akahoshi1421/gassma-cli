@@ -1,65 +1,123 @@
-import type { RelationsConfig } from "../../read/extractRelations";
+import type {
+  RelationDefinition,
+  RelationsConfig,
+} from "../../read/extractRelations";
+
+type NestedWriteContext = "create" | "update";
+
+type BaseOpTypes = {
+  childCreate: string;
+  createType: string;
+  connectType: string;
+  connectOrCreateType: string;
+};
 
 const isListRelation = (type: string): boolean =>
   type === "oneToMany" || type === "manyToMany";
 
+const buildBaseOpTypes = (
+  rel: RelationDefinition,
+  target: string,
+): BaseOpTypes => {
+  const childCreate =
+    rel.type === "oneToMany"
+      ? `Omit<${target}Use, "${rel.reference}">`
+      : `${target}Use`;
+  const isList = isListRelation(rel.type);
+  const createType = isList ? `${childCreate} | ${childCreate}[]` : childCreate;
+  const connectType = isList
+    ? `${target}WhereUse | ${target}WhereUse[]`
+    : `${target}WhereUse`;
+  const connectOrCreateSingle = `{ where: ${target}WhereUse; create: ${childCreate} }`;
+  const connectOrCreateType = isList
+    ? `${connectOrCreateSingle} | ${connectOrCreateSingle}[]`
+    : connectOrCreateSingle;
+
+  return { childCreate, createType, connectType, connectOrCreateType };
+};
+
+const buildCreateContextOps = (
+  rel: RelationDefinition,
+  target: string,
+): string[] => {
+  const base = buildBaseOpTypes(rel, target);
+  const createManyOps =
+    rel.type === "oneToMany"
+      ? [`createMany?: { data: ${base.childCreate}[] }`]
+      : [];
+
+  return [
+    `create?: ${base.createType}`,
+    ...createManyOps,
+    `connect?: ${base.connectType}`,
+    `connectOrCreate?: ${base.connectOrCreateType}`,
+  ];
+};
+
+const buildUpdateOnlyOps = (
+  rel: RelationDefinition,
+  target: string,
+): string[] => {
+  if (rel.type === "oneToMany") {
+    return [
+      `update?: { where: ${target}WhereUse; data: Partial<${target}Use> } | { where: ${target}WhereUse; data: Partial<${target}Use> }[]`,
+      `delete?: boolean | ${target}WhereUse | ${target}WhereUse[]`,
+      `deleteMany?: ${target}WhereUse | ${target}WhereUse[]`,
+      `disconnect?: boolean | ${target}WhereUse | ${target}WhereUse[]`,
+      `set?: ${target}WhereUse[]`,
+    ];
+  }
+  if (rel.type === "oneToOne" || rel.type === "manyToOne") {
+    return [
+      `update?: Partial<${target}Use>`,
+      "delete?: true",
+      "disconnect?: true",
+    ];
+  }
+  return [
+    `disconnect?: ${target}WhereUse | ${target}WhereUse[]`,
+    `set?: ${target}WhereUse[]`,
+  ];
+};
+
+const buildUpdateContextOps = (
+  rel: RelationDefinition,
+  target: string,
+): string[] => {
+  const base = buildBaseOpTypes(rel, target);
+
+  return [
+    `create?: ${base.createType}`,
+    `connect?: ${base.connectType}`,
+    `connectOrCreate?: ${base.connectOrCreateType}`,
+    ...buildUpdateOnlyOps(rel, target),
+  ];
+};
+
 const getNestedWriteFields = (
   schemaName: string,
   sheetName: string,
-  relations?: RelationsConfig,
+  relations: RelationsConfig | undefined,
+  context: NestedWriteContext,
 ): string => {
   if (!relations) return "";
   const modelRelations = relations[sheetName];
   if (!modelRelations) return "";
 
-  const fields = Object.keys(modelRelations).reduce((pre, relationName) => {
+  const relationNames = Object.keys(modelRelations).filter(
+    (name) => context === "update" || modelRelations[name].ownsFk !== true,
+  );
+
+  return relationNames.reduce((pre, relationName) => {
     const rel = modelRelations[relationName];
     const target = `Gassma${schemaName}${rel.to}`;
-    const isList = isListRelation(rel.type);
-
-    const childCreateUse =
-      rel.type === "oneToMany"
-        ? `Omit<${target}Use, "${rel.reference}">`
-        : `${target}Use`;
-    const createType = isList
-      ? `${childCreateUse} | ${childCreateUse}[]`
-      : childCreateUse;
-    const connectType = isList
-      ? `${target}WhereUse | ${target}WhereUse[]`
-      : `${target}WhereUse`;
-    const connectOrCreateType = isList
-      ? `{ where: ${target}WhereUse; create: ${childCreateUse} } | { where: ${target}WhereUse; create: ${childCreateUse} }[]`
-      : `{ where: ${target}WhereUse; create: ${childCreateUse} }`;
-
-    const ops = [
-      `create?: ${createType}`,
-      `connect?: ${connectType}`,
-      `connectOrCreate?: ${connectOrCreateType}`,
-    ];
-
-    if (rel.type === "oneToMany") {
-      ops.push(
-        `update?: { where: ${target}WhereUse; data: Partial<${target}Use> } | { where: ${target}WhereUse; data: Partial<${target}Use> }[]`,
-      );
-      ops.push(`delete?: boolean | ${target}WhereUse | ${target}WhereUse[]`);
-      ops.push(`deleteMany?: ${target}WhereUse | ${target}WhereUse[]`);
-      ops.push(
-        `disconnect?: boolean | ${target}WhereUse | ${target}WhereUse[]`,
-      );
-      ops.push(`set?: ${target}WhereUse[]`);
-    } else if (rel.type === "oneToOne" || rel.type === "manyToOne") {
-      ops.push(`update?: Partial<${target}Use>`);
-      ops.push("delete?: true");
-      ops.push("disconnect?: true");
-    } else if (rel.type === "manyToMany") {
-      ops.push(`disconnect?: ${target}WhereUse | ${target}WhereUse[]`);
-      ops.push(`set?: ${target}WhereUse[]`);
-    }
+    const ops =
+      context === "create"
+        ? buildCreateContextOps(rel, target)
+        : buildUpdateContextOps(rel, target);
 
     return `${pre}    "${relationName}"?: { ${ops.join("; ")} };\n`;
   }, "");
-
-  return fields;
 };
 
 export { getNestedWriteFields };

@@ -47,6 +47,7 @@ const detectImplicitManyToMany = (
         to: targetName,
         field: "id",
         reference: "id",
+        ownsFk: false,
         through: {
           sheet: throughSheet,
           field: `${toLowercaseFirst(modelA.name.value)}Id`,

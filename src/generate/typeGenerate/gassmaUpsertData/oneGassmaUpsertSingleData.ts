@@ -6,7 +6,12 @@ const getOneGassmaUpsertSingleData = (
   sheetName: string,
   relations?: RelationsConfig,
 ) => {
-  const nestedFields = getNestedWriteFields(schemaName, sheetName, relations);
+  const nestedFields = getNestedWriteFields(
+    schemaName,
+    sheetName,
+    relations,
+    "update",
+  );
 
   const createType = nestedFields
     ? `Gassma${schemaName}${sheetName}Use & {\n${nestedFields}  }`

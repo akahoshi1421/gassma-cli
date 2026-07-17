@@ -1,5 +1,8 @@
 import { expectTypeOf } from "vitest";
-import type { GassmaClient } from "../__generated__/client";
+import type {
+  GassmaClient,
+  GassmaUserCreateData,
+} from "../__generated__/client";
 
 declare const client: GassmaClient;
 
@@ -90,4 +93,60 @@ declare const client: GassmaClient;
       posts: { create: { title: "t" } },
     },
   });
+}
+
+// nested write(create): FK 保持側は FK 直接指定か relation op のどちらかで満たす
+// （本体 processBeforeCreate が connect/create/connectOrCreate で FK をセットするため）
+{
+  client.Post.create({
+    data: { title: "t", author: { connect: { id: 1 } } },
+  });
+  client.Post.create({
+    data: { title: "t", author: { create: { email: "a@e.com", score: 0 } } },
+  });
+  client.Post.create({
+    data: {
+      title: "t",
+      author: {
+        connectOrCreate: {
+          where: { id: 1 },
+          create: { email: "a@e.com", score: 0 },
+        },
+      },
+    },
+  });
+  client.Post.create({ data: { title: "t", authorId: 1 } });
+
+  // @ts-expect-error author も authorId も無いとエラー
+  client.Post.create({ data: { title: "t" } });
+
+  client.Profile.create({ data: { bio: "b", user: { connect: { id: 1 } } } });
+}
+
+// FK が optional のモデルは FK も relation op も省略できる
+{
+  client.Category.create({ data: { name: "c" } });
+  client.Category.create({
+    data: { name: "c", parent: { connect: { id: 1 } } },
+  });
+}
+
+// nested write(create): oneToMany は createMany を受け付ける（子は FK 省略）
+{
+  client.User.create({
+    data: {
+      email: "a@example.com",
+      score: 0,
+      posts: { createMany: { data: [{ title: "t" }] } },
+    },
+  });
+}
+
+// create コンテキストの oneToMany op は本体 NESTED_WRITE_KEYS と一致する
+// （update 専用 op は本体 processAfterCreate が処理しないため型からも除外）
+{
+  type PostsOps = NonNullable<GassmaUserCreateData["data"]["posts"]>;
+  expectTypeOf<keyof PostsOps>().toEqualTypeOf<
+    "create" | "createMany" | "connect" | "connectOrCreate"
+  >();
 }

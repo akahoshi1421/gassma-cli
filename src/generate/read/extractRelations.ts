@@ -24,6 +24,8 @@ type RelationDefinition = {
   to: string;
   field: string;
   reference: string;
+  /** この relation を持つモデル側が FK 列を保持しているか（manyToOne / oneToOne の FK 側 = true） */
+  ownsFk?: boolean;
   onDelete?: string;
   onUpdate?: string;
   through?: ThroughDefinition;
@@ -87,6 +89,7 @@ const buildRelationsConfig = (
       to: rel.toModel,
       field: rel.localField,
       reference: rel.foreignField,
+      ownsFk: true,
     };
 
     const inverseModel = models.find((m) => m.name.value === rel.toModel);
@@ -107,6 +110,7 @@ const buildRelationsConfig = (
       to: rel.modelName,
       field: rel.foreignField,
       reference: rel.localField,
+      ownsFk: false,
       ...(rel.onDelete ? { onDelete: rel.onDelete } : {}),
       ...(rel.onUpdate ? { onUpdate: rel.onUpdate } : {}),
     };
