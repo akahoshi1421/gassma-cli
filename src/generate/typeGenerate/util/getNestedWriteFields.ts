@@ -61,9 +61,9 @@ const buildUpdateOnlyOps = (
   if (rel.type === "oneToMany") {
     return [
       `update?: { where: ${target}WhereUse; data: Partial<${target}Use> } | { where: ${target}WhereUse; data: Partial<${target}Use> }[]`,
-      `delete?: boolean | ${target}WhereUse | ${target}WhereUse[]`,
+      `delete?: ${target}WhereUse | ${target}WhereUse[]`,
       `deleteMany?: ${target}WhereUse | ${target}WhereUse[]`,
-      `disconnect?: boolean | ${target}WhereUse | ${target}WhereUse[]`,
+      `disconnect?: ${target}WhereUse | ${target}WhereUse[]`,
       `set?: ${target}WhereUse[]`,
     ];
   }

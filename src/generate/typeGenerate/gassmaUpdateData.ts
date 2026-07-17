@@ -1,23 +1,13 @@
 import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaUpdateData } from "./gassmaUpdateData/oneGassmaUpdateData";
-import type { RelationsConfig } from "../read/extractRelations";
 
-const getGassmaUpdateData = (
-  sheetNames: string[],
-  schemaName: string,
-  relations?: RelationsConfig,
-) => {
+const getGassmaUpdateData = (sheetNames: string[], schemaName: string) => {
   const updateDataDeclare = sheetNames.reduce((pre, currentSheetName) => {
     const removedSpaceCurrentSheetName =
       getRemovedCantUseVarChar(currentSheetName);
 
     return (
-      pre +
-      getOneGassmaUpdateData(
-        schemaName,
-        removedSpaceCurrentSheetName,
-        relations,
-      )
+      pre + getOneGassmaUpdateData(schemaName, removedSpaceCurrentSheetName)
     );
   }, "");
 

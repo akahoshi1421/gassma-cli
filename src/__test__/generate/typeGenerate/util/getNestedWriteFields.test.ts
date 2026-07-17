@@ -115,6 +115,53 @@ describe("getNestedWriteFields", () => {
 
       expect(result).not.toContain("createMany?:");
     });
+
+    it("should only accept where filters for oneToMany delete/disconnect", () => {
+      const result = getNestedWriteFields(
+        "",
+        "User",
+        oneToManyRelations,
+        "update",
+      );
+
+      expect(result).toContain(
+        "delete?: GassmaPostWhereUse | GassmaPostWhereUse[]",
+      );
+      expect(result).toContain(
+        "disconnect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
+      );
+      expect(result).not.toContain("boolean");
+    });
+
+    it("should emit only ops the core processes for manyToMany", () => {
+      const relations: RelationsConfig = {
+        Post: {
+          tags: {
+            type: "manyToMany",
+            to: "Tag",
+            field: "id",
+            reference: "id",
+            ownsFk: false,
+            through: {
+              sheet: "_PostToTag",
+              field: "postId",
+              reference: "tagId",
+            },
+          },
+        },
+      };
+
+      const result = getNestedWriteFields("", "Post", relations, "update");
+
+      expect(result).toContain(
+        "disconnect?: GassmaTagWhereUse | GassmaTagWhereUse[]",
+      );
+      expect(result).toContain("set?: GassmaTagWhereUse[]");
+      expect(result).not.toContain("boolean");
+      expect(result).not.toContain("update?:");
+      expect(result).not.toContain("delete?:");
+      expect(result).not.toContain("deleteMany?:");
+    });
   });
 
   describe("create context", () => {
