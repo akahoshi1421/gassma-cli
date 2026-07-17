@@ -86,8 +86,8 @@ enum Status {
 /// enum・@updatedAt・@map・@@map・@ignore・replaceType の検証用
 model Member {
   id        Int      @id @default(autoincrement())
-  role      Role
-  status    Status
+  role      Role     @default(USER)
+  status    Status   @default(active)
   firstName String   @map("名前")
   secret    String   @ignore
   /// @gassma.replaceType "small", "large"

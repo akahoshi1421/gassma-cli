@@ -135,4 +135,78 @@ model User {
       User: { role: { kind: "static", value: "USER" } },
     });
   });
+
+  it("should extract enum default as member name when enum has no @map", () => {
+    const schema = `
+enum Role {
+  ADMIN
+  USER
+}
+
+model Member {
+  id   Int  @id
+  role Role @default(ADMIN)
+}
+`;
+    const result = extractDefaults(schema);
+
+    expect(result).toEqual({
+      Member: { role: { kind: "static", value: "ADMIN" } },
+    });
+  });
+
+  it("should extract enum default as mapped value when enum member has @map", () => {
+    const schema = `
+enum Status {
+  active   @map("ACTIVE")
+  archived @map("ARCHIVED")
+}
+
+model Member {
+  id     Int    @id
+  status Status @default(active)
+}
+`;
+    const result = extractDefaults(schema);
+
+    expect(result).toEqual({
+      Member: { status: { kind: "static", value: "ACTIVE" } },
+    });
+  });
+
+  it("should extract enum default on optional field", () => {
+    const schema = `
+enum Role {
+  ADMIN
+  USER
+}
+
+model Member {
+  id   Int   @id
+  role Role? @default(USER)
+}
+`;
+    const result = extractDefaults(schema);
+
+    expect(result).toEqual({
+      Member: { role: { kind: "static", value: "USER" } },
+    });
+  });
+
+  it("should skip path default that does not reference a known enum member", () => {
+    const schema = `
+enum Role {
+  ADMIN
+  USER
+}
+
+model Member {
+  id   Int  @id
+  role Role @default(UNKNOWN)
+}
+`;
+    const result = extractDefaults(schema);
+
+    expect(result).toEqual({});
+  });
 });
