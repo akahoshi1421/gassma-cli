@@ -6,6 +6,7 @@ import { watchGenerate } from "./generate/watchGenerate";
 import { init } from "./init/initCommand";
 import { validate } from "./validate/validateCommand";
 import { getVersion } from "./version/getVersion";
+import { versionCommand } from "./version/versionCommand";
 
 const program = new Command();
 
@@ -63,8 +64,9 @@ program
 program
   .command("version")
   .description("Display the current version of GASsma CLI")
-  .action(() => {
-    console.log(`gassma v${getVersion()}`);
+  .option("--json", "Output version information as JSON")
+  .action((options) => {
+    versionCommand({ json: options.json });
   });
 
 program.parse();
