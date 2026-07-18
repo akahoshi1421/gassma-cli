@@ -39,10 +39,20 @@ class GassmaConfigEnvError extends Error {
   }
 }
 
+class GassmaConfigLoadError extends Error {
+  constructor(configPath: string, reason: unknown) {
+    const detail = reason instanceof Error ? reason.message : String(reason);
+    super(
+      `GASsmaConfigLoadError: Failed to load config file at ${configPath}.\n${detail}`,
+    );
+  }
+}
+
 export {
   ArgumentError,
   NoModelsError,
   NoDatasourceUrlError,
   ConfigFileNotFoundError,
   GassmaConfigEnvError,
+  GassmaConfigLoadError,
 };
