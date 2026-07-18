@@ -4,6 +4,7 @@ import { format } from "./format/formatCommand";
 import { generate } from "./generate/generate";
 import { watchGenerate } from "./generate/watchGenerate";
 import { init } from "./init/initCommand";
+import { studioCommand } from "./studio/studioCommand";
 import { validate } from "./validate/validateCommand";
 import { getVersion } from "./version/getVersion";
 import { versionCommand } from "./version/versionCommand";
@@ -59,6 +60,13 @@ program
   .option("--with-model", "Include a sample User model in the schema")
   .action((options) => {
     init({ output: options.output, withModel: options.withModel });
+  });
+
+program
+  .command("studio")
+  .description("Open the datasource spreadsheet in your default browser")
+  .action(() => {
+    studioCommand();
   });
 
 program
