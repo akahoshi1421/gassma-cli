@@ -71,4 +71,28 @@ describe("getOneGassmaUpdateSingleData", () => {
       "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
     );
   });
+
+  it("should omit the auto-set FK from oneToOne create children only", () => {
+    const relations: RelationsConfig = {
+      User: {
+        profile: {
+          type: "oneToOne",
+          to: "Profile",
+          field: "id",
+          reference: "userId",
+        },
+      },
+    };
+
+    const result = getOneGassmaUpdateSingleData("", "User", relations);
+
+    expect(result).toContain('"profile"?:');
+    expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">;');
+    expect(result).toContain(
+      'connectOrCreate?: { where: GassmaProfileWhereUse; create: Omit<GassmaProfileUse, "userId"> }',
+    );
+    expect(result).toContain("update?: Partial<GassmaProfileUse>");
+    expect(result).toContain("delete?: true");
+    expect(result).toContain("disconnect?: true");
+  });
 });

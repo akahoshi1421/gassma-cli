@@ -86,7 +86,6 @@ describe("getOneGassmaUpsertSingleData", () => {
           to: "User",
           field: "authorId",
           reference: "id",
-          ownsFk: true,
         },
       },
     };
@@ -106,7 +105,6 @@ describe("getOneGassmaUpsertSingleData", () => {
           to: "Post",
           field: "id",
           reference: "authorId",
-          ownsFk: false,
         },
       },
     };
@@ -135,7 +133,6 @@ describe("getOneGassmaUpsertSingleData", () => {
           to: "Post",
           field: "id",
           reference: "authorId",
-          ownsFk: false,
         },
       },
     };

@@ -10,7 +10,6 @@ describe("getNestedWriteFields", () => {
         to: "User",
         field: "authorId",
         reference: "id",
-        ownsFk: true,
       },
     },
   };
@@ -22,7 +21,17 @@ describe("getNestedWriteFields", () => {
         to: "Post",
         field: "id",
         reference: "authorId",
-        ownsFk: false,
+      },
+    },
+  };
+
+  const oneToOneRelations: RelationsConfig = {
+    User: {
+      profile: {
+        type: "oneToOne",
+        to: "Profile",
+        field: "id",
+        reference: "userId",
       },
     },
   };
@@ -73,6 +82,34 @@ describe("getNestedWriteFields", () => {
       );
     });
 
+    it("should omit the auto-set FK from oneToOne create children", () => {
+      const result = getNestedWriteFields(
+        "",
+        "User",
+        oneToOneRelations,
+        "update",
+      );
+
+      expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">;');
+      expect(result).toContain(
+        'connectOrCreate?: { where: GassmaProfileWhereUse; create: Omit<GassmaProfileUse, "userId"> }',
+      );
+    });
+
+    it("should keep non-create ops un-omitted for oneToOne", () => {
+      const result = getNestedWriteFields(
+        "",
+        "User",
+        oneToOneRelations,
+        "update",
+      );
+
+      expect(result).toContain("connect?: GassmaProfileWhereUse;");
+      expect(result).toContain("update?: Partial<GassmaProfileUse>");
+      expect(result).toContain("delete?: true");
+      expect(result).toContain("disconnect?: true");
+    });
+
     it("should NOT omit FK from manyToOne/manyToMany create children", () => {
       const relations: RelationsConfig = {
         Post: {
@@ -81,14 +118,12 @@ describe("getNestedWriteFields", () => {
             to: "User",
             field: "authorId",
             reference: "id",
-            ownsFk: true,
           },
           tags: {
             type: "manyToMany",
             to: "Tag",
             field: "id",
             reference: "id",
-            ownsFk: false,
             through: {
               sheet: "_PostToTag",
               field: "postId",
@@ -154,7 +189,6 @@ describe("getNestedWriteFields", () => {
             to: "Tag",
             field: "id",
             reference: "id",
-            ownsFk: false,
             through: {
               sheet: "_PostToTag",
               field: "postId",
@@ -179,7 +213,7 @@ describe("getNestedWriteFields", () => {
   });
 
   describe("create context", () => {
-    it("should not emit ownsFk relations (handled by the FK XOR)", () => {
+    it("should not emit manyToOne relations (handled by the FK XOR)", () => {
       const result = getNestedWriteFields(
         "",
         "Post",
@@ -225,7 +259,6 @@ describe("getNestedWriteFields", () => {
             to: "Tag",
             field: "id",
             reference: "id",
-            ownsFk: false,
             through: {
               sheet: "_PostToTag",
               field: "postId",
@@ -250,24 +283,17 @@ describe("getNestedWriteFields", () => {
     });
 
     it("should emit only create/connect/connectOrCreate for inverse oneToOne", () => {
-      const relations: RelationsConfig = {
-        User: {
-          profile: {
-            type: "oneToOne",
-            to: "Profile",
-            field: "id",
-            reference: "userId",
-            ownsFk: false,
-          },
-        },
-      };
+      const result = getNestedWriteFields(
+        "",
+        "User",
+        oneToOneRelations,
+        "create",
+      );
 
-      const result = getNestedWriteFields("", "User", relations, "create");
-
-      expect(result).toContain("create?: GassmaProfileUse");
+      expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">');
       expect(result).toContain("connect?: GassmaProfileWhereUse");
       expect(result).toContain(
-        "connectOrCreate?: { where: GassmaProfileWhereUse; create: GassmaProfileUse }",
+        'connectOrCreate?: { where: GassmaProfileWhereUse; create: Omit<GassmaProfileUse, "userId"> }',
       );
       expect(result).not.toContain("createMany?:");
       expect(result).not.toContain("update?:");

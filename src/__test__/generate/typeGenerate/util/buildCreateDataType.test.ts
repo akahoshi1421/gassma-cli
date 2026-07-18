@@ -10,7 +10,6 @@ describe("buildCreateDataType", () => {
         to: "User",
         field: "authorId",
         reference: "id",
-        ownsFk: true,
       },
     },
   };
@@ -22,7 +21,6 @@ describe("buildCreateDataType", () => {
         to: "Post",
         field: "id",
         reference: "authorId",
-        ownsFk: false,
       },
     },
   };
@@ -31,12 +29,50 @@ describe("buildCreateDataType", () => {
     expect(buildCreateDataType("", "User")).toBe("GassmaUserUse");
   });
 
-  it("should build the FK XOR for ownsFk relations", () => {
+  it("should build the FK XOR for manyToOne relations", () => {
     const result = buildCreateDataType("", "Post", postRelations);
 
     expect(result).toBe(
       'Omit<GassmaPostUse, "authorId"> & (Pick<GassmaPostUse, "authorId"> | { "author": { create?: GassmaUserUse; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: GassmaUserUse } } })',
     );
+  });
+
+  it("should build the FK XOR for the FK side of a 1:1 relation (manyToOne)", () => {
+    const relations: RelationsConfig = {
+      Profile: {
+        user: {
+          type: "manyToOne",
+          to: "User",
+          field: "userId",
+          reference: "id",
+        },
+      },
+    };
+
+    const result = buildCreateDataType("", "Profile", relations);
+
+    expect(result).toBe(
+      'Omit<GassmaProfileUse, "userId"> & (Pick<GassmaProfileUse, "userId"> | { "user": { create?: GassmaUserUse; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: GassmaUserUse } } })',
+    );
+  });
+
+  it("should not build the FK XOR for inverse oneToOne relations", () => {
+    const relations: RelationsConfig = {
+      User: {
+        profile: {
+          type: "oneToOne",
+          to: "Profile",
+          field: "id",
+          reference: "userId",
+        },
+      },
+    };
+
+    const result = buildCreateDataType("", "User", relations);
+
+    expect(result).toContain("GassmaUserUse & {");
+    expect(result).not.toContain("Pick<");
+    expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">');
   });
 
   it("should append create-context nested fields for non-FK relations", () => {

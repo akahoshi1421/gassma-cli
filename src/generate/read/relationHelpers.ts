@@ -90,28 +90,10 @@ const findInverseField = (
   });
 };
 
-const isOneToOneRelation = (
-  rel: FieldsideRelation,
-  models: ModelDeclaration[],
-): boolean => {
-  const targetModel = models.find((m) => m.name.value === rel.toModel);
-  if (!targetModel) return false;
-
-  const inverseField = findInverseField(
-    targetModel,
-    rel.modelName,
-    rel.relationName,
-  );
-  if (!inverseField) return false;
-
-  return inverseField.type.kind !== "list";
-};
-
 export {
   getRelationName,
   getFieldReferences,
   getActionValue,
   findInverseField,
-  isOneToOneRelation,
 };
 export type { FieldsideRelation };

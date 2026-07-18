@@ -20,7 +20,7 @@ const buildBaseOpTypes = (
   target: string,
 ): BaseOpTypes => {
   const childCreate =
-    rel.type === "oneToMany"
+    rel.type === "oneToMany" || rel.type === "oneToOne"
       ? `Omit<${target}Use, "${rel.reference}">`
       : `${target}Use`;
   const isList = isListRelation(rel.type);
@@ -99,7 +99,7 @@ const getNestedWriteFields = (
   if (!modelRelations) return "";
 
   const relationNames = Object.keys(modelRelations).filter(
-    (name) => context === "update" || modelRelations[name].ownsFk !== true,
+    (name) => context === "update" || modelRelations[name].type !== "manyToOne",
   );
 
   return relationNames.reduce((pre, relationName) => {

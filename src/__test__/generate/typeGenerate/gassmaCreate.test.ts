@@ -18,7 +18,6 @@ describe("getOneGassmaCreate", () => {
           to: "Post",
           field: "id",
           reference: "authorId",
-          ownsFk: false,
         },
       },
     };
@@ -48,7 +47,6 @@ describe("getOneGassmaCreate", () => {
           to: "Profile",
           field: "id",
           reference: "userId",
-          ownsFk: false,
         },
       },
     };
@@ -56,10 +54,10 @@ describe("getOneGassmaCreate", () => {
     const result = getOneGassmaCreate("", "User", relations);
 
     expect(result).toContain('"profile"?:');
-    expect(result).toContain("create?: GassmaProfileUse");
+    expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">');
     expect(result).toContain("connect?: GassmaProfileWhereUse");
     expect(result).toContain(
-      "connectOrCreate?: { where: GassmaProfileWhereUse; create: GassmaProfileUse }",
+      'connectOrCreate?: { where: GassmaProfileWhereUse; create: Omit<GassmaProfileUse, "userId"> }',
     );
   });
 
@@ -71,7 +69,6 @@ describe("getOneGassmaCreate", () => {
           to: "Post",
           field: "id",
           reference: "authorId",
-          ownsFk: false,
         },
       },
     };
@@ -85,7 +82,7 @@ describe("getOneGassmaCreate", () => {
     expect(result).not.toContain("set?:");
   });
 
-  it("should build the FK XOR for ownsFk relations", () => {
+  it("should build the FK XOR for manyToOne relations", () => {
     const relations: RelationsConfig = {
       Post: {
         author: {
@@ -93,7 +90,6 @@ describe("getOneGassmaCreate", () => {
           to: "User",
           field: "authorId",
           reference: "id",
-          ownsFk: true,
         },
       },
     };
@@ -113,14 +109,12 @@ describe("getOneGassmaCreate", () => {
           to: "User",
           field: "authorId",
           reference: "id",
-          ownsFk: true,
         },
         tags: {
           type: "manyToMany",
           to: "Tag",
           field: "id",
           reference: "id",
-          ownsFk: false,
           through: {
             sheet: "_PostToTag",
             field: "postId",
@@ -149,14 +143,12 @@ describe("getOneGassmaCreate", () => {
           to: "Post",
           field: "postId",
           reference: "id",
-          ownsFk: true,
         },
         tag: {
           type: "manyToOne",
           to: "Tag",
           field: "tagId",
           reference: "id",
-          ownsFk: true,
         },
       },
     };
@@ -201,7 +193,6 @@ describe("getOneGassmaCreate", () => {
           to: "User",
           field: "authorId",
           reference: "id",
-          ownsFk: true,
         },
       },
     };
