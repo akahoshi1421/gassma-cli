@@ -24,7 +24,7 @@ const buildCreateDataType = (
   const use = `Gassma${schemaName}${sheetName}Use`;
   const modelRelations = relations?.[sheetName] ?? {};
   const fkRelationNames = Object.keys(modelRelations).filter(
-    (name) => modelRelations[name].ownsFk === true,
+    (name) => modelRelations[name].type === "manyToOne",
   );
   const nestedFields = getNestedWriteFields(
     schemaName,
