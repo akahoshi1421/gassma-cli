@@ -88,4 +88,21 @@ describe("resolveStudioUrl", () => {
     expect(() => resolveStudioUrl()).toThrow(NoDatasourceUrlError);
     expect(() => resolveStudioUrl()).toThrow(/GASsmaNoDatasourceUrlError/);
   });
+
+  it("should resolve from a config given by the config option", () => {
+    const confDir = path.join(tmpDir, "conf");
+    fs.mkdirSync(path.join(confDir, "schemas"), { recursive: true });
+    fs.writeFileSync(
+      path.join(confDir, "schemas", "main.prisma"),
+      SCHEMA_WITHOUT_URL,
+    );
+    fs.writeFileSync(
+      path.join(confDir, "custom.config.ts"),
+      `export default { schema: "schemas", datasource: { url: "configId789" } };`,
+    );
+
+    expect(resolveStudioUrl({ config: "conf/custom.config.ts" })).toBe(
+      "https://docs.google.com/spreadsheets/d/configId789/edit",
+    );
+  });
 });

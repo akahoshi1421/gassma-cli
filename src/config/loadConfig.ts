@@ -1,22 +1,30 @@
 import fs from "fs";
 import path from "path";
 import { createJiti } from "jiti";
+import { ConfigFileNotFoundError } from "../error/mainError";
 import type { GassmaConfig } from "./defineConfig";
 
 const CONFIG_FILE_NAME = "gassma.config.ts";
 
-const loadConfig = (): GassmaConfig | undefined => {
-  const configPath = path.resolve(process.cwd(), CONFIG_FILE_NAME);
+type LoadedConfig = {
+  config: GassmaConfig;
+  filePath: string;
+};
 
-  if (!fs.existsSync(configPath)) {
-    return undefined;
+const loadConfig = (configPath?: string): LoadedConfig | undefined => {
+  const filePath = path.resolve(process.cwd(), configPath ?? CONFIG_FILE_NAME);
+
+  if (!fs.existsSync(filePath)) {
+    if (configPath === undefined) return undefined;
+    throw new ConfigFileNotFoundError(filePath);
   }
 
-  const jiti = createJiti(configPath);
-  const mod = jiti(configPath);
-  const config = (mod.default ?? mod) as GassmaConfig;
+  const jiti = createJiti(filePath);
+  const mod = jiti(filePath);
+  const config: GassmaConfig = mod.default ?? mod;
 
-  return config;
+  return { config, filePath };
 };
 
 export { loadConfig };
+export type { LoadedConfig };

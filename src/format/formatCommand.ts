@@ -6,10 +6,14 @@ import { resolveSchemaFiles } from "../config/resolveSchemaFiles";
 type FormatOptions = {
   schema?: string;
   check?: boolean;
+  config?: string;
 };
 
 async function format(options?: FormatOptions): Promise<boolean> {
-  const files = resolveSchemaFiles({ schema: options?.schema });
+  const files = resolveSchemaFiles({
+    schema: options?.schema,
+    config: options?.config,
+  });
   const schemas: [string, string][] = files.map(({ filePath }) => [
     path.basename(filePath),
     fs.readFileSync(filePath, "utf-8"),

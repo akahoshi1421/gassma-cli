@@ -54,6 +54,18 @@ describe("watchGenerate", () => {
     expect(mockGenerate).toHaveBeenCalledWith({ schema: "custom/path.prisma" });
     expect(mockResolveSchemaFiles).toHaveBeenCalledWith({
       schema: "custom/path.prisma",
+      config: undefined,
+    });
+  });
+
+  it("should pass config option to generate and resolveSchemaFiles", () => {
+    watchGenerate({ config: "conf/custom.config.ts" });
+    expect(mockGenerate).toHaveBeenCalledWith({
+      config: "conf/custom.config.ts",
+    });
+    expect(mockResolveSchemaFiles).toHaveBeenCalledWith({
+      schema: undefined,
+      config: "conf/custom.config.ts",
     });
   });
 

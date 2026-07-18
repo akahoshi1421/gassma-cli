@@ -2,9 +2,11 @@ import fs from "fs";
 import path from "path";
 import { parseSchemaPath } from "../generate/parseSchemaPath";
 import { loadConfig } from "./loadConfig";
+import type { LoadedConfig } from "./loadConfig";
 
 type SchemaOptions = {
   schema?: string;
+  config?: string;
 };
 
 type SchemaFile = {
@@ -13,16 +15,26 @@ type SchemaFile = {
 };
 
 const resolveSchemaFiles = (options: SchemaOptions): SchemaFile[] => {
+  const loaded = loadConfigIfNeeded(options);
+
   if (options.schema) {
     return resolveFromSchemaOption(options.schema);
   }
 
-  const config = loadConfig();
-  if (config?.schema) {
-    return resolveFromConfigSchema(config.schema);
+  if (loaded?.config.schema) {
+    return resolveFromConfigSchema(
+      path.resolve(path.dirname(loaded.filePath), loaded.config.schema),
+    );
   }
 
   return resolveFromDefaultDir();
+};
+
+const loadConfigIfNeeded = (
+  options: SchemaOptions,
+): LoadedConfig | undefined => {
+  if (options.config === undefined && options.schema) return undefined;
+  return loadConfig(options.config);
 };
 
 const resolveFromSchemaOption = (schema: string): SchemaFile[] => {

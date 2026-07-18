@@ -7,7 +7,10 @@ import type { GenerateOptions } from "./generate";
 const watchGenerate = (options?: GenerateOptions): (() => void) => {
   generate(options);
 
-  const files = resolveSchemaFiles({ schema: options?.schema });
+  const files = resolveSchemaFiles({
+    schema: options?.schema,
+    config: options?.config,
+  });
   const dirs = [...new Set(files.map((f) => path.dirname(f.filePath)))];
 
   console.log(`\n👀 Watching ${dirs.join(", ")} for changes...`);
