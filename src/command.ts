@@ -20,12 +20,13 @@ program
   .command("generate")
   .description("Generate type definitions from .prisma files")
   .option("--schema <path>", "Path to a specific .prisma file to generate")
+  .option("--config <path>", "Custom path to your GASsma config file")
   .option("--watch", "Watch for changes and regenerate automatically")
   .action((options) => {
     if (options.watch) {
-      watchGenerate({ schema: options.schema });
+      watchGenerate({ schema: options.schema, config: options.config });
     } else {
-      generate({ schema: options.schema });
+      generate({ schema: options.schema, config: options.config });
     }
   });
 
@@ -33,19 +34,22 @@ program
   .command("validate")
   .description("Validate .prisma files in the gassma directory")
   .option("--schema <path>", "Path to a specific .prisma file to validate")
+  .option("--config <path>", "Custom path to your GASsma config file")
   .action((options) => {
-    validate({ schema: options.schema });
+    validate({ schema: options.schema, config: options.config });
   });
 
 program
   .command("format")
   .description("Format .prisma files in the gassma directory")
   .option("--schema <path>", "Path to a specific .prisma file to format")
+  .option("--config <path>", "Custom path to your GASsma config file")
   .option("--check", "Check if files are formatted without modifying them")
   .action(async (options) => {
     const result = await format({
       schema: options.schema,
       check: options.check,
+      config: options.config,
     });
     if (options.check && !result) {
       console.error("Some files are not formatted.");
@@ -65,8 +69,9 @@ program
 program
   .command("studio")
   .description("Open the datasource spreadsheet in your default browser")
-  .action(async () => {
-    await studioCommand();
+  .option("--config <path>", "Custom path to your GASsma config file")
+  .action(async (options) => {
+    await studioCommand({ config: options.config });
   });
 
 program

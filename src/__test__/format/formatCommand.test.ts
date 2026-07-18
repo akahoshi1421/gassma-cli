@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { format } from "../../format/formatCommand";
+import { ConfigFileNotFoundError } from "../../error/mainError";
 
 describe("format", () => {
   let tmpDir: string;
@@ -79,6 +80,34 @@ describe("format", () => {
       fs.mkdirSync(dir, { recursive: true });
 
       await expect(format()).rejects.toThrow("No .prisma files found");
+    });
+  });
+
+  describe("with --config", () => {
+    it("should format a schema resolved against the config file directory", async () => {
+      const confDir = path.join(tmpDir, "conf");
+      fs.mkdirSync(path.join(confDir, "schemas"), { recursive: true });
+      const schemaPath = path.join(confDir, "schemas", "main.prisma");
+      fs.writeFileSync(
+        schemaPath,
+        "model User {\nid Int @id\nname    String\n}\n",
+      );
+      fs.writeFileSync(
+        path.join(confDir, "custom.config.ts"),
+        `export default { schema: "schemas" };`,
+      );
+
+      await format({ config: "conf/custom.config.ts" });
+
+      expect(fs.readFileSync(schemaPath, "utf-8")).toBe(
+        "model User {\n  id   Int    @id\n  name String\n}\n",
+      );
+    });
+
+    it("should throw ConfigFileNotFoundError when --config does not exist", async () => {
+      await expect(
+        format({ config: "conf/missing.config.ts" }),
+      ).rejects.toThrow(ConfigFileNotFoundError);
     });
   });
 

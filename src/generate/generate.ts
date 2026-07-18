@@ -27,14 +27,18 @@ import { jsWriter } from "./jsWriter";
 
 type GenerateOptions = {
   schema?: string;
+  config?: string;
 };
 
 function generate(options?: GenerateOptions) {
-  const allFiles = resolveSchemaFiles({ schema: options?.schema });
+  const allFiles = resolveSchemaFiles({
+    schema: options?.schema,
+    config: options?.config,
+  });
   const baseDir = findBaseDir(allFiles.map((f) => f.filePath));
   const files = filterOutputFiles(allFiles, baseDir);
-  const config = loadConfig();
-  const datasourceUrl = extractSpreadsheetId(config?.datasource?.url);
+  const loaded = loadConfig(options?.config);
+  const datasourceUrl = extractSpreadsheetId(loaded?.config.datasource?.url);
 
   console.log(
     `📁 Found ${files.length} .prisma file(s) in ${path.basename(baseDir)} directory`,

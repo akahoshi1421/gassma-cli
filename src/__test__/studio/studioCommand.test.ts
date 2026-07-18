@@ -23,4 +23,16 @@ describe("studioCommand", () => {
     expect(log).toHaveBeenCalledWith(`🚀 Opening ${URL}`);
     expect(openBrowser).toHaveBeenCalledWith(URL);
   });
+
+  it("should pass the config option to resolveStudioUrl", async () => {
+    vi.mocked(resolveStudioUrl).mockReturnValue(URL);
+    vi.mocked(openBrowser).mockResolvedValue(undefined);
+    vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    await studioCommand({ config: "conf/custom.config.ts" });
+
+    expect(resolveStudioUrl).toHaveBeenCalledWith({
+      config: "conf/custom.config.ts",
+    });
+  });
 });

@@ -3,15 +3,16 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { resolveSchemaFiles } from "../../config/resolveSchemaFiles";
+import { ConfigFileNotFoundError } from "../../error/mainError";
 
 describe("resolveSchemaFiles", () => {
   let tmpDir: string;
   let originalCwd: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "gassma-resolve-"));
     originalCwd = process.cwd();
-    process.chdir(tmpDir);
+    process.chdir(fs.mkdtempSync(path.join(os.tmpdir(), "gassma-resolve-")));
+    tmpDir = process.cwd();
   });
 
   afterEach(() => {
@@ -49,7 +50,9 @@ describe("resolveSchemaFiles", () => {
 
       const files = resolveSchemaFiles({});
       expect(files).toHaveLength(1);
-      expect(files[0].filePath).toBe(path.join("custom", "schema.prisma"));
+      expect(files[0].filePath).toBe(
+        path.join(tmpDir, "custom", "schema.prisma"),
+      );
     });
 
     it("should resolve directory from gassma.config.ts", () => {
@@ -78,6 +81,90 @@ describe("resolveSchemaFiles", () => {
       const files = resolveSchemaFiles({ schema: "gassma/override.prisma" });
       expect(files).toHaveLength(1);
       expect(files[0].displayName).toBe("override.prisma");
+    });
+  });
+
+  describe("--config option", () => {
+    it("should resolve a relative schema file against the config file directory", () => {
+      const confDir = path.join(tmpDir, "conf");
+      fs.mkdirSync(path.join(confDir, "schemas"), { recursive: true });
+      fs.writeFileSync(path.join(confDir, "schemas", "main.prisma"), "content");
+      fs.writeFileSync(
+        path.join(confDir, "custom.config.ts"),
+        `export default { schema: "schemas/main.prisma" };`,
+      );
+
+      const files = resolveSchemaFiles({ config: "conf/custom.config.ts" });
+      expect(files).toHaveLength(1);
+      expect(files[0].filePath).toBe(
+        path.join(confDir, "schemas", "main.prisma"),
+      );
+    });
+
+    it("should resolve a relative schema directory against the config file directory", () => {
+      const confDir = path.join(tmpDir, "conf");
+      fs.mkdirSync(path.join(confDir, "schemas"), { recursive: true });
+      fs.writeFileSync(path.join(confDir, "schemas", "a.prisma"), "content");
+      fs.writeFileSync(path.join(confDir, "schemas", "b.prisma"), "content");
+      fs.writeFileSync(
+        path.join(confDir, "custom.config.ts"),
+        `export default { schema: "schemas" };`,
+      );
+
+      const files = resolveSchemaFiles({ config: "conf/custom.config.ts" });
+      expect(files).toHaveLength(2);
+    });
+
+    it("should use an absolute schema path in the config as is", () => {
+      const schemaDir = path.join(tmpDir, "elsewhere");
+      fs.mkdirSync(schemaDir, { recursive: true });
+      fs.writeFileSync(path.join(schemaDir, "schema.prisma"), "content");
+      const confDir = path.join(tmpDir, "conf");
+      fs.mkdirSync(confDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(confDir, "custom.config.ts"),
+        `export default { schema: ${JSON.stringify(schemaDir)} };`,
+      );
+
+      const files = resolveSchemaFiles({ config: "conf/custom.config.ts" });
+      expect(files).toHaveLength(1);
+      expect(files[0].filePath).toBe(path.join(schemaDir, "schema.prisma"));
+    });
+
+    it("--schema should override the schema in --config", () => {
+      const dir = path.join(tmpDir, "gassma");
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, "override.prisma"), "content");
+      fs.writeFileSync(
+        path.join(tmpDir, "custom.config.ts"),
+        `export default { schema: "other/schema.prisma" };`,
+      );
+
+      const files = resolveSchemaFiles({
+        schema: "gassma/override.prisma",
+        config: "custom.config.ts",
+      });
+      expect(files).toHaveLength(1);
+      expect(files[0].displayName).toBe("override.prisma");
+    });
+
+    it("should throw ConfigFileNotFoundError when --config does not exist", () => {
+      expect(() =>
+        resolveSchemaFiles({ config: "conf/missing.config.ts" }),
+      ).toThrow(ConfigFileNotFoundError);
+    });
+
+    it("should throw for a missing --config even when --schema is given", () => {
+      const dir = path.join(tmpDir, "gassma");
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, "test.prisma"), "content");
+
+      expect(() =>
+        resolveSchemaFiles({
+          schema: "gassma/test.prisma",
+          config: "conf/missing.config.ts",
+        }),
+      ).toThrow(ConfigFileNotFoundError);
     });
   });
 

@@ -5,11 +5,16 @@ import { mergeSchemaFiles } from "../generate/mergeSchemaFiles";
 import { extractDatasourceUrl } from "../generate/read/extractDatasourceUrl";
 import { buildSpreadsheetUrl } from "./buildSpreadsheetUrl";
 
-const resolveStudioUrl = (): string => {
-  const files = resolveSchemaFiles({});
+type StudioUrlOptions = {
+  config?: string;
+};
+
+const resolveStudioUrl = (options?: StudioUrlOptions): string => {
+  const files = resolveSchemaFiles({ config: options?.config });
   const schemaText = mergeSchemaFiles(files.map((f) => f.filePath));
-  const config = loadConfig();
-  const urlOrId = extractDatasourceUrl(schemaText) ?? config?.datasource?.url;
+  const loaded = loadConfig(options?.config);
+  const urlOrId =
+    extractDatasourceUrl(schemaText) ?? loaded?.config.datasource?.url;
 
   if (urlOrId === undefined || urlOrId === null) {
     throw new NoDatasourceUrlError();
@@ -19,3 +24,4 @@ const resolveStudioUrl = (): string => {
 };
 
 export { resolveStudioUrl };
+export type { StudioUrlOptions };

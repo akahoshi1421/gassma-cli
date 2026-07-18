@@ -6,10 +6,14 @@ import { mergeSchemaFiles } from "../generate/mergeSchemaFiles";
 
 type ValidateOptions = {
   schema?: string;
+  config?: string;
 };
 
 function validate(options?: ValidateOptions) {
-  const allFiles = resolveSchemaFiles({ schema: options?.schema });
+  const allFiles = resolveSchemaFiles({
+    schema: options?.schema,
+    config: options?.config,
+  });
   const baseDir =
     allFiles.length > 0 ? path.dirname(allFiles[0].filePath) : ".";
   const files = filterOutputFiles(allFiles, baseDir);

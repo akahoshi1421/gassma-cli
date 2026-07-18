@@ -24,4 +24,17 @@ class NoDatasourceUrlError extends Error {
   }
 }
 
-export { ArgumentError, NoModelsError, NoDatasourceUrlError };
+class ConfigFileNotFoundError extends Error {
+  constructor(configPath: string) {
+    super(
+      `GASsmaConfigFileNotFoundError: config file not found at ${configPath}`,
+    );
+  }
+}
+
+export {
+  ArgumentError,
+  NoModelsError,
+  NoDatasourceUrlError,
+  ConfigFileNotFoundError,
+};
