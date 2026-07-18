@@ -20,6 +20,7 @@ import { NoModelsError } from "../error/mainError";
 import { resolveSchemaFiles } from "../config/resolveSchemaFiles";
 import { filterOutputFiles } from "../config/filterOutputFiles";
 import { loadConfig } from "../config/loadConfig";
+import { logLoadedConfig } from "../config/logLoadedConfig";
 import { extractSpreadsheetId } from "../config/extractSpreadsheetId";
 import { mergeSchemaFiles } from "./mergeSchemaFiles";
 import { writer } from "./writer";
@@ -38,6 +39,7 @@ function generate(options?: GenerateOptions) {
   const baseDir = findBaseDir(allFiles.map((f) => f.filePath));
   const files = filterOutputFiles(allFiles, baseDir);
   const loaded = loadConfig(options?.config);
+  logLoadedConfig(loaded?.filePath);
   const datasourceUrl = extractSpreadsheetId(loaded?.config.datasource?.url);
 
   console.log(
