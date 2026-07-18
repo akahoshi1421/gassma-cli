@@ -127,6 +127,11 @@ const errorClassDefinitions: ErrorClassDef[] = [
   },
   { name: "NestedWriteWithoutRelationsError", extends: "Error", params: "" },
   {
+    name: "NestedWriteTargetNotFoundError",
+    extends: "Error",
+    params: "sheetName: string, operation: string",
+  },
+  {
     name: "RelationOrderByUnsupportedTypeError",
     extends: "Error",
     params: "relationName: string, relationType: string",
