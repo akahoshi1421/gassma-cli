@@ -117,6 +117,12 @@ describe("getGassmaErrorClasses", () => {
     expect(result).toContain(
       "class NestedWriteWithoutRelationsError extends Error",
     );
+    expect(result).toContain(
+      "class NestedWriteTargetNotFoundError extends Error",
+    );
+    expect(result).toContain(
+      "constructor(sheetName: string, operation: string)",
+    );
   });
 
   it("should include orderBy errors", () => {
