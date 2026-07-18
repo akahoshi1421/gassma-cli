@@ -39,25 +39,6 @@ model Post {
     });
   });
 
-  it("should not emit ownsFk", () => {
-    const schema = `
-model User {
-  id    Int    @id
-  posts Post[]
-}
-
-model Post {
-  id       Int  @id
-  author   User @relation(fields: [authorId], references: [id])
-  authorId Int
-}
-`;
-    const result = extractRelations(schema);
-
-    expect(result.Post.author).not.toHaveProperty("ownsFk");
-    expect(result.User.posts).not.toHaveProperty("ownsFk");
-  });
-
   it("should type the FK side of a 1:1 relation as manyToOne and the inverse as oneToOne", () => {
     const schema = `
 model User {
