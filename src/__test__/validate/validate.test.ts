@@ -55,6 +55,46 @@ model User {
     );
   });
 
+  it("should return error when the schema has no models", () => {
+    const schema = `
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/gassma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+`;
+    const result = validateSchema(schema);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ type: "noModels" }),
+    );
+  });
+
+  it("should return error when the schema has only enums", () => {
+    const schema = `
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/gassma"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+`;
+    const result = validateSchema(schema);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContainEqual(
+      expect.objectContaining({ type: "noModels" }),
+    );
+  });
+
   it("should return error when no generator block exists", () => {
     const schema = `
 model User {

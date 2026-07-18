@@ -4,6 +4,7 @@ import { mapPrismaType } from "./mapPrismaType";
 import { isScalarField } from "./isScalarField";
 import { extractAddTypes, extractReplaceTypes } from "./extractAddTypes";
 import { extractEnums } from "./extractEnums";
+import { hasModelIgnoreAttribute } from "./countModels";
 
 function prismaReader(
   schemaText: string,
@@ -59,15 +60,6 @@ function prismaReader(
   });
 
   return result;
-}
-
-function hasModelIgnoreAttribute(decl: {
-  members?: ReadonlyArray<{ kind: string; path?: { value: string[] } }>;
-}): boolean {
-  return (decl.members ?? []).some(
-    (member) =>
-      member.kind === "blockAttribute" && member.path?.value[0] === "ignore",
-  );
 }
 
 function hasIgnoreAttribute(

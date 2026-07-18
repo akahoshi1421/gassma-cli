@@ -14,7 +14,9 @@ import { extractMap } from "./read/extractMap";
 import { extractMapSheets } from "./read/extractMapSheets";
 import { extractEnums } from "./read/extractEnums";
 import { extractDatasourceUrl } from "./read/extractDatasourceUrl";
+import { countModels } from "./read/countModels";
 import { prismaReader } from "./read/prismaReader";
+import { NoModelsError } from "../error/mainError";
 import { resolveSchemaFiles } from "../config/resolveSchemaFiles";
 import { filterOutputFiles } from "../config/filterOutputFiles";
 import { loadConfig } from "../config/loadConfig";
@@ -40,6 +42,11 @@ function generate(options?: GenerateOptions) {
   files.forEach((f) => console.log(`  📄 ${f.displayName}`));
 
   const schemaText = mergeSchemaFiles(files.map((f) => f.filePath));
+  if (countModels(schemaText) === 0) {
+    const location = files.length === 1 ? files[0].filePath : baseDir;
+    throw new NoModelsError(path.resolve(location));
+  }
+
   const schemaName = deriveSchemaName(baseDir, files);
   const schemaDatasourceUrl = extractDatasourceUrl(schemaText);
   const resolvedUrl = extractSpreadsheetId(

@@ -1,7 +1,8 @@
 import { parsePrismaSchema } from "@loancrate/prisma-schema-parser";
+import { countModelsInAst } from "../generate/read/countModels";
 
 type ValidationError = {
-  type: "syntax" | "missingGenerator" | "missingOutput";
+  type: "syntax" | "missingGenerator" | "missingOutput" | "noModels";
   message: string;
 };
 
@@ -39,6 +40,14 @@ const validateSchema = (schemaText: string): ValidationResult => {
       errors.push({
         type: "missingGenerator",
         message: "No generator block found. A generator block is required.",
+      });
+    }
+
+    if (countModelsInAst(ast) === 0) {
+      errors.push({
+        type: "noModels",
+        message:
+          "You don't have any models defined in your schema, so nothing will be generated. At least one model is required.",
       });
     }
   } catch (e) {
