@@ -3,8 +3,7 @@ import path from "path";
 import { createJiti } from "jiti";
 import { ConfigFileNotFoundError } from "../error/mainError";
 import type { GassmaConfig } from "./defineConfig";
-
-const CONFIG_FILE_NAME = "gassma.config.ts";
+import { findConfigFile } from "./findConfigFile";
 
 type LoadedConfig = {
   config: GassmaConfig;
@@ -12,10 +11,16 @@ type LoadedConfig = {
 };
 
 const loadConfig = (configPath?: string): LoadedConfig | undefined => {
-  const filePath = path.resolve(process.cwd(), configPath ?? CONFIG_FILE_NAME);
+  const filePath =
+    configPath === undefined
+      ? findConfigFile(process.cwd())
+      : path.resolve(process.cwd(), configPath);
+
+  if (filePath === undefined) {
+    return undefined;
+  }
 
   if (!fs.existsSync(filePath)) {
-    if (configPath === undefined) return undefined;
     throw new ConfigFileNotFoundError(filePath);
   }
 

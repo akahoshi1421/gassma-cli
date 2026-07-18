@@ -70,6 +70,80 @@ export default defineConfig({ schema: "gassma/schema.prisma" });`,
       const loaded = loadConfig();
       expect(loaded?.config).toEqual({});
     });
+
+    it.each([
+      {
+        ext: "js",
+        content: `export default { schema: "gassma/from-js.prisma" };`,
+      },
+      {
+        ext: "mjs",
+        content: `export default { schema: "gassma/from-mjs.prisma" };`,
+      },
+      {
+        ext: "cjs",
+        content: `module.exports = { schema: "gassma/from-cjs.prisma" };`,
+      },
+      {
+        ext: "mts",
+        content: `export default { schema: "gassma/from-mts.prisma" };`,
+      },
+      {
+        ext: "cts",
+        content: `export default { schema: "gassma/from-cts.prisma" };`,
+      },
+    ])("should load config from gassma.config.$ext", ({ ext, content }) => {
+      fs.writeFileSync(path.join(tmpDir, `gassma.config.${ext}`), content);
+
+      const loaded = loadConfig();
+      expect(loaded?.config).toEqual({ schema: `gassma/from-${ext}.prisma` });
+      expect(loaded?.filePath).toBe(path.join(tmpDir, `gassma.config.${ext}`));
+    });
+
+    it("should prefer gassma.config.js over gassma.config.ts", () => {
+      fs.writeFileSync(
+        path.join(tmpDir, "gassma.config.js"),
+        `export default { schema: "gassma/from-js.prisma" };`,
+      );
+      fs.writeFileSync(
+        path.join(tmpDir, "gassma.config.ts"),
+        `export default { schema: "gassma/from-ts.prisma" };`,
+      );
+
+      const loaded = loadConfig();
+      expect(loaded?.config).toEqual({ schema: "gassma/from-js.prisma" });
+      expect(loaded?.filePath).toBe(path.join(tmpDir, "gassma.config.js"));
+    });
+
+    it("should load config from .config/gassma.ts when no root config exists", () => {
+      fs.mkdirSync(path.join(tmpDir, ".config"));
+      fs.writeFileSync(
+        path.join(tmpDir, ".config", "gassma.ts"),
+        `export default { schema: "gassma/from-dot-config.prisma" };`,
+      );
+
+      const loaded = loadConfig();
+      expect(loaded?.config).toEqual({
+        schema: "gassma/from-dot-config.prisma",
+      });
+      expect(loaded?.filePath).toBe(path.join(tmpDir, ".config", "gassma.ts"));
+    });
+
+    it("should prefer root gassma.config.cts over .config/gassma.js", () => {
+      fs.writeFileSync(
+        path.join(tmpDir, "gassma.config.cts"),
+        `export default { schema: "gassma/from-root.prisma" };`,
+      );
+      fs.mkdirSync(path.join(tmpDir, ".config"));
+      fs.writeFileSync(
+        path.join(tmpDir, ".config", "gassma.js"),
+        `export default { schema: "gassma/from-dot-config.prisma" };`,
+      );
+
+      const loaded = loadConfig();
+      expect(loaded?.config).toEqual({ schema: "gassma/from-root.prisma" });
+      expect(loaded?.filePath).toBe(path.join(tmpDir, "gassma.config.cts"));
+    });
   });
 
   describe("explicit config path", () => {
