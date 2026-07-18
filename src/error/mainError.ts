@@ -14,4 +14,14 @@ class NoModelsError extends Error {
   }
 }
 
-export { ArgumentError, NoModelsError };
+class NoDatasourceUrlError extends Error {
+  constructor() {
+    super(
+      "GASsmaNoDatasourceUrlError: datasource url is not set.\n" +
+        "Please set datasource.url in gassma.config.ts or add a url to the datasource block in your schema.\n" +
+        'Example:\n  datasource db {\n    provider = "gassma"\n    url      = "https://docs.google.com/spreadsheets/d/XXXX/edit"\n  }',
+    );
+  }
+}
+
+export { ArgumentError, NoModelsError, NoDatasourceUrlError };
