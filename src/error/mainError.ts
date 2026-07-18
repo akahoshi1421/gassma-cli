@@ -32,9 +32,17 @@ class ConfigFileNotFoundError extends Error {
   }
 }
 
+class GassmaConfigEnvError extends Error {
+  constructor(name: string) {
+    super(`Cannot resolve environment variable: ${name}.`);
+    this.name = "GassmaConfigEnvError";
+  }
+}
+
 export {
   ArgumentError,
   NoModelsError,
   NoDatasourceUrlError,
   ConfigFileNotFoundError,
+  GassmaConfigEnvError,
 };
