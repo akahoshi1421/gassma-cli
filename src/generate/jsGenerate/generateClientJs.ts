@@ -93,6 +93,7 @@ const generateClientJs = (
   autoincrement?: AutoincrementConfig,
   enums?: EnumsConfig,
   datasourceUrl?: string,
+  strictUndefinedChecks?: boolean,
 ): string => {
   const lowerName = schemaName.charAt(0).toLowerCase() + schemaName.slice(1);
   const relationsJson =
@@ -161,6 +162,7 @@ const generateClientJs = (
   if (hasMapSheets) mergeProps.push(`mapSheets: ${lowerName}MapSheets`);
   if (hasAutoincrement)
     mergeProps.push(`autoincrement: ${lowerName}Autoincrement`);
+  if (strictUndefinedChecks) mergeProps.push("strictUndefinedChecks: true");
   const mergeExpr = `Object.assign({}, options, { ${mergeProps.join(", ")} })`;
 
   return `const ${lowerName}Relations = ${relationsJson};

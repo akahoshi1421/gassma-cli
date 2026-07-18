@@ -4,6 +4,7 @@ import { getOneGassmaCreateManyAndReturnData } from "./gassmaCreateMany/oneGassm
 const getGassmaCreateManyAndReturnData = (
   sheetNames: string[],
   schemaName: string,
+  strict?: boolean,
 ) => {
   const createManyAndReturnDeclare = sheetNames.reduce(
     (pre, currentSheetName) => {
@@ -15,6 +16,7 @@ const getGassmaCreateManyAndReturnData = (
         getOneGassmaCreateManyAndReturnData(
           schemaName,
           removedSpaceCurrentSheetName,
+          strict,
         )
       );
     },

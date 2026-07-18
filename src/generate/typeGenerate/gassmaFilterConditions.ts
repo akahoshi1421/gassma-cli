@@ -4,6 +4,7 @@ import { getOneSheetGassmaFilterConditions } from "./gassmaFilterConditions/oneS
 const getGassmaFilterCoditions = (
   dictYaml: Record<string, Record<string, unknown[]>>,
   schemaName: string,
+  strict?: boolean,
 ) => {
   const filterConditionsDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -17,6 +18,7 @@ const getGassmaFilterCoditions = (
           sheetContent,
           schemaName,
           removedSpaceCurrentSheetName,
+          strict,
         )
       );
     },

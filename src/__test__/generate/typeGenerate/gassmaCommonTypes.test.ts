@@ -52,4 +52,52 @@ describe("getGassmaCommonTypes", () => {
     expect(result).not.toContain("type RelationListFilter");
     expect(result).not.toContain("type RelationSingleFilter");
   });
+
+  it("should not contain skip declarations by default", () => {
+    expect(result).not.toContain("skip");
+    expect(result).not.toContain("SkipValue");
+    expect(result).not.toContain("SkipOptional");
+  });
+
+  describe("strict mode", () => {
+    const strictResult = getGassmaCommonTypes(true);
+
+    it("should declare skip symbol and SkipValue", () => {
+      expect(strictResult).toContain("const skip: unique symbol;");
+      expect(strictResult).toContain("type SkipValue = typeof skip;");
+    });
+
+    it("should declare SkipOptional helper", () => {
+      expect(strictResult).toContain(
+        "type SkipOptional<T> = { [K in keyof T]: {} extends Pick<T, K> ? T[K] | SkipValue : T[K] };",
+      );
+    });
+
+    it("should add SkipValue to FilterConditions keys", () => {
+      expect(strictResult).toContain("equals?: T | FieldRef | SkipValue");
+      expect(strictResult).toContain("not?: T | SkipValue");
+      expect(strictResult).toContain("in?: T[] | SkipValue");
+      expect(strictResult).toContain("notIn?: T[] | SkipValue");
+      expect(strictResult).toContain("lt?: T | FieldRef | SkipValue");
+      expect(strictResult).toContain("lte?: T | FieldRef | SkipValue");
+      expect(strictResult).toContain("gt?: T | FieldRef | SkipValue");
+      expect(strictResult).toContain("gte?: T | FieldRef | SkipValue");
+      expect(strictResult).toContain(
+        "contains?: string | FieldRef | SkipValue",
+      );
+      expect(strictResult).toContain(
+        "startsWith?: string | FieldRef | SkipValue",
+      );
+      expect(strictResult).toContain(
+        "endsWith?: string | FieldRef | SkipValue",
+      );
+      expect(strictResult).toContain(
+        'mode?: "default" | "insensitive" | SkipValue',
+      );
+    });
+
+    it("should not add SkipValue to array element types", () => {
+      expect(strictResult).not.toContain("(T | SkipValue)[]");
+    });
+  });
 });

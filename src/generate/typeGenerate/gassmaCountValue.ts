@@ -6,6 +6,7 @@ const getGassmaCountValue = (
   sheetNames: string[],
   schemaName: string,
   relations?: RelationsConfig,
+  strict?: boolean,
 ) => {
   return sheetNames.reduce((pre, currentSheetName) => {
     const removedSpaceCurrentSheetName =
@@ -17,6 +18,7 @@ const getGassmaCountValue = (
         schemaName,
         removedSpaceCurrentSheetName,
         relations,
+        strict,
       )
     );
   }, "");

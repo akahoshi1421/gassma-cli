@@ -37,8 +37,8 @@ const getGassmaClientOptions = (schemaName: string) => {
 };\n\n`;
 };
 
-const getGassmaCommonNamespace = () => {
-  const commonTypes = getGassmaCommonTypes();
+const getGassmaCommonNamespace = (strict?: boolean) => {
+  const commonTypes = getGassmaCommonTypes(strict);
   const errorClasses = getGassmaErrorClasses();
 
   return `export namespace Gassma {
@@ -118,8 +118,10 @@ const getGassmaMain = (
   schemaName: string,
   includeCommon?: boolean,
   options?: GassmaMainOptions,
+  strict?: boolean,
 ) => {
-  const common = includeCommon !== false ? getGassmaCommonNamespace() : "";
+  const common =
+    includeCommon !== false ? getGassmaCommonNamespace(strict) : "";
   const mainOptions = options ?? {
     dictYaml: {},
     defaults: {},

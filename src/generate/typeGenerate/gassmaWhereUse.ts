@@ -6,6 +6,7 @@ const getGassmaWhereUse = (
   dictYaml: Record<string, Record<string, unknown[]>>,
   schemaName: string,
   relations?: RelationsConfig,
+  strict?: boolean,
 ) => {
   const whereUseDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -20,6 +21,7 @@ const getGassmaWhereUse = (
           schemaName,
           removedSpaceCurrentSheetName,
           relations,
+          strict,
         )
       );
     },

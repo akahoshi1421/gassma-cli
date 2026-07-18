@@ -529,4 +529,31 @@ describe("generateClientJs", () => {
 
     expect(result).not.toContain("id:");
   });
+
+  it("should embed strictUndefinedChecks when enabled", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      true,
+    );
+
+    expect(result).toContain(
+      "Object.assign({}, options, { relations: testRelations, strictUndefinedChecks: true })",
+    );
+  });
+
+  it("should not embed strictUndefinedChecks by default", () => {
+    const result = generateClientJs({}, "Test");
+
+    expect(result).not.toContain("strictUndefinedChecks");
+  });
 });

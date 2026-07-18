@@ -4,6 +4,7 @@ import { getOneGassmaDeleteSingleData } from "./gassmaDeleteManyData/oneGassmaDe
 const getGassmaDeleteSingleData = (
   sheetNames: string[],
   schemaName: string,
+  strict?: boolean,
 ) => {
   const deleteSingleDataDeclare = sheetNames.reduce((pre, currentSheetName) => {
     const removedSpaceCurrentSheetName =
@@ -11,7 +12,11 @@ const getGassmaDeleteSingleData = (
 
     return (
       pre +
-      getOneGassmaDeleteSingleData(schemaName, removedSpaceCurrentSheetName)
+      getOneGassmaDeleteSingleData(
+        schemaName,
+        removedSpaceCurrentSheetName,
+        strict,
+      )
     );
   }, "");
 

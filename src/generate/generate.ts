@@ -3,6 +3,7 @@ import { generater } from "./generator";
 import { generateClientDts } from "./jsGenerate/generateClientDts";
 import { generateClientJs } from "./jsGenerate/generateClientJs";
 import { extractOutputPath } from "./read/extractOutputPath";
+import { extractPreviewFeatures } from "./read/extractPreviewFeatures";
 import { extractAutoincrement } from "./read/extractAutoincrement";
 import { extractDefaults } from "./read/extractDefaults";
 import { extractRelations } from "./read/extractRelations";
@@ -105,6 +106,9 @@ function generateFromSchema(
   const map = extractMap(schemaText);
   const mapSheets = extractMapSheets(schemaText);
   const enums = extractEnums(schemaText);
+  const strict = extractPreviewFeatures(schemaText).includes(
+    "strictUndefinedChecks",
+  );
 
   const resultString = generater(
     parsed,
@@ -115,6 +119,7 @@ function generateFromSchema(
     Object.keys(updatedAt),
     Object.keys(autoincrement),
     optionalFields,
+    strict,
   );
   const clientDts = generateClientDts(schemaName, enums);
   const mergedDts = resultString + "\n" + clientDts;
@@ -132,6 +137,7 @@ function generateFromSchema(
     autoincrement,
     enums,
     datasourceUrl,
+    strict,
   );
   jsWriter(clientJs, `${baseName}Client`, outputPath);
 

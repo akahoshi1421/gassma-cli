@@ -4,6 +4,7 @@ import { getOneGassmaHavingCore } from "./gassmaHavingCore/oneGassmaHavingCore";
 const getGassmaHavingCore = (
   dictYaml: Record<string, Record<string, unknown[]>>,
   schemaName: string,
+  strict?: boolean,
 ) => {
   const havingCoreDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -17,6 +18,7 @@ const getGassmaHavingCore = (
           sheetContent,
           schemaName,
           removedSpaceCurrentSheetName,
+          strict,
         )
       );
     },

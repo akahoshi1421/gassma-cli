@@ -6,6 +6,7 @@ const getGassmaOrderBy = (
   dictYaml: Record<string, Record<string, unknown[]>>,
   schemaName: string,
   relations?: RelationsConfig,
+  strict?: boolean,
 ) => {
   const orderByDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -20,6 +21,7 @@ const getGassmaOrderBy = (
           schemaName,
           removedSpaceCurrentSheetName,
           relations,
+          strict,
         )
       );
     },

@@ -1,7 +1,10 @@
+import { skipUnion } from "../util/skipUnion";
+
 const getOneGassmaGroupByData = (
   sheetContent: Record<string, unknown[]>,
   schemaName: string,
   sheetName: string,
+  strict?: boolean,
 ) => {
   const byArrayData = Object.keys(sheetContent).reduce(
     (pre, columnName, index) => {
@@ -25,9 +28,11 @@ const getOneGassmaGroupByData = (
     return `${pre}"${removedQuestionMark}" | `;
   }, "");
 
+  const sk = skipUnion(strict);
+
   return `\nexport type Gassma${schemaName}${sheetName}GroupByData = Gassma${schemaName}${sheetName}AggregateData & {
   by: ${byData}(${byArrayData})[];
-  having?: Gassma${schemaName}${sheetName}HavingUse;
+  having?: Gassma${schemaName}${sheetName}HavingUse${sk};
 };
 `;
 };
