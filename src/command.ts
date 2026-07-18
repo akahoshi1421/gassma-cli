@@ -65,8 +65,8 @@ program
 program
   .command("studio")
   .description("Open the datasource spreadsheet in your default browser")
-  .action(() => {
-    studioCommand();
+  .action(async () => {
+    await studioCommand();
   });
 
 program

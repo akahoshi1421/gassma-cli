@@ -13,11 +13,12 @@ describe("studioCommand", () => {
     vi.restoreAllMocks();
   });
 
-  it("should print the resolved URL and open the browser", () => {
+  it("should print the resolved URL and open the browser", async () => {
     vi.mocked(resolveStudioUrl).mockReturnValue(URL);
+    vi.mocked(openBrowser).mockResolvedValue(undefined);
     const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
-    studioCommand();
+    await studioCommand();
 
     expect(log).toHaveBeenCalledWith(`🚀 Opening ${URL}`);
     expect(openBrowser).toHaveBeenCalledWith(URL);

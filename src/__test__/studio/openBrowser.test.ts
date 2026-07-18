@@ -1,9 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getOpenCommand } from "../../studio/getOpenCommand";
 
-const spawnMock = vi.hoisted(() => vi.fn(() => ({ unref: vi.fn() })));
+const openMock = vi.hoisted(() => vi.fn(async () => undefined));
 
-vi.mock("child_process", () => ({ spawn: spawnMock }));
+vi.mock("open", () => ({ default: openMock }));
 
 import { openBrowser } from "../../studio/openBrowser";
 
@@ -11,16 +10,13 @@ const URL = "https://docs.google.com/spreadsheets/d/abc123/edit";
 
 describe("openBrowser", () => {
   afterEach(() => {
-    spawnMock.mockClear();
+    openMock.mockClear();
   });
 
-  it("should spawn the platform open command detached with stdio ignored", () => {
-    openBrowser(URL);
+  it("should call open once with the resolved url", async () => {
+    await openBrowser(URL);
 
-    const expected = getOpenCommand(process.platform, URL);
-    expect(spawnMock).toHaveBeenCalledWith(expected.command, expected.args, {
-      detached: true,
-      stdio: "ignore",
-    });
+    expect(openMock).toHaveBeenCalledTimes(1);
+    expect(openMock).toHaveBeenCalledWith(URL);
   });
 });
