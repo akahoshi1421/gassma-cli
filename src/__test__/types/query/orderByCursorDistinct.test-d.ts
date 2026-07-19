@@ -1,4 +1,9 @@
-import type { GassmaClient } from "../__generated__/client";
+import { expectTypeOf } from "vitest";
+import type {
+  GassmaClient,
+  GassmaUserFindData,
+  GassmaUserFindFirstData,
+} from "../__generated__/client";
 
 declare const client: GassmaClient;
 
@@ -85,4 +90,39 @@ declare const client: GassmaClient;
 // take / skip: number
 {
   client.User.findMany({ where: {}, take: 10, skip: 5 });
+}
+
+// findFirst: take / skip / distinct / cursor を受け付ける
+{
+  client.User.findFirst({ where: {}, take: 1, skip: 2 });
+  client.User.findFirst({ where: {}, take: -1 });
+  client.User.findFirst({ where: {}, distinct: "email" });
+  client.User.findFirst({ where: {}, distinct: ["email", "name"] });
+  client.User.findFirst({ where: {}, cursor: { id: 1 }, skip: 1, take: 1 });
+}
+
+// findFirst: take / skip / distinct の型は FindData と同一
+{
+  expectTypeOf<GassmaUserFindFirstData["take"]>().toEqualTypeOf<
+    GassmaUserFindData["take"]
+  >();
+  expectTypeOf<GassmaUserFindFirstData["skip"]>().toEqualTypeOf<
+    GassmaUserFindData["skip"]
+  >();
+  expectTypeOf<GassmaUserFindFirstData["distinct"]>().toEqualTypeOf<
+    GassmaUserFindData["distinct"]
+  >();
+  expectTypeOf<GassmaUserFindFirstData["take"]>().toEqualTypeOf<
+    number | undefined
+  >();
+}
+
+// findFirst: 存在しないフィールドの distinct は拒否
+{
+  // @ts-expect-error "nonexistent" は User のフィールドでない
+  client.User.findFirst({ where: {}, distinct: "nonexistent" });
+  // @ts-expect-error take は number
+  client.User.findFirst({ where: {}, take: "1" });
+  // @ts-expect-error skip は number
+  client.User.findFirst({ where: {}, skip: "2" });
 }

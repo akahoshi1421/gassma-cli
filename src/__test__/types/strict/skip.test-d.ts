@@ -1,4 +1,9 @@
+import { expectTypeOf } from "vitest";
 import { Gassma, GassmaClient } from "../__generated__/clientStrict";
+import type {
+  GassmaUserFindData,
+  GassmaUserFindFirstData,
+} from "../__generated__/clientStrict";
 import { Gassma as PlainGassma } from "../__generated__/client";
 
 declare const client: GassmaClient;
@@ -61,6 +66,34 @@ declare const client: GassmaClient;
   client.User.findMany({ select: { id: Gassma.skip } });
   client.User.findMany({ omit: { id: Gassma.skip } });
   client.User.findMany({ include: { posts: Gassma.skip } });
+}
+
+// findFirst のトップレベルのオプショナル引数に skip を渡せる
+{
+  client.User.findFirst({
+    orderBy: Gassma.skip,
+    take: Gassma.skip,
+    skip: Gassma.skip,
+    cursor: Gassma.skip,
+    distinct: Gassma.skip,
+    include: Gassma.skip,
+  });
+}
+
+// findFirst の take/skip/distinct は strict でも FindData と同形（SkipValue 込み）
+{
+  expectTypeOf<GassmaUserFindFirstData["take"]>().toEqualTypeOf<
+    GassmaUserFindData["take"]
+  >();
+  expectTypeOf<GassmaUserFindFirstData["skip"]>().toEqualTypeOf<
+    GassmaUserFindData["skip"]
+  >();
+  expectTypeOf<GassmaUserFindFirstData["distinct"]>().toEqualTypeOf<
+    GassmaUserFindData["distinct"]
+  >();
+  expectTypeOf<GassmaUserFindFirstData["take"]>().toEqualTypeOf<
+    number | Gassma.SkipValue | undefined
+  >();
 }
 
 // create: オプショナルなフィールド値に skip を渡せる
