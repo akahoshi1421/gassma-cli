@@ -110,7 +110,9 @@ describe("generater", () => {
 
   it("should include result extension types", () => {
     expect(result).toContain("export type GassmaResultScalars<M> =");
-    expect(result).toContain("export type GassmaResultExtension<R_> = {");
+    expect(result).toContain(
+      "export type GassmaResultExtension<R_, RC_, CMap> = {",
+    );
     expect(result).toContain("export type GassmaComputedMap<CMap, R> = {");
     expect(result).toContain("export type GassmaExtendsFn<O extends");
     expect(result).toContain("export type GassmaExtendedClient<O extends");

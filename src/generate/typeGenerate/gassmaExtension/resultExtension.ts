@@ -39,9 +39,21 @@ export type ${prefix}ResultShape = {
   [M in ${prefix}ModelName | "$allModels"]?: unknown;
 };
 
-export type ${prefix}ResultExtension<R_> = {
+export type ${prefix}ResultComputeSlots<RC_> = {
+  [M in keyof RC_]?: { [F in keyof RC_[M]]?: { compute: RC_[M][F] } };
+};
+
+export type ${prefix}ResultComputedKeys<R_, CMap, M> =
+  keyof Gassma.At<R_, M> | keyof Gassma.At<R_, "$allModels"> | keyof Gassma.At<CMap, M>;
+
+export type ${prefix}ResultComputedTypes<RC_, CMap, M> = Gassma.MergeShape<
+  Gassma.At<CMap, M>,
+  Gassma.MergeShape<Gassma.SlotReturns<Gassma.At<RC_, "$allModels">>, Gassma.SlotReturns<Gassma.At<RC_, M>>>
+>;
+
+export type ${prefix}ResultExtension<R_, RC_, CMap> = {
   [M in keyof R_]: {
-    [F in keyof R_[M]]?: Gassma.ResultField<${prefix}ResultScalars<M>, R_[M][F]>;
+    [F in keyof R_[M]]?: Gassma.ResultField<${prefix}ResultScalars<M>, R_[M][F], ${prefix}ResultComputedKeys<R_, CMap, M>, ${prefix}ResultComputedTypes<RC_, CMap, M>>;
   };
 };
 
@@ -58,9 +70,9 @@ export type ${prefix}ComputedMap<CMap, R> = {
 ${computedMapEntries}
 };
 
-export type ${prefix}ExtendsFn<O extends ${prefix}GlobalOmitConfig, CMap> = <R_ extends ${prefix}ResultShape = {}, R extends ${prefix}ResultConfig = {}>(extension: {
+export type ${prefix}ExtendsFn<O extends ${prefix}GlobalOmitConfig, CMap> = <R_ extends ${prefix}ResultShape = {}, RC_ extends ${prefix}ResultShape = {}, R extends ${prefix}ResultConfig = {}>(extension: {
   query?: ${prefix}QueryExtension<O>;
-  result?: ${prefix}ResultExtension<R_> & R;
+  result?: ${prefix}ResultExtension<R_, RC_, CMap> & ${prefix}ResultComputeSlots<RC_> & R;
 }) => ${prefix}ExtendedClient<O, ${prefix}ComputedMap<CMap, R>>;
 
 export type ${prefix}ExtendedClient<O extends ${prefix}GlobalOmitConfig = {}, CMap = {}> = {
