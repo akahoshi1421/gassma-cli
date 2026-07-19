@@ -109,7 +109,7 @@ describe("strict WhereUse", () => {
       true,
     );
     expect(postResult).toContain(
-      '"author"?: { is?: GassmaUserWhereUse | null | Gassma.SkipValue; isNot?: GassmaUserWhereUse | null | Gassma.SkipValue } | Gassma.SkipValue;',
+      '"author"?: { is?: GassmaUserWhereUse | null | Gassma.SkipValue; isNot?: GassmaUserWhereUse | null | Gassma.SkipValue } | null | Gassma.SkipValue;',
     );
   });
 

@@ -34,8 +34,9 @@ describe("getOneGassmaWhereUse", () => {
     const result = getOneGassmaWhereUse(sheetContent, "", "User", relations);
 
     expect(result).toContain(
-      '"posts"?: { some?: GassmaPostWhereUse; every?: GassmaPostWhereUse; none?: GassmaPostWhereUse }',
+      '"posts"?: { some?: GassmaPostWhereUse; every?: GassmaPostWhereUse; none?: GassmaPostWhereUse };',
     );
+    expect(result).not.toContain("} | null");
   });
 
   it("should add manyToOne relation filter with is/isNot", () => {
@@ -53,7 +54,7 @@ describe("getOneGassmaWhereUse", () => {
     const result = getOneGassmaWhereUse(sheetContent, "", "Post", relations);
 
     expect(result).toContain(
-      '"author"?: { is?: GassmaUserWhereUse | null; isNot?: GassmaUserWhereUse | null }',
+      '"author"?: { is?: GassmaUserWhereUse | null; isNot?: GassmaUserWhereUse | null } | null;',
     );
   });
 
@@ -72,7 +73,7 @@ describe("getOneGassmaWhereUse", () => {
     const result = getOneGassmaWhereUse(sheetContent, "", "User", relations);
 
     expect(result).toContain(
-      '"profile"?: { is?: GassmaProfileWhereUse | null; isNot?: GassmaProfileWhereUse | null }',
+      '"profile"?: { is?: GassmaProfileWhereUse | null; isNot?: GassmaProfileWhereUse | null } | null;',
     );
   });
 
@@ -91,8 +92,9 @@ describe("getOneGassmaWhereUse", () => {
     const result = getOneGassmaWhereUse(sheetContent, "", "Post", relations);
 
     expect(result).toContain(
-      '"tags"?: { some?: GassmaTagWhereUse; every?: GassmaTagWhereUse; none?: GassmaTagWhereUse }',
+      '"tags"?: { some?: GassmaTagWhereUse; every?: GassmaTagWhereUse; none?: GassmaTagWhereUse };',
     );
+    expect(result).not.toContain("} | null");
   });
 
   it("should not add relation fields when no relations for model", () => {

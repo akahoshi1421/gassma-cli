@@ -77,6 +77,24 @@ declare const client: GassmaClient;
   client.Post.findMany({ where: { author: { is: null } } });
 }
 
+// where: to-one relation に直接 null（is: null のショートハンド）
+{
+  client.User.findMany({ where: { profile: null } });
+  client.Post.findMany({ where: { author: null } });
+  client.Category.findMany({ where: { parent: null } });
+  // gassma に required 概念はないため FK 側 oneToOne も null 可（Prisma との差異）
+  client.Profile.findMany({ where: { user: null } });
+  client.User.findMany({ where: { posts: { some: { author: null } } } });
+}
+
+// where: list relation に直接 null は渡せない
+{
+  // @ts-expect-error posts は oneToMany なので null 不可
+  client.User.findMany({ where: { posts: null } });
+  // @ts-expect-error tags は manyToMany なので null 不可
+  client.Post.findMany({ where: { tags: null } });
+}
+
 // where: nullable フィールドの FilterConditions で null を使える
 {
   client.User.findMany({ where: { name: { equals: null } } });
