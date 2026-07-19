@@ -6,6 +6,7 @@ const getGassmaInclude = (
   sheetNames: string[],
   schemaName: string,
   relations?: RelationsConfig,
+  strict?: boolean,
 ) => {
   return sheetNames.reduce((pre, currentSheetName) => {
     const removedSpaceCurrentSheetName =
@@ -13,7 +14,12 @@ const getGassmaInclude = (
 
     return (
       pre +
-      getOneGassmaInclude(schemaName, removedSpaceCurrentSheetName, relations)
+      getOneGassmaInclude(
+        schemaName,
+        removedSpaceCurrentSheetName,
+        relations,
+        strict,
+      )
     );
   }, "");
 };

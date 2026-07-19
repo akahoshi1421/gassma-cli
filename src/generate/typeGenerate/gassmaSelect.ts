@@ -8,6 +8,7 @@ const getGassmaSelect = (
   dictYaml: Record<string, Record<string, unknown[]>>,
   schemaName: string,
   relations?: RelationsConfig,
+  strict?: boolean,
 ) => {
   const selectDeclare = Object.keys(dictYaml).reduce(
     (pre, currentSheetName) => {
@@ -21,17 +22,20 @@ const getGassmaSelect = (
           sheetContent,
           schemaName,
           removedSpaceCurrentSheetName,
+          strict,
         ) +
         getOneGassmaNumberSelect(
           sheetContent,
           schemaName,
           removedSpaceCurrentSheetName,
+          strict,
         ) +
         getOneGassmaFindSelect(
           sheetContent,
           schemaName,
           removedSpaceCurrentSheetName,
           relations,
+          strict,
         )
       );
     },

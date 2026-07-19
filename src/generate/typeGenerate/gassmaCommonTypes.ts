@@ -1,5 +1,16 @@
-const getGassmaCommonTypes = () => {
-  return `  type RelationsConfig = Record<string, Record<string, unknown>>;
+const getSkipDeclarations = () => {
+  return `  const skip: unique symbol;
+  type SkipValue = typeof skip;
+  type SkipOptional<T> = { [K in keyof T]: {} extends Pick<T, K> ? T[K] | SkipValue : T[K] };
+
+`;
+};
+
+const getGassmaCommonTypes = (strict?: boolean) => {
+  const skipDecls = strict ? getSkipDeclarations() : "";
+  const sk = strict ? " | SkipValue" : "";
+
+  return `${skipDecls}  type RelationsConfig = Record<string, Record<string, unknown>>;
 
   type NumberOperation = {
     increment?: number;
@@ -14,18 +25,18 @@ const getGassmaCommonTypes = () => {
   };
 
   type FilterConditions<T> = {
-    equals?: T | FieldRef;
-    not?: T;
-    in?: T[];
-    notIn?: T[];
-    lt?: T | FieldRef;
-    lte?: T | FieldRef;
-    gt?: T | FieldRef;
-    gte?: T | FieldRef;
-    contains?: string | FieldRef;
-    startsWith?: string | FieldRef;
-    endsWith?: string | FieldRef;
-    mode?: "default" | "insensitive";
+    equals?: T | FieldRef${sk};
+    not?: T${sk};
+    in?: T[]${sk};
+    notIn?: T[]${sk};
+    lt?: T | FieldRef${sk};
+    lte?: T | FieldRef${sk};
+    gt?: T | FieldRef${sk};
+    gte?: T | FieldRef${sk};
+    contains?: string | FieldRef${sk};
+    startsWith?: string | FieldRef${sk};
+    endsWith?: string | FieldRef${sk};
+    mode?: "default" | "insensitive"${sk};
   };
 
   type TrueKeys<T> = { [K in keyof T]: T[K] extends true ? K : never }[keyof T];

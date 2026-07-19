@@ -6,6 +6,7 @@ const getGassmaCreate = (
   sheetNames: string[],
   schemaName: string,
   relations?: RelationsConfig,
+  strict?: boolean,
 ) => {
   const createTypeDeclare = sheetNames.reduce((pre, currentSheetName) => {
     const removedSpaceCurrentSheetName =
@@ -13,7 +14,12 @@ const getGassmaCreate = (
 
     return (
       pre +
-      getOneGassmaCreate(schemaName, removedSpaceCurrentSheetName, relations)
+      getOneGassmaCreate(
+        schemaName,
+        removedSpaceCurrentSheetName,
+        relations,
+        strict,
+      )
     );
   }, "");
 

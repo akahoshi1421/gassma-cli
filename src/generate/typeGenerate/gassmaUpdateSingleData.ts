@@ -6,6 +6,7 @@ const getGassmaUpdateSingleData = (
   sheetNames: string[],
   schemaName: string,
   relations?: RelationsConfig,
+  strict?: boolean,
 ) => {
   const updateSingleDataDeclare = sheetNames.reduce((pre, currentSheetName) => {
     const removedSpaceCurrentSheetName =
@@ -17,6 +18,7 @@ const getGassmaUpdateSingleData = (
         schemaName,
         removedSpaceCurrentSheetName,
         relations,
+        strict,
       )
     );
   }, "");

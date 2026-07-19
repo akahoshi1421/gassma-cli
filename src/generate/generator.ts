@@ -48,15 +48,22 @@ const generater = (
   updatedAtModels?: string[],
   autoincrementModels?: string[],
   optionalFields?: Record<string, string[]>,
+  strict?: boolean,
 ) => {
   const schema = schemaName ?? "";
   const sheetNames = Object.keys(dictYaml);
-  let result = getGassmaMain(sheetNames, schema, includeCommon, {
-    dictYaml,
-    defaults: defaults ?? {},
-    updatedAtModels: updatedAtModels ?? [],
-    autoincrementModels: autoincrementModels ?? [],
-  });
+  let result = getGassmaMain(
+    sheetNames,
+    schema,
+    includeCommon,
+    {
+      dictYaml,
+      defaults: defaults ?? {},
+      updatedAtModels: updatedAtModels ?? [],
+      autoincrementModels: autoincrementModels ?? [],
+    },
+    strict,
+  );
 
   result += getGassmaSheet(sheetNames, schema);
   result += getGassmaController(sheetNames, schema);
@@ -64,29 +71,29 @@ const generater = (
     result += getGassmaManyCount();
   }
   result += getGassmaAnyUse(dictYaml, schema, optionalFields ?? {});
-  result += getGassmaCreate(sheetNames, schema, relations);
-  result += getGassmaCreateMany(sheetNames, schema);
-  result += getGassmaCreateManyAndReturnData(sheetNames, schema);
-  result += getGassmaFilterCoditions(dictYaml, schema);
-  result += getGassmaWhereUse(dictYaml, schema, relations);
-  result += getGassmaHavingCore(dictYaml, schema);
-  result += getGassmaHavingUse(dictYaml, schema);
-  result += getGassmaFindData(dictYaml, schema);
-  result += getGassmaFindFirstData(sheetNames, schema);
+  result += getGassmaCreate(sheetNames, schema, relations, strict);
+  result += getGassmaCreateMany(sheetNames, schema, strict);
+  result += getGassmaCreateManyAndReturnData(sheetNames, schema, strict);
+  result += getGassmaFilterCoditions(dictYaml, schema, strict);
+  result += getGassmaWhereUse(dictYaml, schema, relations, strict);
+  result += getGassmaHavingCore(dictYaml, schema, strict);
+  result += getGassmaHavingUse(dictYaml, schema, strict);
+  result += getGassmaFindData(dictYaml, schema, strict);
+  result += getGassmaFindFirstData(sheetNames, schema, strict);
   result += getGassmaFindManyData(sheetNames, schema);
-  result += getGassmaUpdateData(sheetNames, schema);
-  result += getGassmaUpdateSingleData(sheetNames, schema, relations);
-  result += getGassmaUpsertSingleData(sheetNames, schema, relations);
-  result += getGassmaDeleteData(sheetNames, schema);
-  result += getGassmaDeleteSingleData(sheetNames, schema);
-  result += getGassmaAggregateData(sheetNames, schema);
-  result += getGassmaGroupByData(dictYaml, schema);
-  result += getGassmaInclude(sheetNames, schema, relations);
-  result += getGassmaCountValue(sheetNames, schema, relations);
-  result += getGassmaOrderBy(dictYaml, schema, relations);
-  result += getGassmaSelect(dictYaml, schema, relations);
-  result += getGassmaOmit(dictYaml, schema);
-  result += getGassmaCountData(sheetNames, schema);
+  result += getGassmaUpdateData(sheetNames, schema, strict);
+  result += getGassmaUpdateSingleData(sheetNames, schema, relations, strict);
+  result += getGassmaUpsertSingleData(sheetNames, schema, relations, strict);
+  result += getGassmaDeleteData(sheetNames, schema, strict);
+  result += getGassmaDeleteSingleData(sheetNames, schema, strict);
+  result += getGassmaAggregateData(sheetNames, schema, strict);
+  result += getGassmaGroupByData(dictYaml, schema, strict);
+  result += getGassmaInclude(sheetNames, schema, relations, strict);
+  result += getGassmaCountValue(sheetNames, schema, relations, strict);
+  result += getGassmaOrderBy(dictYaml, schema, relations, strict);
+  result += getGassmaSelect(dictYaml, schema, relations, strict);
+  result += getGassmaOmit(dictYaml, schema, strict);
+  result += getGassmaCountData(sheetNames, schema, strict);
   result += getGassmaCreateReturn(dictYaml, schema);
   result += getGassmaDefaultFindResult(sheetNames, schema);
   result += getGassmaFindResult(sheetNames, schema, relations);

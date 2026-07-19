@@ -6,6 +6,7 @@ const getGassmaUpsertSingleData = (
   sheetNames: string[],
   schemaName: string,
   relations?: RelationsConfig,
+  strict?: boolean,
 ) => {
   const upsertSingleDataDeclare = sheetNames.reduce((pre, currentSheetName) => {
     const removedSpaceCurrentSheetName =
@@ -17,6 +18,7 @@ const getGassmaUpsertSingleData = (
         schemaName,
         removedSpaceCurrentSheetName,
         relations,
+        strict,
       )
     );
   }, "");
