@@ -49,9 +49,6 @@ const getGassmaCommonTypes = (strict?: boolean) => {
     [F in keyof Fields]: Fields[F] extends { compute: (...args: never[]) => infer V } ? V : never;
   };
   type ComputedOf<R, M> = MergeShape<ComputedReturns<At<R, "$allModels">>, ComputedReturns<At<R, M>>>;
-  type SlotReturns<Slots> = {
-    [F in keyof Slots]: Slots[F] extends (...args: never[]) => infer V ? V : never;
-  };
   type ResultField<Scalars, S, CKeys extends PropertyKey = never, CTypes = {}> = {
     needs?: { [K in keyof S]: K extends keyof Scalars | CKeys ? S[K] : never } & { [K in keyof Scalars]?: boolean } & { [K in CKeys]?: boolean };
     compute(record: { [K in keyof S as S[K] extends true ? K & (keyof Scalars | CKeys) : never]: K extends keyof CTypes ? CTypes[K] : K extends keyof Scalars ? Scalars[K] : never }): unknown;
