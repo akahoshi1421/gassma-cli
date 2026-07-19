@@ -40,13 +40,21 @@ describe("strict FindData", () => {
 });
 
 describe("strict FindFirstData", () => {
-  const result = getOneGassmaFindFirstData("", "User", true);
+  const result = getOneGassmaFindFirstData(
+    { id: ["number"] },
+    "",
+    "User",
+    true,
+  );
 
   it("should add SkipValue to optional top-level arguments", () => {
     expect(result).toContain("where?: GassmaUserWhereUse | Gassma.SkipValue;");
     expect(result).toContain(
       "orderBy?: GassmaUserOrderBy | GassmaUserOrderBy[] | Gassma.SkipValue;",
     );
+    expect(result).toContain("take?: number | Gassma.SkipValue;");
+    expect(result).toContain("skip?: number | Gassma.SkipValue;");
+    expect(result).toContain('distinct?: "id" | ("id")[] | Gassma.SkipValue;');
     expect(result).toContain("include?: GassmaUserInclude | Gassma.SkipValue;");
     expect(result).toContain(
       "cursor?: Gassma.SkipOptional<Partial<GassmaUserUse>> | Gassma.SkipValue;",
@@ -60,7 +68,9 @@ describe("strict FindFirstData", () => {
   });
 
   it("should keep non-strict output unchanged", () => {
-    expect(getOneGassmaFindFirstData("", "User")).not.toContain("Skip");
+    expect(
+      getOneGassmaFindFirstData({ id: ["number"] }, "", "User"),
+    ).not.toContain("Skip");
   });
 });
 
