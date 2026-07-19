@@ -41,14 +41,40 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
   });
 }
 
-// needs にスカラー以外のキーは書けない
+// needs にはスカラーと同 extension 内の算出フィールド名だけが書ける
 {
   client.$extends({
     result: {
       User: {
+        ok: {
+          needs: { email: true },
+          compute: (user) => user.email,
+        },
+        okComputed: {
+          needs: { ok: true },
+          compute: () => 1,
+        },
         bad: {
-          // @ts-expect-error nope というスカラーは存在しない
+          // @ts-expect-error nope はスカラーでも算出フィールドでもない
           needs: { nope: true },
+          compute: () => 1,
+        },
+      },
+    },
+  });
+}
+
+// 他モデルの算出フィールドは needs に書けない
+{
+  client.$extends({
+    result: {
+      User: {
+        userOnly: { needs: { email: true }, compute: (user) => user.email },
+      },
+      Post: {
+        bad: {
+          // @ts-expect-error userOnly は User の算出フィールド
+          needs: { userOnly: true },
           compute: () => 1,
         },
       },
@@ -339,4 +365,177 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
 
   const empty = client.$extends({});
   expectTypeOf(empty.User.findMany({})[0].id).toEqualTypeOf<number>();
+}
+
+// 算出フィールド依存: 依存先の compute 戻り型が依存元の compute 引数に現れる
+{
+  const extended = client.$extends({
+    result: {
+      User: {
+        emailLen: {
+          needs: { email: true },
+          compute: (user: { email: string }) => user.email.length,
+        },
+        doubledLen: {
+          needs: { emailLen: true },
+          compute: (user) => {
+            expectTypeOf(user.emailLen).toEqualTypeOf<number>();
+            // @ts-expect-error emailLen は number なので toUpperCase は呼べない
+            user.emailLen.toUpperCase();
+            return user.emailLen * 2;
+          },
+        },
+      },
+    },
+  });
+  const rows = extended.User.findMany({});
+  expectTypeOf(rows[0].emailLen).toEqualTypeOf<number>();
+  expectTypeOf(rows[0].doubledLen).toEqualTypeOf<number>();
+}
+
+// 宣言順非依存: 依存元を依存先より先に宣言しても型が付く
+{
+  const extended = client.$extends({
+    result: {
+      User: {
+        doubledFirst: {
+          needs: { lenLater: true },
+          compute: (user) => {
+            expectTypeOf(user.lenLater).toEqualTypeOf<number>();
+            return user.lenLater * 2;
+          },
+        },
+        lenLater: {
+          needs: { email: true },
+          compute: (user: { email: string }) => user.email.length,
+        },
+      },
+    },
+  });
+  const rows = extended.User.findMany({});
+  expectTypeOf(rows[0].doubledFirst).toEqualTypeOf<number>();
+  expectTypeOf(rows[0].lenLater).toEqualTypeOf<number>();
+}
+
+// $allModels の算出フィールドへモデル固有算出から依存できる
+{
+  const extended = client.$extends({
+    result: {
+      $allModels: {
+        tag: { compute: () => "t" },
+      },
+      User: {
+        tagged: {
+          needs: { tag: true },
+          compute: (user) => {
+            expectTypeOf(user.tag).toEqualTypeOf<string>();
+            return `#${user.tag}`;
+          },
+        },
+      },
+    },
+  });
+  const rows = extended.User.findMany({});
+  expectTypeOf(rows[0].tagged).toEqualTypeOf<string>();
+  expectTypeOf(rows[0].tag).toEqualTypeOf<string>();
+}
+
+// 未注釈（context-sensitive）な依存先: needs は通り結果型も正しい。
+// compute 引数の値型のみ TS 推論の限界で never（依存先に注釈を付ければ実型になる）。
+{
+  const extended = client.$extends({
+    result: {
+      User: {
+        rawLen: {
+          needs: { email: true },
+          compute: (user) => user.email.length,
+        },
+        viaRaw: {
+          needs: { rawLen: true },
+          compute: (user) => {
+            expectTypeOf(user.rawLen).toBeNever();
+            return 1;
+          },
+        },
+      },
+    },
+  });
+  const rows = extended.User.findMany({});
+  expectTypeOf(rows[0].rawLen).toEqualTypeOf<number>();
+  expectTypeOf(rows[0].viaRaw).toEqualTypeOf<number>();
+}
+
+// チェーン $extends 越しの算出フィールド依存（Prisma docs パターン）は完全に型が付く
+{
+  const extended = client
+    .$extends({
+      result: {
+        User: {
+          fullName: {
+            needs: { email: true },
+            compute: (user) => `x${user.email}`,
+          },
+        },
+      },
+    })
+    .$extends({
+      result: {
+        User: {
+          titled: {
+            needs: { fullName: true, id: true },
+            compute: (user) => {
+              expectTypeOf(user.fullName).toEqualTypeOf<string>();
+              expectTypeOf(user.id).toEqualTypeOf<number>();
+              // @ts-expect-error fullName は string なので toFixed は呼べない
+              user.fullName.toFixed();
+              return `${user.id}: ${user.fullName}`;
+            },
+          },
+        },
+      },
+    });
+  const rows = extended.User.findMany({});
+  expectTypeOf(rows[0].titled).toEqualTypeOf<string>();
+  expectTypeOf(rows[0].fullName).toEqualTypeOf<string>();
+}
+
+// チェーン先で無関係キーは引き続き不可
+{
+  client
+    .$extends({
+      result: {
+        User: {
+          fullName: {
+            needs: { email: true },
+            compute: (user) => `x${user.email}`,
+          },
+        },
+      },
+    })
+    .$extends({
+      result: {
+        User: {
+          bad: {
+            // @ts-expect-error nope はスカラーでも算出フィールドでもない
+            needs: { nope: true },
+            compute: () => 1,
+          },
+        },
+      },
+    });
+}
+
+// 自己参照（循環）は型上は素直に許容する（ランタイムは打ち切りガード済み）
+{
+  const extended = client.$extends({
+    result: {
+      User: {
+        selfy: {
+          needs: { selfy: true, id: true },
+          compute: (user) => user.id,
+        },
+      },
+    },
+  });
+  expectTypeOf(extended.User.findMany({})[0].selfy).toEqualTypeOf<number>();
 }
