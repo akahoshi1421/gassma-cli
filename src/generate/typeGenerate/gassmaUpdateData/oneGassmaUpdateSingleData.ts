@@ -1,12 +1,15 @@
 import type { RelationsConfig } from "../../read/extractRelations";
+import { buildUpdateDataType } from "../util/buildUpdateDataType";
 import { getNestedWriteFields } from "../util/getNestedWriteFields";
 import { skipUnion } from "../util/skipUnion";
 
 const getOneGassmaUpdateSingleData = (
   schemaName: string,
   sheetName: string,
+  sheetContent: Record<string, unknown[]>,
   relations?: RelationsConfig,
   strict?: boolean,
+  dictYaml?: Record<string, Record<string, unknown[]>>,
 ) => {
   const sk = skipUnion(strict);
   const nestedFields = getNestedWriteFields(
@@ -15,8 +18,13 @@ const getOneGassmaUpdateSingleData = (
     relations,
     "update",
     strict,
+    dictYaml,
   );
-  const baseDataType = `Partial<{ [K in keyof Gassma${schemaName}${sheetName}Use]: Gassma${schemaName}${sheetName}Use[K] | Gassma.NumberOperation${sk} }>`;
+  const baseDataType = buildUpdateDataType(
+    `Gassma${schemaName}${sheetName}Use`,
+    sheetContent,
+    strict,
+  );
   const dataType = nestedFields
     ? `${baseDataType} & {\n${nestedFields}  }`
     : baseDataType;

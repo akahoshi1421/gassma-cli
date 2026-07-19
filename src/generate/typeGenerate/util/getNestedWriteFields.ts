@@ -2,6 +2,7 @@ import type {
   RelationDefinition,
   RelationsConfig,
 } from "../../read/extractRelations";
+import { buildUpdateDataType } from "./buildUpdateDataType";
 import { skipOptionalWrap, skipUnion } from "./skipUnion";
 
 type NestedWriteContext = "create" | "update";
@@ -62,10 +63,14 @@ const buildCreateContextOps = (
 const buildUpdateOnlyOps = (
   rel: RelationDefinition,
   target: string,
+  targetContent: Record<string, unknown[]>,
   strict?: boolean,
 ): string[] => {
   const sk = skipUnion(strict);
-  const partialUpdate = skipOptionalWrap(`Partial<${target}Use>`, strict);
+  const partialUpdate = skipOptionalWrap(
+    buildUpdateDataType(`${target}Use`, targetContent),
+    strict,
+  );
   if (rel.type === "oneToMany") {
     return [
       `update?: { where: ${target}WhereUse; data: ${partialUpdate} } | { where: ${target}WhereUse; data: ${partialUpdate} }[]${sk}`,
@@ -91,10 +96,11 @@ const buildUpdateOnlyOps = (
 const buildUpdateContextOps = (
   rel: RelationDefinition,
   target: string,
+  targetContent: Record<string, unknown[]>,
   strict?: boolean,
 ): string[] => [
   ...buildCreateContextOps(rel, target, strict),
-  ...buildUpdateOnlyOps(rel, target, strict),
+  ...buildUpdateOnlyOps(rel, target, targetContent, strict),
 ];
 
 const getNestedWriteFields = (
@@ -103,6 +109,7 @@ const getNestedWriteFields = (
   relations: RelationsConfig | undefined,
   context: NestedWriteContext,
   strict?: boolean,
+  dictYaml?: Record<string, Record<string, unknown[]>>,
 ): string => {
   if (!relations) return "";
   const modelRelations = relations[sheetName];
@@ -119,7 +126,7 @@ const getNestedWriteFields = (
     const ops =
       context === "create"
         ? buildCreateContextOps(rel, target, strict)
-        : buildUpdateContextOps(rel, target, strict);
+        : buildUpdateContextOps(rel, target, dictYaml?.[rel.to] ?? {}, strict);
 
     return `${pre}    "${relationName}"?: { ${ops.join("; ")} }${sk};\n`;
   }, "");

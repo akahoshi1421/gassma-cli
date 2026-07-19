@@ -1,5 +1,6 @@
 import { expectTypeOf } from "vitest";
 import type {
+  Gassma,
   GassmaClient,
   GassmaProfileUse,
   GassmaUserCreateData,
@@ -67,9 +68,12 @@ declare const client: GassmaClient;
     NonNullable<UpdateOps["connectOrCreate"]>["create"]
   >().toEqualTypeOf<Omit<GassmaProfileUse, "userId">>();
 
-  expectTypeOf<NonNullable<UpdateOps["update"]>>().toEqualTypeOf<
-    Partial<GassmaProfileUse>
+  // update データは数値カラムのみ NumberOperation を受理する
+  type ProfileUpdateData = NonNullable<UpdateOps["update"]>;
+  expectTypeOf<ProfileUpdateData["userId"]>().toEqualTypeOf<
+    number | Gassma.NumberOperation | undefined
   >();
+  expectTypeOf<ProfileUpdateData["bio"]>().toEqualTypeOf<string | undefined>();
 }
 
 // inverse oneToOne(User.profile) の update 文脈: to-one op（delete / disconnect は true のみ）
