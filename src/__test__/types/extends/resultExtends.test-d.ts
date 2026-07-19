@@ -259,7 +259,7 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
   expectTypeOf(extended.User.deleteMany({}).count).toEqualTypeOf<number>();
 }
 
-// 算出フィールドはネストしたリレーション結果には出ない（Tier1）
+// 算出フィールドはネストしたリレーション結果にも出る
 {
   const extended = client.$extends({
     result: {
@@ -270,7 +270,7 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
   });
   const rows = extended.User.findMany({ include: { posts: true } });
   expectTypeOf(rows[0].tag).toEqualTypeOf<string>();
-  expectTypeOf(rows[0].posts[0]).not.toHaveProperty("tag");
+  expectTypeOf(rows[0].posts[0].tag).toEqualTypeOf<string>();
   expectTypeOf(rows[0].posts[0].title).toEqualTypeOf<string>();
 }
 

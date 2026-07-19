@@ -6,7 +6,7 @@ type ExtensionOperation = {
 };
 
 const genericFindResult = (self: string) =>
-  `${self}FindResult<T["select"], T["include"], T["omit"], GO, O>`;
+  `${self}FindResultBase<T["select"], T["include"], T["omit"], GO, O>`;
 
 const EXTENSION_OPERATIONS: ExtensionOperation[] = [
   {
@@ -62,7 +62,7 @@ const EXTENSION_OPERATIONS: ExtensionOperation[] = [
     dataSuffix: "UpdateData",
     generic: false,
     result: (self) =>
-      `${self}FindResult<undefined, undefined, undefined, GO, O>[]`,
+      `${self}FindResultBase<undefined, undefined, undefined, GO, O>[]`,
   },
   {
     name: "upsert",
