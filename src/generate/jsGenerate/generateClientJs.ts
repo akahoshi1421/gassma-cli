@@ -1,11 +1,11 @@
-import type { RelationsConfig } from "../read/extractRelations";
+import type { AutoincrementConfig } from "../read/extractAutoincrement";
 import type { DefaultsConfig } from "../read/extractDefaults";
-import type { UpdatedAtConfig } from "../read/extractUpdatedAt";
+import type { EnumsConfig } from "../read/extractEnums";
 import type { IgnoreConfig } from "../read/extractIgnore";
 import type { MapConfig } from "../read/extractMap";
-import type { AutoincrementConfig } from "../read/extractAutoincrement";
 import type { MapSheetsConfig } from "../read/extractMapSheets";
-import type { EnumsConfig } from "../read/extractEnums";
+import type { RelationsConfig } from "../read/extractRelations";
+import type { UpdatedAtConfig } from "../read/extractUpdatedAt";
 
 const FUNCTION_MAP: Record<string, string> = {
   now: "() => new Date()",
@@ -172,6 +172,7 @@ ${defaultsDecl}${updatedAtDecl}${ignoreDecl}${mapDecl}${ignoreSheetsDecl}${mapSh
     const mergedOptions = ${mergeExpr};
     const client = new Gassma.GassmaClient(mergedOptions);
     Object.assign(this, client);
+    this.$extends = (extension) => client.$extends(extension);
   }
 }
 

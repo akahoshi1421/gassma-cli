@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { generater } from "../../generate/generator";
 
 describe("generater", () => {
@@ -97,5 +97,14 @@ describe("generater", () => {
   it("should include GroupBy types", () => {
     expect(result).toContain("GassmaUserGroupByData");
     expect(result).toContain("GassmaUserGroupByResult");
+  });
+
+  it("should include Extension types", () => {
+    expect(result).toContain(
+      "export type GassmaExtension<O extends GassmaGlobalOmitConfig = {}> = {",
+    );
+    expect(result).toContain("export type GassmaUserQueryHooks");
+    expect(result).toContain("export type GassmaPostQueryHooks");
+    expect(result).toContain("export type GassmaAllModelsQueryHooks");
   });
 });

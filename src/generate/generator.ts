@@ -1,3 +1,5 @@
+import type { DefaultsConfig } from "./read/extractDefaults";
+import type { RelationsConfig } from "./read/extractRelations";
 import { getGassmaAggregateBaseReturn } from "./typeGenerate/gassmaAggregateBaseReturn";
 import { getGassmaAggregateData } from "./typeGenerate/gassmaAggregateData";
 import { getGassmaAggregateField } from "./typeGenerate/gassmaAggregateField";
@@ -6,6 +8,7 @@ import { getGassmaAnyUse } from "./typeGenerate/gassmaAnyUse";
 import { getGassmaByField } from "./typeGenerate/gassmaByField";
 import { getGassmaController } from "./typeGenerate/gassmaController";
 import { getGassmaCountData } from "./typeGenerate/gassmaCountData";
+import { getGassmaCountValue } from "./typeGenerate/gassmaCountValue";
 import { getGassmaCreate } from "./typeGenerate/gassmaCreate";
 import { getGassmaCreateMany } from "./typeGenerate/gassmaCreateMany";
 import { getGassmaCreateManyAndReturnData } from "./typeGenerate/gassmaCreateManyAndReturnData";
@@ -13,6 +16,7 @@ import { getGassmaCreateReturn } from "./typeGenerate/gassmaCreateReturn";
 import { getGassmaDefaultFindResult } from "./typeGenerate/gassmaDefaultFindResult";
 import { getGassmaDeleteData } from "./typeGenerate/gassmaDeleteData";
 import { getGassmaDeleteSingleData } from "./typeGenerate/gassmaDeleteSingleData";
+import { getGassmaExtension } from "./typeGenerate/gassmaExtension";
 import { getGassmaFilterCoditions } from "./typeGenerate/gassmaFilterConditions";
 import { getGassmaFindData } from "./typeGenerate/gassmaFindData";
 import { getGassmaFindFirstData } from "./typeGenerate/gassmaFindFirstData";
@@ -24,11 +28,10 @@ import { getGassmaGroupByKeyOfBaseReturn } from "./typeGenerate/gassmaGroupByKey
 import { getGassmaGroupByResult } from "./typeGenerate/gassmaGroupByResult";
 import { getGassmaHavingCore } from "./typeGenerate/gassmaHavingCore";
 import { getGassmaHavingUse } from "./typeGenerate/gassmaHavingUse";
+import { getGassmaInclude } from "./typeGenerate/gassmaInclude";
 import { getGassmaMain } from "./typeGenerate/gassmaMain";
 import { getGassmaManyCount } from "./typeGenerate/gassmaManyCount";
 import { getGassmaOmit } from "./typeGenerate/gassmaOmit";
-import { getGassmaInclude } from "./typeGenerate/gassmaInclude";
-import { getGassmaCountValue } from "./typeGenerate/gassmaCountValue";
 import { getGassmaOrderBy } from "./typeGenerate/gassmaOrderBy";
 import { getGassmaSelect } from "./typeGenerate/gassmaSelect";
 import { getGassmaSheet } from "./typeGenerate/gassmaSheet";
@@ -36,8 +39,6 @@ import { getGassmaUpdateData } from "./typeGenerate/gassmaUpdateData";
 import { getGassmaUpdateSingleData } from "./typeGenerate/gassmaUpdateSingleData";
 import { getGassmaUpsertSingleData } from "./typeGenerate/gassmaUpsertSingleData";
 import { getGassmaWhereUse } from "./typeGenerate/gassmaWhereUse";
-import type { DefaultsConfig } from "./read/extractDefaults";
-import type { RelationsConfig } from "./read/extractRelations";
 
 const generater = (
   dictYaml: Record<string, Record<string, unknown[]>>,
@@ -104,6 +105,7 @@ const generater = (
   result += getGassmaGroupByKeyOfBaseReturn(sheetNames, schema);
   result += getGassmaByField(sheetNames, schema);
   result += getGassmaGroupByResult(sheetNames, schema);
+  result += getGassmaExtension(sheetNames, schema);
 
   return result;
 };

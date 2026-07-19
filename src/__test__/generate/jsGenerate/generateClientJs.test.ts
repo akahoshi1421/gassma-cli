@@ -1,10 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { generateClientJs } from "../../../generate/jsGenerate/generateClientJs";
+import type { AutoincrementConfig } from "../../../generate/read/extractAutoincrement";
 import type { DefaultsConfig } from "../../../generate/read/extractDefaults";
-import type { UpdatedAtConfig } from "../../../generate/read/extractUpdatedAt";
 import type { IgnoreConfig } from "../../../generate/read/extractIgnore";
 import type { MapConfig } from "../../../generate/read/extractMap";
-import type { AutoincrementConfig } from "../../../generate/read/extractAutoincrement";
+import type { UpdatedAtConfig } from "../../../generate/read/extractUpdatedAt";
 
 describe("generateClientJs", () => {
   it("should generate GassmaClient class with embedded relations", () => {
@@ -45,6 +45,46 @@ describe("generateClientJs", () => {
 
     expect(result).toContain("hogeRelations = {}");
     expect(result).toContain("class GassmaClient");
+  });
+
+  it("should delegate $extends to the core client instance", () => {
+    const result = generateClientJs({}, "Hoge");
+
+    expect(result).toContain(
+      "    this.$extends = (extension) => client.$extends(extension);",
+    );
+    expect(result.indexOf("Object.assign(this, client);")).toBeLessThan(
+      result.indexOf("this.$extends = (extension)"),
+    );
+  });
+
+  it("should expose a working $extends even though core defines it on the prototype", () => {
+    const code = generateClientJs({}, "Hoge");
+    const received: unknown[] = [];
+    class FakeCoreClient {
+      User = { findMany: () => [] };
+      $extends(extension: unknown) {
+        received.push(extension);
+        return { marker: "extended" };
+      }
+    }
+    const exportsObject: {
+      GassmaClient?: new (
+        options?: unknown,
+      ) => { $extends?: (extension: unknown) => unknown };
+    } = {};
+    const run = new Function("Gassma", "exports", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject);
+
+    const GeneratedClient = exportsObject.GassmaClient;
+    if (!GeneratedClient) throw new Error("GassmaClient not exported");
+    const instance = new GeneratedClient({});
+    expect(typeof instance.$extends).toBe("function");
+
+    const extension = { query: {} };
+    const extended = instance.$extends?.(extension);
+    expect(extended).toEqual({ marker: "extended" });
+    expect(received).toEqual([extension]);
   });
 
   it("should include onDelete and onUpdate when present", () => {
