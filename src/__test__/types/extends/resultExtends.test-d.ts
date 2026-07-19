@@ -41,6 +41,27 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
   });
 }
 
+// implicit-any 回帰ガード: 注釈なし compute の param は needs から文脈型付けされ any にならない
+// （any に戻ると toEqualTypeOf は壊れ、@ts-expect-error も未使用になって落ちる。#118 で TS<=5.6 が壊れた回帰）
+{
+  client.$extends({
+    result: {
+      User: {
+        greeting: {
+          needs: { name: true },
+          compute: (user) => {
+            expectTypeOf(user).toEqualTypeOf<{ name: string | null }>();
+            expectTypeOf(user.name).toEqualTypeOf<string | null>();
+            // @ts-expect-error needs 外の email は参照できない（any なら未使用ディレクティブで落ちる）
+            user.email;
+            return `Hi ${user.name}`;
+          },
+        },
+      },
+    },
+  });
+}
+
 // needs にはスカラーと同 extension 内の算出フィールド名だけが書ける
 {
   client.$extends({
@@ -367,22 +388,22 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
   expectTypeOf(empty.User.findMany({})[0].id).toEqualTypeOf<number>();
 }
 
-// 算出フィールド依存: 依存先の compute 戻り型が依存元の compute 引数に現れる
+// 同一 call 内の算出フィールド依存: needs キーは通り結果型も正しいが、
+// compute 引数の「値型」は never に縮退する（Prisma と同じ TS 推論の制約。
+// チェーン $extends 越しの依存は下のテストのとおり完全に型が付く）。
 {
   const extended = client.$extends({
     result: {
       User: {
         emailLen: {
           needs: { email: true },
-          compute: (user: { email: string }) => user.email.length,
+          compute: (user) => user.email.length,
         },
         doubledLen: {
           needs: { emailLen: true },
           compute: (user) => {
-            expectTypeOf(user.emailLen).toEqualTypeOf<number>();
-            // @ts-expect-error emailLen は number なので toUpperCase は呼べない
-            user.emailLen.toUpperCase();
-            return user.emailLen * 2;
+            expectTypeOf(user.emailLen).toBeNever();
+            return 2;
           },
         },
       },
@@ -393,7 +414,7 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
   expectTypeOf(rows[0].doubledLen).toEqualTypeOf<number>();
 }
 
-// 宣言順非依存: 依存元を依存先より先に宣言しても型が付く
+// 宣言順非依存: 依存元を依存先より後に宣言しても needs キーは通り結果型は正しい（値型は never に縮退）
 {
   const extended = client.$extends({
     result: {
@@ -401,13 +422,13 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
         doubledFirst: {
           needs: { lenLater: true },
           compute: (user) => {
-            expectTypeOf(user.lenLater).toEqualTypeOf<number>();
-            return user.lenLater * 2;
+            expectTypeOf(user.lenLater).toBeNever();
+            return 2;
           },
         },
         lenLater: {
           needs: { email: true },
-          compute: (user: { email: string }) => user.email.length,
+          compute: (user) => user.email.length,
         },
       },
     },
@@ -417,7 +438,7 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
   expectTypeOf(rows[0].lenLater).toEqualTypeOf<number>();
 }
 
-// $allModels の算出フィールドへモデル固有算出から依存できる
+// $allModels の算出フィールドをモデル固有算出が同一 call で needs に指定できる（値型は never に縮退、結果型は正しい）
 {
   const extended = client.$extends({
     result: {
@@ -428,8 +449,8 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
         tagged: {
           needs: { tag: true },
           compute: (user) => {
-            expectTypeOf(user.tag).toEqualTypeOf<string>();
-            return `#${user.tag}`;
+            expectTypeOf(user.tag).toBeNever();
+            return "#";
           },
         },
       },
@@ -438,31 +459,6 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
   const rows = extended.User.findMany({});
   expectTypeOf(rows[0].tagged).toEqualTypeOf<string>();
   expectTypeOf(rows[0].tag).toEqualTypeOf<string>();
-}
-
-// 未注釈（context-sensitive）な依存先: needs は通り結果型も正しい。
-// compute 引数の値型のみ TS 推論の限界で never（依存先に注釈を付ければ実型になる）。
-{
-  const extended = client.$extends({
-    result: {
-      User: {
-        rawLen: {
-          needs: { email: true },
-          compute: (user) => user.email.length,
-        },
-        viaRaw: {
-          needs: { rawLen: true },
-          compute: (user) => {
-            expectTypeOf(user.rawLen).toBeNever();
-            return 1;
-          },
-        },
-      },
-    },
-  });
-  const rows = extended.User.findMany({});
-  expectTypeOf(rows[0].rawLen).toEqualTypeOf<number>();
-  expectTypeOf(rows[0].viaRaw).toEqualTypeOf<number>();
 }
 
 // チェーン $extends 越しの算出フィールド依存（Prisma docs パターン）は完全に型が付く

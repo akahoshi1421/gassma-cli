@@ -29,20 +29,14 @@ describe("getGassmaExtension", () => {
       '  [M in GassmaHogeModelName | "$allModels"]?: unknown;',
     );
     expect(result).toContain(
-      "export type GassmaHogeResultExtension<R_, RC_, CMap> = {",
+      "export type GassmaHogeResultExtension<R_, CMap> = {",
     );
     expect(result).toContain(
-      "    [F in keyof R_[M]]?: Gassma.ResultField<GassmaHogeResultScalars<M>, R_[M][F], GassmaHogeResultComputedKeys<R_, CMap, M>, GassmaHogeResultComputedTypes<RC_, CMap, M>>;",
+      "    [F in keyof R_[M]]?: Gassma.ResultField<GassmaHogeResultScalars<M>, R_[M][F], GassmaHogeResultComputedKeys<R_, CMap, M>, GassmaHogeResultComputedTypes<CMap, M>>;",
     );
   });
 
   it("should generate computed-needs helper types", () => {
-    expect(result).toContain(
-      "export type GassmaHogeResultComputeSlots<RC_> = {",
-    );
-    expect(result).toContain(
-      "  [M in keyof RC_]?: { [F in keyof RC_[M]]?: { compute: RC_[M][F] } };",
-    );
     expect(result).toContain(
       "export type GassmaHogeResultComputedKeys<R_, CMap, M> =",
     );
@@ -50,11 +44,13 @@ describe("getGassmaExtension", () => {
       '  keyof Gassma.At<R_, M> | keyof Gassma.At<R_, "$allModels"> | keyof Gassma.At<CMap, M>;',
     );
     expect(result).toContain(
-      "export type GassmaHogeResultComputedTypes<RC_, CMap, M> = Gassma.MergeShape<",
+      "export type GassmaHogeResultComputedTypes<CMap, M> = Gassma.At<CMap, M>;",
     );
-    expect(result).toContain(
-      '  Gassma.MergeShape<Gassma.SlotReturns<Gassma.At<RC_, "$allModels">>, Gassma.SlotReturns<Gassma.At<RC_, M>>>',
-    );
+  });
+
+  it("should not reintroduce the RC_ compute-slot channel that clobbers compute param inference", () => {
+    expect(result).not.toContain("ResultComputeSlots");
+    expect(result).not.toContain("RC_");
   });
 
   it("should generate loose ResultConfig for annotations", () => {
@@ -76,11 +72,11 @@ describe("getGassmaExtension", () => {
 
   it("should generate generic ExtendsFn capturing result literal", () => {
     expect(result).toContain(
-      "export type GassmaHogeExtendsFn<O extends GassmaHogeGlobalOmitConfig, CMap> = <R_ extends GassmaHogeResultShape = {}, RC_ extends GassmaHogeResultShape = {}, R extends GassmaHogeResultConfig = {}>(extension: {",
+      "export type GassmaHogeExtendsFn<O extends GassmaHogeGlobalOmitConfig, CMap> = <R_ extends GassmaHogeResultShape = {}, R extends GassmaHogeResultConfig = {}>(extension: {",
     );
     expect(result).toContain("  query?: GassmaHogeQueryExtension<O>;");
     expect(result).toContain(
-      "  result?: GassmaHogeResultExtension<R_, RC_, CMap> & GassmaHogeResultComputeSlots<RC_> & R;",
+      "  result?: GassmaHogeResultExtension<R_, CMap> & R;",
     );
     expect(result).toContain(
       "}) => GassmaHogeExtendedClient<O, GassmaHogeComputedMap<CMap, R>>;",
