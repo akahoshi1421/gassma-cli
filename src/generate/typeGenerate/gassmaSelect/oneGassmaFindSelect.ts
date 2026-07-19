@@ -27,7 +27,7 @@ const getOneGassmaFindSelect = (
     relationFields = Object.keys(modelRelations).reduce((pre, relationName) => {
       const targetModel = modelRelations[relationName].to;
       const target = `Gassma${schemaName}${targetModel}`;
-      const optionsType = `{ select?: ${target}FindSelect${sk}; omit?: ${target}Omit${sk}; where?: ${target}WhereUse${sk}; orderBy?: ${target}OrderBy${sk}; take?: number${sk}; skip?: number${sk}; include?: ${target}Include${sk}; _count?: ${target}CountValue${sk} }`;
+      const optionsType = `{ select?: ${target}FindSelect${sk}; omit?: ${target}Omit${sk}; where?: ${target}WhereUse${sk}; orderBy?: ${target}OrderBy | ${target}OrderBy[]${sk}; take?: number${sk}; skip?: number${sk}; include?: ${target}Include${sk}; _count?: ${target}CountValue${sk} }`;
       return `${pre}  "${relationName}"?: true | ${optionsType}${sk};\n`;
     }, "");
   }

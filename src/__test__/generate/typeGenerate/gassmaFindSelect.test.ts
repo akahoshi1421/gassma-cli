@@ -42,7 +42,9 @@ describe("getOneGassmaFindSelect", () => {
     expect(result).toContain("select?: GassmaTestPostFindSelect");
     expect(result).not.toContain("select?: GassmaTestPostSelect;");
     expect(result).toContain("where?: GassmaTestPostWhereUse");
-    expect(result).toContain("orderBy?: GassmaTestPostOrderBy");
+    expect(result).toContain(
+      "orderBy?: GassmaTestPostOrderBy | GassmaTestPostOrderBy[]",
+    );
     expect(result).toContain("include?: GassmaTestPostInclude");
   });
 

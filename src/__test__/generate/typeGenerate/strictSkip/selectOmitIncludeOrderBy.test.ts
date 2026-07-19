@@ -78,7 +78,7 @@ describe("strict FindSelect", () => {
 
   it("should add SkipValue to relation values and their options", () => {
     expect(result).toContain(
-      '"posts"?: true | { select?: GassmaPostFindSelect | Gassma.SkipValue; omit?: GassmaPostOmit | Gassma.SkipValue; where?: GassmaPostWhereUse | Gassma.SkipValue; orderBy?: GassmaPostOrderBy | Gassma.SkipValue; take?: number | Gassma.SkipValue; skip?: number | Gassma.SkipValue; include?: GassmaPostInclude | Gassma.SkipValue; _count?: GassmaPostCountValue | Gassma.SkipValue } | Gassma.SkipValue;',
+      '"posts"?: true | { select?: GassmaPostFindSelect | Gassma.SkipValue; omit?: GassmaPostOmit | Gassma.SkipValue; where?: GassmaPostWhereUse | Gassma.SkipValue; orderBy?: GassmaPostOrderBy | GassmaPostOrderBy[] | Gassma.SkipValue; take?: number | Gassma.SkipValue; skip?: number | Gassma.SkipValue; include?: GassmaPostInclude | Gassma.SkipValue; _count?: GassmaPostCountValue | Gassma.SkipValue } | Gassma.SkipValue;',
     );
   });
 
@@ -100,7 +100,7 @@ describe("strict Include", () => {
 
   it("should add SkipValue to relation values and their options", () => {
     expect(result).toContain(
-      '"posts"?: true | { select?: GassmaPostFindSelect | Gassma.SkipValue; omit?: GassmaPostOmit | Gassma.SkipValue; where?: GassmaPostWhereUse | Gassma.SkipValue; orderBy?: GassmaPostOrderBy | Gassma.SkipValue; take?: number | Gassma.SkipValue; skip?: number | Gassma.SkipValue; include?: GassmaPostInclude | Gassma.SkipValue; _count?: GassmaPostCountValue | Gassma.SkipValue } | Gassma.SkipValue;',
+      '"posts"?: true | { select?: GassmaPostFindSelect | Gassma.SkipValue; omit?: GassmaPostOmit | Gassma.SkipValue; where?: GassmaPostWhereUse | Gassma.SkipValue; orderBy?: GassmaPostOrderBy | GassmaPostOrderBy[] | Gassma.SkipValue; take?: number | Gassma.SkipValue; skip?: number | Gassma.SkipValue; include?: GassmaPostInclude | Gassma.SkipValue; _count?: GassmaPostCountValue | Gassma.SkipValue } | Gassma.SkipValue;',
     );
     expect(result).toContain(
       '"_count"?: GassmaUserCountValue | Gassma.SkipValue;',
