@@ -1,5 +1,9 @@
 import { expectTypeOf } from "vitest";
-import type { GassmaClient } from "../__generated__/client";
+import type {
+  GassmaClient,
+  GassmaUserAggregateData,
+  GassmaUserGroupByData,
+} from "../__generated__/client";
 
 declare const client: GassmaClient;
 
@@ -133,6 +137,24 @@ declare const client: GassmaClient;
     by: ["isActive"],
     orderBy: [{ isActive: "asc" }],
   });
+}
+
+// groupBy: cursor は存在しない（Prisma パリティ）
+{
+  const withCursor: GassmaUserGroupByData = {
+    by: ["isActive"],
+    // @ts-expect-error groupBy に cursor は指定できない
+    cursor: { id: 1 },
+  };
+  void withCursor;
+  expectTypeOf<GassmaUserGroupByData>().not.toHaveProperty("cursor");
+}
+
+// aggregate: cursor は引き続き使える（groupBy のみ除去）
+{
+  const aggregateData: GassmaUserAggregateData = { cursor: { id: 1 } };
+  void aggregateData;
+  client.User.aggregate({ cursor: { id: 1 }, _count: { id: true } });
 }
 
 // groupBy: _avg / _sum の数値フィールド限定が AggregateData から波及する

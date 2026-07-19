@@ -132,3 +132,15 @@ declare const client: GassmaClient;
   type C = NonNullable<typeof c>;
   expectTypeOf<C["parent"]>().toBeNullable();
 }
+
+// include の relation オプション orderBy: 単一・配列の両方を受け付ける
+{
+  client.User.findFirst({
+    where: { id: 1 },
+    include: { posts: { orderBy: { title: "asc" } } },
+  });
+  client.User.findFirst({
+    where: { id: 1 },
+    include: { posts: { orderBy: [{ published: "desc" }, { title: "asc" }] } },
+  });
+}

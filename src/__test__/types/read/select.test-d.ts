@@ -188,3 +188,21 @@ declare const client: GassmaClient;
   expectTypeOf<(typeof rs)[number]["posts"]>().toBeArray();
   expectTypeOf<(typeof rs)[number]>().not.toHaveProperty("email");
 }
+
+// select 内 relation の orderBy: 単一・配列の両方を受け付ける
+{
+  client.User.findFirstOrThrow({
+    where: {},
+    select: { posts: { orderBy: { title: "asc" }, select: { title: true } } },
+  });
+  const r = client.User.findFirstOrThrow({
+    where: {},
+    select: {
+      posts: {
+        orderBy: [{ published: "desc" }, { title: "asc" }],
+        select: { title: true },
+      },
+    },
+  });
+  expectTypeOf<(typeof r)["posts"][number]["title"]>().toEqualTypeOf<string>();
+}

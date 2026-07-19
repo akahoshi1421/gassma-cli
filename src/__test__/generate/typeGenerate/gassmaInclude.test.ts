@@ -43,7 +43,7 @@ describe("getOneGassmaInclude", () => {
     const result = getOneGassmaInclude("", "User", relations);
 
     expect(result).toContain(
-      '"posts"?: true | { select?: GassmaPostFindSelect; omit?: GassmaPostOmit; where?: GassmaPostWhereUse; orderBy?: GassmaPostOrderBy; take?: number; skip?: number; include?: GassmaPostInclude; _count?: GassmaPostCountValue };',
+      '"posts"?: true | { select?: GassmaPostFindSelect; omit?: GassmaPostOmit; where?: GassmaPostWhereUse; orderBy?: GassmaPostOrderBy | GassmaPostOrderBy[]; take?: number; skip?: number; include?: GassmaPostInclude; _count?: GassmaPostCountValue };',
     );
   });
 
