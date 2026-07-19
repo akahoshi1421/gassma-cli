@@ -1,12 +1,18 @@
+import { buildUpdateDataType } from "../util/buildUpdateDataType";
 import { skipUnion } from "../util/skipUnion";
 
 const getOneGassmaUpdateData = (
   schemaName: string,
   sheetName: string,
+  sheetContent: Record<string, unknown[]>,
   strict?: boolean,
 ) => {
   const sk = skipUnion(strict);
-  const dataType = `Partial<{ [K in keyof Gassma${schemaName}${sheetName}Use]: Gassma${schemaName}${sheetName}Use[K] | Gassma.NumberOperation${sk} }>`;
+  const dataType = buildUpdateDataType(
+    `Gassma${schemaName}${sheetName}Use`,
+    sheetContent,
+    strict,
+  );
 
   return `
 export type Gassma${schemaName}${sheetName}UpdateData = {

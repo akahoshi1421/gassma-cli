@@ -3,25 +3,30 @@ import { getOneGassmaUpdateSingleData } from "./gassmaUpdateData/oneGassmaUpdate
 import type { RelationsConfig } from "../read/extractRelations";
 
 const getGassmaUpdateSingleData = (
-  sheetNames: string[],
+  dictYaml: Record<string, Record<string, unknown[]>>,
   schemaName: string,
   relations?: RelationsConfig,
   strict?: boolean,
 ) => {
-  const updateSingleDataDeclare = sheetNames.reduce((pre, currentSheetName) => {
-    const removedSpaceCurrentSheetName =
-      getRemovedCantUseVarChar(currentSheetName);
+  const updateSingleDataDeclare = Object.keys(dictYaml).reduce(
+    (pre, currentSheetName) => {
+      const removedSpaceCurrentSheetName =
+        getRemovedCantUseVarChar(currentSheetName);
 
-    return (
-      pre +
-      getOneGassmaUpdateSingleData(
-        schemaName,
-        removedSpaceCurrentSheetName,
-        relations,
-        strict,
-      )
-    );
-  }, "");
+      return (
+        pre +
+        getOneGassmaUpdateSingleData(
+          schemaName,
+          removedSpaceCurrentSheetName,
+          dictYaml[currentSheetName],
+          relations,
+          strict,
+          dictYaml,
+        )
+      );
+    },
+    "",
+  );
 
   return updateSingleDataDeclare;
 };

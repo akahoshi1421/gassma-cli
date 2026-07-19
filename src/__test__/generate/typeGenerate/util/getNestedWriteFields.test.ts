@@ -181,6 +181,79 @@ describe("getNestedWriteFields", () => {
       expect(result).not.toContain("boolean");
     });
 
+    it("should add NumberOperation to update data for target number columns (list relation)", () => {
+      const dictYaml: Record<string, Record<string, unknown[]>> = {
+        Post: { id: ["number"], title: ["string"], "authorId?": ["number"] },
+      };
+
+      const result = getNestedWriteFields(
+        "",
+        "User",
+        oneToManyRelations,
+        "update",
+        undefined,
+        dictYaml,
+      );
+
+      expect(result).toContain(
+        'update?: { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) }> } | { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) }> }[]',
+      );
+    });
+
+    it("should add NumberOperation to update data for target number columns (single relation)", () => {
+      const dictYaml: Record<string, Record<string, unknown[]>> = {
+        User: { id: ["number"], name: ["string"] },
+      };
+
+      const result = getNestedWriteFields(
+        "",
+        "Post",
+        manyToOneRelations,
+        "update",
+        undefined,
+        dictYaml,
+      );
+
+      expect(result).toContain(
+        'update?: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) }>',
+      );
+    });
+
+    it("should not add NumberOperation when the target has no number column", () => {
+      const dictYaml: Record<string, Record<string, unknown[]>> = {
+        User: { name: ["string"] },
+      };
+
+      const result = getNestedWriteFields(
+        "",
+        "Post",
+        manyToOneRelations,
+        "update",
+        undefined,
+        dictYaml,
+      );
+
+      expect(result).toContain("update?: Partial<GassmaUserUse>");
+      expect(result).not.toContain("NumberOperation");
+    });
+
+    it("should fall back to plain Partial when the target sheet is not in dictYaml", () => {
+      const dictYaml: Record<string, Record<string, unknown[]>> = {
+        Post: { id: ["number"] },
+      };
+
+      const result = getNestedWriteFields(
+        "",
+        "Post",
+        manyToOneRelations,
+        "update",
+        undefined,
+        dictYaml,
+      );
+
+      expect(result).toContain("update?: Partial<GassmaUserUse>");
+    });
+
     it("should emit only ops the core processes for manyToMany", () => {
       const relations: RelationsConfig = {
         Post: {

@@ -68,6 +68,12 @@ describe("generater", () => {
     expect(result).toContain("GassmaPostUpdateData");
   });
 
+  it("should limit NumberOperation to number columns in update data", () => {
+    expect(result).toContain(
+      'data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) }>;',
+    );
+  });
+
   it("should include Select types", () => {
     expect(result).toContain("GassmaUserSelect");
     expect(result).toContain("GassmaPostSelect");
