@@ -3,11 +3,11 @@ import { getOneGassmaController } from "../../../generate/typeGenerate/gassmaCon
 
 describe("getOneGassmaController", () => {
   const result = getOneGassmaController("", "User");
-  const res = `Gassma.WithComputed<GassmaUserFindResult<Gassma.StripComputed<T["select"], C>, T["include"], T["omit"], GO, O>, C, T["select"], T["omit"]>`;
+  const res = `GassmaUserFindResult<T["select"], T["include"], T["omit"], GO, O, CMap>`;
 
-  it("should generate controller class declaration with GO, O and computed map C", () => {
+  it("should generate controller class declaration with GO, O and computed map CMap", () => {
     expect(result).toContain(
-      "export declare class GassmaUserController<GO extends GassmaUserOmit = {}, O = {}, C = {}>",
+      "export declare class GassmaUserController<GO extends GassmaUserOmit = {}, O = {}, CMap = {}>",
     );
   });
 
@@ -28,13 +28,13 @@ describe("getOneGassmaController", () => {
   it("should include CRUD methods", () => {
     expect(result).toContain("createMany(");
     expect(result).toContain(
-      "create<T extends GassmaUserCreateData & Gassma.ComputedArgs<C>>",
+      `create<T extends GassmaUserCreateData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>`,
     );
     expect(result).toContain(
-      "findFirst<T extends GassmaUserFindFirstData & Gassma.ComputedArgs<C>>",
+      `findFirst<T extends GassmaUserFindFirstData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>`,
     );
     expect(result).toContain(
-      "findMany<T extends GassmaUserFindManyData & Gassma.ComputedArgs<C>>",
+      `findMany<T extends GassmaUserFindManyData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>`,
     );
     expect(result).toContain("updateMany(");
     expect(result).not.toContain("upsertMany(");
@@ -49,49 +49,49 @@ describe("getOneGassmaController", () => {
 
   it("should have generic delete method with model-specific type", () => {
     expect(result).toContain(
-      `delete<T extends GassmaUserDeleteSingleData & Gassma.ComputedArgs<C>>(deleteData: T): ${res} | null`,
+      `delete<T extends GassmaUserDeleteSingleData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(deleteData: T): ${res} | null`,
     );
   });
 
   it("should have generic upsert method with model-specific type", () => {
     expect(result).toContain(
-      `upsert<T extends GassmaUserUpsertSingleData & Gassma.ComputedArgs<C>>(upsertData: T): ${res}`,
+      `upsert<T extends GassmaUserUpsertSingleData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(upsertData: T): ${res}`,
     );
   });
 
   it("should include createManyAndReturn method with generic type", () => {
     expect(result).toContain(
-      `createManyAndReturn<T extends GassmaUserCreateManyAndReturnData & Gassma.ComputedArgs<C>>(createdData: T): ${res}[]`,
+      `createManyAndReturn<T extends GassmaUserCreateManyAndReturnData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(createdData: T): ${res}[]`,
     );
   });
 
   it("should include updateManyAndReturn method with globalOmit and computed applied", () => {
     expect(result).toContain(
-      "updateManyAndReturn(updateData: GassmaUserUpdateData): Gassma.WithComputed<GassmaUserFindResult<undefined, undefined, undefined, GO, O>, C, undefined, undefined>[]",
+      "updateManyAndReturn(updateData: GassmaUserUpdateData): GassmaUserFindResult<undefined, undefined, undefined, GO, O, CMap>[]",
     );
   });
 
   it("should use FindFirstData for findFirst", () => {
     expect(result).toContain(
-      `findFirst<T extends GassmaUserFindFirstData & Gassma.ComputedArgs<C>>(findData: T): ${res} | null`,
+      `findFirst<T extends GassmaUserFindFirstData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(findData: T): ${res} | null`,
     );
   });
 
   it("should use FindFirstData for findFirstOrThrow", () => {
     expect(result).toContain(
-      `findFirstOrThrow<T extends GassmaUserFindFirstData & Gassma.ComputedArgs<C>>(findData: T): ${res}`,
+      `findFirstOrThrow<T extends GassmaUserFindFirstData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(findData: T): ${res}`,
     );
   });
 
   it("should have generic create method with FindResult return", () => {
     expect(result).toContain(
-      `create<T extends GassmaUserCreateData & Gassma.ComputedArgs<C>>(createdData: T): ${res}`,
+      `create<T extends GassmaUserCreateData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(createdData: T): ${res}`,
     );
   });
 
   it("should have generic update method with model-specific type", () => {
     expect(result).toContain(
-      `update<T extends GassmaUserUpdateSingleData & Gassma.ComputedArgs<C>>(updateData: T): ${res} | null`,
+      `update<T extends GassmaUserUpdateSingleData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(updateData: T): ${res} | null`,
     );
   });
 

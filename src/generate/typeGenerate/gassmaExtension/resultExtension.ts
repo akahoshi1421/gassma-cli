@@ -27,7 +27,7 @@ const getGassmaResultExtension = (sheetNames: string[], schemaName: string) => {
     .map((sheetName) => {
       const self = selfOf(sheetName);
       const go = `O extends { "${sheetName}": infer UO } ? UO extends ${self}Omit ? UO : {} : {}`;
-      return `  "${sheetName}": ${self}Controller<${go}, O, Gassma.At<CMap, "${sheetName}">>;`;
+      return `  "${sheetName}": ${self}Controller<${go}, O, CMap>;`;
     })
     .join("\n");
 

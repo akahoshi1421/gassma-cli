@@ -92,10 +92,10 @@ describe("getGassmaExtension", () => {
       "export type GassmaHogeExtendedClient<O extends GassmaHogeGlobalOmitConfig = {}, CMap = {}> = {",
     );
     expect(result).toContain(
-      '  "User": GassmaHogeUserController<O extends { "User": infer UO } ? UO extends GassmaHogeUserOmit ? UO : {} : {}, O, Gassma.At<CMap, "User">>;',
+      '  "User": GassmaHogeUserController<O extends { "User": infer UO } ? UO extends GassmaHogeUserOmit ? UO : {} : {}, O, CMap>;',
     );
     expect(result).toContain(
-      '  "Post": GassmaHogePostController<O extends { "Post": infer UO } ? UO extends GassmaHogePostOmit ? UO : {} : {}, O, Gassma.At<CMap, "Post">>;',
+      '  "Post": GassmaHogePostController<O extends { "Post": infer UO } ? UO extends GassmaHogePostOmit ? UO : {} : {}, O, CMap>;',
     );
     expect(result).toContain("  $extends: GassmaHogeExtendsFn<O, CMap>;");
   });
@@ -148,16 +148,16 @@ describe("getGassmaExtension", () => {
       "  findMany?: <T extends GassmaHogeUserFindManyData>(params: {",
     );
     expect(result).toContain(
-      '    query: (args: T) => GassmaHogeUserFindResult<T["select"], T["include"], T["omit"], GO, O>[];',
+      '    query: (args: T) => GassmaHogeUserFindResultBase<T["select"], T["include"], T["omit"], GO, O>[];',
     );
     expect(result).toContain(
-      '  }) => GassmaHogeUserFindResult<T["select"], T["include"], T["omit"], GO, O>[];',
+      '  }) => GassmaHogeUserFindResultBase<T["select"], T["include"], T["omit"], GO, O>[];',
     );
     expect(result).toContain(
       "  findFirst?: <T extends GassmaHogeUserFindFirstData>(params: {",
     );
     expect(result).toContain(
-      '  }) => GassmaHogeUserFindResult<T["select"], T["include"], T["omit"], GO, O> | null;',
+      '  }) => GassmaHogeUserFindResultBase<T["select"], T["include"], T["omit"], GO, O> | null;',
     );
     expect(result).toContain(
       "  findFirstOrThrow?: <T extends GassmaHogeUserFindFirstData>(params: {",
@@ -200,7 +200,7 @@ describe("getGassmaExtension", () => {
     );
     expect(result).toContain("  updateManyAndReturn?: (params: {");
     expect(result).toContain(
-      "    query: (args: GassmaHogeUserUpdateData) => GassmaHogeUserFindResult<undefined, undefined, undefined, GO, O>[];",
+      "    query: (args: GassmaHogeUserUpdateData) => GassmaHogeUserFindResultBase<undefined, undefined, undefined, GO, O>[];",
     );
     expect(result).toContain("  deleteMany?: (params: {");
     expect(result).toContain(
@@ -258,7 +258,7 @@ describe("getGassmaExtension", () => {
       '  M extends "My Sheet" ? GassmaMySheetDefaultFindResult :',
     );
     expect(spaced).toContain(
-      '  "My Sheet": GassmaMySheetController<O extends { "My Sheet": infer UO } ? UO extends GassmaMySheetOmit ? UO : {} : {}, O, Gassma.At<CMap, "My Sheet">>;',
+      '  "My Sheet": GassmaMySheetController<O extends { "My Sheet": infer UO } ? UO extends GassmaMySheetOmit ? UO : {} : {}, O, CMap>;',
     );
   });
 
