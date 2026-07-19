@@ -3,7 +3,7 @@ import { GassmaClient } from "../__generated__/client";
 
 const client = new GassmaClient();
 
-// Tier2: nested include(default)の子モデル computed が正しい戻り型で出る
+// nested include(default)の子モデル computed が正しい戻り型で出る
 {
   const extended = client.$extends({
     result: {
@@ -21,7 +21,7 @@ const client = new GassmaClient();
   expectTypeOf(rows[0].posts[0].id).toEqualTypeOf<number>();
 }
 
-// Tier2: nested computed の戻り型が number でも保たれる
+// nested computed の戻り型が number でも保たれる
 {
   const extended = client.$extends({
     result: {
@@ -37,7 +37,7 @@ const client = new GassmaClient();
   expectTypeOf(rows[0].posts[0].doubleId).toEqualTypeOf<number>();
 }
 
-// Tier2: oneToOne(nullable)の nested computed
+// oneToOne(nullable)の nested computed
 {
   const extended = client.$extends({
     result: {
@@ -54,7 +54,7 @@ const client = new GassmaClient();
   if (profile) expectTypeOf(profile.bioLen).toEqualTypeOf<number>();
 }
 
-// Tier2: manyToOne(nullable)の nested computed
+// manyToOne(nullable)の nested computed
 {
   const extended = client.$extends({
     result: {
@@ -71,7 +71,7 @@ const client = new GassmaClient();
   if (author) expectTypeOf(author.fullName).toEqualTypeOf<string>();
 }
 
-// Tier2: 深いネスト(User→posts→tags)で各階層の computed
+// 深いネスト(User→posts→tags)で各階層の computed
 {
   const extended = client.$extends({
     result: {
@@ -96,7 +96,7 @@ const client = new GassmaClient();
   expectTypeOf(rows[0].posts[0].tags[0].upper).toEqualTypeOf<string>();
 }
 
-// Tier2: $allModels が nested にも付く
+// $allModels が nested にも付く
 {
   const extended = client.$extends({
     result: {
@@ -110,7 +110,7 @@ const client = new GassmaClient();
   expectTypeOf(rows[0].posts[0].tag).toEqualTypeOf<string>();
 }
 
-// Tier2: nested でもモデル固有が $allModels に勝つ
+// nested でもモデル固有が $allModels に勝つ
 {
   const extended = client.$extends({
     result: {
@@ -123,7 +123,7 @@ const client = new GassmaClient();
   expectTypeOf(rows[0].posts[0].tag).toEqualTypeOf<number>();
 }
 
-// Tier2: 自己リレーション(Category tree)の nested computed
+// 自己リレーション(Category tree)の nested computed
 {
   const extended = client.$extends({
     result: {
@@ -140,7 +140,7 @@ const client = new GassmaClient();
   expectTypeOf(rows[0].children[0].label).toEqualTypeOf<string>();
 }
 
-// Tier2: チェーン $extends の computed が nested にも累積する
+// チェーン $extends の computed が nested にも累積する
 {
   const extended = client
     .$extends({
@@ -170,7 +170,7 @@ const client = new GassmaClient();
   expectTypeOf(rows[0].posts[0].tags[0].upper).toEqualTypeOf<string>();
 }
 
-// Tier2: nested select は computed を選ばなければ computed を出さない
+// nested select は computed を選ばなければ computed を出さない
 {
   const extended = client.$extends({
     result: {
@@ -190,7 +190,7 @@ const client = new GassmaClient();
   expectTypeOf(rows[0].posts[0]).not.toHaveProperty("id");
 }
 
-// Tier2: nested omit はスカラーを落としつつ computed を残す
+// nested omit はスカラーを落としつつ computed を残す
 {
   const extended = client.$extends({
     result: {
@@ -210,14 +210,14 @@ const client = new GassmaClient();
   expectTypeOf(rows[0].posts[0]).not.toHaveProperty("content");
 }
 
-// Tier2 後方互換: 拡張なしなら nested に computed は出ない
+// 後方互換: 拡張なしなら nested に computed は出ない
 {
   const rows = client.User.findMany({ include: { posts: true } });
   expectTypeOf(rows[0].posts[0].title).toEqualTypeOf<string>();
   expectTypeOf(rows[0].posts[0]).not.toHaveProperty("headline");
 }
 
-// Tier2 後方互換: query-only 拡張は nested も従来型
+// 後方互換: query-only 拡張は nested も従来型
 {
   const queryOnly = client.$extends({
     query: { User: { findMany: ({ args, query }) => query(args) } },

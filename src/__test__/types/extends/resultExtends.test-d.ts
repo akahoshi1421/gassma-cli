@@ -259,7 +259,7 @@ const omitClient = new GassmaClient({ omit: { User: { email: true } } });
   expectTypeOf(extended.User.deleteMany({}).count).toEqualTypeOf<number>();
 }
 
-// 算出フィールドはネストしたリレーション結果にも出る（Tier2）
+// 算出フィールドはネストしたリレーション結果にも出る
 {
   const extended = client.$extends({
     result: {
