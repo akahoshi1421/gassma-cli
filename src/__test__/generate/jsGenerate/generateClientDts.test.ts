@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { generateClientDts } from "../../../generate/jsGenerate/generateClientDts";
 
 describe("generateClientDts", () => {
@@ -31,9 +31,20 @@ describe("generateClientDts", () => {
     );
   });
 
+  it("should declare $extends on the client interface", () => {
+    const result = generateClientDts("Hoge");
+
+    expect(result).toContain(
+      "  $extends(extension: GassmaHogeExtension<O>): GassmaClient<O>;",
+    );
+  });
+
   it("should work with different schema names", () => {
     const result = generateClientDts("Fuga");
 
+    expect(result).toContain(
+      "  $extends(extension: GassmaFugaExtension<O>): GassmaClient<O>;",
+    );
     expect(result).toContain("export declare class GassmaClient");
     expect(result).toContain("options?: GassmaFugaClientOptions");
     expect(result).toContain(
