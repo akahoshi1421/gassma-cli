@@ -15,8 +15,14 @@ describe("getOneGassmaController", () => {
     expect(result).toContain("constructor(sheetName: string, id?: string)");
   });
 
-  it("should include changeSettings method", () => {
-    expect(result).toContain("changeSettings(");
+  it("should include changeSettings method accepting column letters", () => {
+    expect(result).toContain(
+      `changeSettings(
+    startRowNumber: number,
+    startColumnValue: number | string,
+    endColumnValue: number | string
+  ): void;`,
+    );
   });
 
   it("should include CRUD methods", () => {

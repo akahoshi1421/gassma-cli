@@ -13,8 +13,8 @@ export declare class ${self}Controller<GO extends ${self}Omit = {}, O = {}, C = 
   readonly fields: Record<string, Gassma.FieldRef>;
   changeSettings(
     startRowNumber: number,
-    startColumnNumber: number,
-    endColumnNumber: number
+    startColumnValue: number | string,
+    endColumnValue: number | string
   ): void;
   createMany(createdData: ${self}CreateManyData): CreateManyReturn;
   createManyAndReturn<${arg("CreateManyAndReturnData")}>(createdData: T): ${res}[];
