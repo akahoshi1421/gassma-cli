@@ -43,6 +43,33 @@ const getGassmaCommonTypes = (strict?: boolean) => {
   type FalseKeys<T> = { [K in keyof T]: T[K] extends false ? K : never }[keyof T];
   type ResolveOmitKeys<GO, QO> = Exclude<TrueKeys<GO>, FalseKeys<QO>> | TrueKeys<QO>;
 
+  type At<X, K> = K extends keyof X ? X[K] : {};
+  type MergeShape<A, B> = Omit<A, keyof B> & B;
+  type ComputedReturns<Fields> = {
+    [F in keyof Fields]: Fields[F] extends { compute: (...args: never[]) => infer V } ? V : never;
+  };
+  type ComputedOf<R, M> = MergeShape<ComputedReturns<At<R, "$allModels">>, ComputedReturns<At<R, M>>>;
+  type ResultField<Scalars, S> = {
+    needs?: { [K in keyof S]: K extends keyof Scalars ? S[K] : never } & { [K in keyof Scalars]?: boolean };
+    compute(record: { [K in keyof S as S[K] extends true ? K & keyof Scalars : never]: Scalars[K & keyof Scalars] }): unknown;
+  };
+  type ComputedArgs<C> = [keyof C] extends [never] ? {} : {
+    select?: { [K in keyof C]?: true };
+    omit?: { [K in keyof C]?: true | false };
+  };
+  type SelectedComputed<C, S> = {
+    [K in keyof C as K extends keyof S ? (S[K] extends true ? K : never) : never]: C[K];
+  };
+  type ActiveComputed<C, QO> = { [K in keyof C as K extends TrueKeys<QO> ? never : K]: C[K] };
+  type StripComputed<S, C> = [keyof C] extends [never]
+    ? S
+    : S extends object ? { [K in Exclude<keyof S, keyof C>]: S[K] } : S;
+  type WithComputed<Base, C, S, QO> = [keyof C] extends [never]
+    ? Base
+    : S extends object
+      ? Omit<Base, keyof SelectedComputed<C, S>> & SelectedComputed<C, S>
+      : Omit<Base, keyof ActiveComputed<C, QO>> & ActiveComputed<C, QO>;
+
   type ExactKeys<T, Shape> = Shape & { [K in Exclude<keyof T, keyof Shape>]?: never };
   type StrictGlobalOmit<O, Config> = Config & {
     [K in keyof O]?: K extends keyof Config

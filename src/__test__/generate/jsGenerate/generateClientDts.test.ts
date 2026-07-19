@@ -31,20 +31,16 @@ describe("generateClientDts", () => {
     );
   });
 
-  it("should declare $extends on the client interface", () => {
+  it("should declare generic $extends on the client interface", () => {
     const result = generateClientDts("Hoge");
 
-    expect(result).toContain(
-      "  $extends(extension: GassmaHogeExtension<O>): GassmaClient<O>;",
-    );
+    expect(result).toContain("  $extends: GassmaHogeExtendsFn<O, {}>;");
   });
 
   it("should work with different schema names", () => {
     const result = generateClientDts("Fuga");
 
-    expect(result).toContain(
-      "  $extends(extension: GassmaFugaExtension<O>): GassmaClient<O>;",
-    );
+    expect(result).toContain("  $extends: GassmaFugaExtendsFn<O, {}>;");
     expect(result).toContain("export declare class GassmaClient");
     expect(result).toContain("options?: GassmaFugaClientOptions");
     expect(result).toContain(

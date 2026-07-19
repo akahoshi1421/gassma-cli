@@ -5,6 +5,7 @@ import {
   toUnion,
 } from "./gassmaExtension/extensionOperations";
 import { getOneGassmaExtension } from "./gassmaExtension/oneGassmaExtension";
+import { getGassmaResultExtension } from "./gassmaExtension/resultExtension";
 
 const getGassmaExtension = (sheetNames: string[], schemaName: string) => {
   const prefix = `Gassma${schemaName}`;
@@ -46,9 +47,10 @@ export type ${prefix}QueryExtension<O extends ${prefix}GlobalOmitConfig = {}> = 
 ${queryExtensionEntries}
   $allModels?: ${prefix}AllModelsQueryHooks;
 };
-
+${getGassmaResultExtension(sheetNames, schemaName)}
 export type ${prefix}Extension<O extends ${prefix}GlobalOmitConfig = {}> = {
   query?: ${prefix}QueryExtension<O>;
+  result?: ${prefix}ResultConfig;
 };
 `;
 };
