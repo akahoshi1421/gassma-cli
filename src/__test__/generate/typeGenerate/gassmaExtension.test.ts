@@ -4,11 +4,75 @@ import { getGassmaExtension } from "../../../generate/typeGenerate/gassmaExtensi
 describe("getGassmaExtension", () => {
   const result = getGassmaExtension(["User", "Post"], "Hoge");
 
-  it("should generate Extension type with optional query", () => {
+  it("should generate Extension type with optional query and result", () => {
     expect(result).toContain(
       "export type GassmaHogeExtension<O extends GassmaHogeGlobalOmitConfig = {}> = {",
     );
     expect(result).toContain("  query?: GassmaHogeQueryExtension<O>;");
+    expect(result).toContain("  result?: GassmaHogeResultConfig;");
+  });
+
+  it("should generate ResultScalars conditional lookup per model", () => {
+    expect(result).toContain("export type GassmaHogeResultScalars<M> =");
+    expect(result).toContain(
+      '  M extends "User" ? GassmaHogeUserDefaultFindResult :',
+    );
+    expect(result).toContain(
+      '  M extends "Post" ? GassmaHogePostDefaultFindResult :',
+    );
+    expect(result).toContain("  { [field: string]: unknown };");
+  });
+
+  it("should generate ResultShape and needs-correlated ResultExtension", () => {
+    expect(result).toContain("export type GassmaHogeResultShape = {");
+    expect(result).toContain(
+      '  [M in GassmaHogeModelName | "$allModels"]?: unknown;',
+    );
+    expect(result).toContain("export type GassmaHogeResultExtension<R_> = {");
+    expect(result).toContain(
+      "    [F in keyof R_[M]]?: Gassma.ResultField<GassmaHogeResultScalars<M>, R_[M][F]>;",
+    );
+  });
+
+  it("should generate loose ResultConfig for annotations", () => {
+    expect(result).toContain("export type GassmaHogeResultConfig = {");
+    expect(result).toContain('  [M in GassmaHogeModelName | "$allModels"]?: {');
+    expect(result).toContain("      needs?: { [key: string]: boolean };");
+    expect(result).toContain("      compute: (record: any) => unknown;");
+  });
+
+  it("should generate ComputedMap merging per model", () => {
+    expect(result).toContain("export type GassmaHogeComputedMap<CMap, R> = {");
+    expect(result).toContain(
+      '  "User": Gassma.MergeShape<Gassma.At<CMap, "User">, Gassma.ComputedOf<R, "User">>;',
+    );
+    expect(result).toContain(
+      '  "Post": Gassma.MergeShape<Gassma.At<CMap, "Post">, Gassma.ComputedOf<R, "Post">>;',
+    );
+  });
+
+  it("should generate generic ExtendsFn capturing result literal", () => {
+    expect(result).toContain(
+      "export type GassmaHogeExtendsFn<O extends GassmaHogeGlobalOmitConfig, CMap> = <R_ extends GassmaHogeResultShape = {}, R extends GassmaHogeResultConfig = {}>(extension: {",
+    );
+    expect(result).toContain("  query?: GassmaHogeQueryExtension<O>;");
+    expect(result).toContain("  result?: GassmaHogeResultExtension<R_> & R;");
+    expect(result).toContain(
+      "}) => GassmaHogeExtendedClient<O, GassmaHogeComputedMap<CMap, R>>;",
+    );
+  });
+
+  it("should generate ExtendedClient with computed controllers and chainable $extends", () => {
+    expect(result).toContain(
+      "export type GassmaHogeExtendedClient<O extends GassmaHogeGlobalOmitConfig = {}, CMap = {}> = {",
+    );
+    expect(result).toContain(
+      '  "User": GassmaHogeUserController<O extends { "User": infer UO } ? UO extends GassmaHogeUserOmit ? UO : {} : {}, O, Gassma.At<CMap, "User">>;',
+    );
+    expect(result).toContain(
+      '  "Post": GassmaHogePostController<O extends { "Post": infer UO } ? UO extends GassmaHogePostOmit ? UO : {} : {}, O, Gassma.At<CMap, "Post">>;',
+    );
+    expect(result).toContain("  $extends: GassmaHogeExtendsFn<O, CMap>;");
   });
 
   it("should generate QueryExtension with per-model hooks and $allModels", () => {
@@ -165,6 +229,12 @@ describe("getGassmaExtension", () => {
     );
     expect(spaced).toContain('    model: "My Sheet";');
     expect(spaced).toContain("export type GassmaMySheetQueryArgs =");
+    expect(spaced).toContain(
+      '  M extends "My Sheet" ? GassmaMySheetDefaultFindResult :',
+    );
+    expect(spaced).toContain(
+      '  "My Sheet": GassmaMySheetController<O extends { "My Sheet": infer UO } ? UO extends GassmaMySheetOmit ? UO : {} : {}, O, Gassma.At<CMap, "My Sheet">>;',
+    );
   });
 
   it("should work with empty schema name", () => {
