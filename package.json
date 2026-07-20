@@ -42,6 +42,14 @@
   "engines": {
     "node": ">=20"
   },
+  "peerDependencies": {
+    "typescript": ">=5.2"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@loancrate/prisma-schema-parser": "^3.0.0",
     "@prisma/internals": "^7.5.0",
