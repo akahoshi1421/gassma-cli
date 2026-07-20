@@ -11,5 +11,6 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true
-  }
+  },
+  "exclude": ["src/__test__/types/**/*.test-d.ts"]
 }
