@@ -6,7 +6,6 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "rootDir": "./src",
-    "baseUrl": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
