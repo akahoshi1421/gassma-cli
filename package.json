@@ -17,7 +17,7 @@
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "vitest run",
     "test:watch": "vitest",
     "pretest:types": "tsx scripts/genFixtureTypes.ts",
@@ -41,6 +41,14 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.2"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@loancrate/prisma-schema-parser": "^3.0.0",
@@ -67,9 +75,9 @@
     "globals": "^15.13.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.22.12",
     "tsx": "^4.22.3",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.7"
   },
   "lint-staged": {
