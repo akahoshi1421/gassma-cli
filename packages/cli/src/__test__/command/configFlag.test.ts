@@ -1,11 +1,12 @@
 import { execFileSync } from "child_process";
 import fs from "fs";
+import { createRequire } from "module";
 import os from "os";
 import path from "path";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
 const projectRoot = path.resolve(__dirname, "../../..");
-const tsxCli = path.join(projectRoot, "node_modules", "tsx", "dist", "cli.mjs");
+const tsxCli = createRequire(import.meta.url).resolve("tsx/cli");
 const commandTs = path.join(projectRoot, "src", "command.ts");
 
 describe("gassma generate --config (e2e)", () => {

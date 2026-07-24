@@ -1,87 +1,16 @@
 {
-  "name": "gassma",
-  "version": "1.1.0",
-  "description": "GASsma is Google Apps Script(GAS) of SpreadSheet library that can be used like prisma.",
-  "types": "index.d.ts",
-  "bin": {
-    "gassma": "bin/index.js"
-  },
-  "exports": {
-    ".": {
-      "types": "./index.d.ts"
-    },
-    "./config": {
-      "types": "./dist/config/defineConfig.d.ts",
-      "require": "./dist/config/defineConfig.js",
-      "import": "./dist/config/defineConfig.js"
-    }
-  },
+  "name": "gassma-cli-monorepo",
+  "private": true,
+  "workspaces": ["packages/*"],
   "scripts": {
-    "build": "tsdown",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "pretest:types": "tsx scripts/genFixtureTypes.ts",
-    "test:types": "vitest --typecheck --run",
-    "typecheck": "tsc --noEmit",
-    "format": "biome format --write src",
-    "format:check": "biome format src",
-    "lint": "biome lint src",
-    "lint:fix": "biome lint --write src",
     "prepare": "husky"
   },
-  "author": "akahoshi1421",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/akahoshi1421/gassma-cli.git"
-  },
-  "homepage": "https://akahoshi1421.github.io/gassma-reference/",
-  "bugs": {
-    "url": "https://github.com/akahoshi1421/gassma-cli/issues"
-  },
-  "engines": {
-    "node": ">=20"
-  },
-  "peerDependencies": {
-    "typescript": ">=5.2"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
-  },
-  "dependencies": {
-    "@loancrate/prisma-schema-parser": "^3.0.0",
-    "@prisma/internals": "^7.5.0",
-    "commander": "^12.1.0",
-    "jiti": "^2.6.1",
-    "open": "^11.0.0"
-  },
-  "keywords": [
-    "Google Apps Script",
-    "google-apps-script",
-    "GAS",
-    "GASsma",
-    "spreadsheet",
-    "prisma",
-    "ORM",
-    "TypeScript",
-    "JavaScript",
-    "CLI"
-  ],
   "devDependencies": {
-    "@biomejs/biome": "2.3.2",
-    "@types/node": "^22.10.2",
-    "globals": "^15.13.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.6",
-    "tsdown": "^0.22.12",
-    "tsx": "^4.22.3",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.7"
+    "lint-staged": "^16.2.6"
   },
   "lint-staged": {
-    "src/**/*.{js,ts,jsx,tsx}": [
+    "packages/*/src/**/*.{js,ts,jsx,tsx}": [
       "biome format --write",
       "biome lint --write"
     ]

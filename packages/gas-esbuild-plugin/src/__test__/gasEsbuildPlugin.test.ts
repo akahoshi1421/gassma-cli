@@ -110,9 +110,9 @@ describe("gasEsbuildPlugin", () => {
     const output = await buildWithPlugin(entry);
     const context = runAsGasScript(output);
 
-    expect(vm.runInContext("increment(); increment(); current()", context)).toBe(
-      2,
-    );
+    expect(
+      vm.runInContext("increment(); increment(); current()", context),
+    ).toBe(2);
   });
 
   it("should not generate a stub for the default export", async () => {
@@ -146,7 +146,10 @@ describe("gasEsbuildPlugin", () => {
   });
 
   it("should resolve re-exports from other modules", async () => {
-    writeSource("lib.ts", "export function libFunc(): string { return 'lib'; }\n");
+    writeSource(
+      "lib.ts",
+      "export function libFunc(): string { return 'lib'; }\n",
+    );
     writeSource("util.ts", "export const utilFunc = (): string => 'util';\n");
     const entry = writeSource(
       "main.ts",

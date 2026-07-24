@@ -2,7 +2,7 @@
   "$schema": "https://biomejs.dev/schemas/2.3.2/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
-    "includes": ["src/**/*.{js,mjs,cjs,ts,tsx,json,jsonc}"]
+    "includes": ["packages/*/src/**/*.{js,mjs,cjs,ts,tsx,json,jsonc}"]
   },
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2 },
   "linter": {
@@ -84,7 +84,7 @@
         "useNamespaceKeyword": "error"
       }
     },
-    "includes": ["src/**"]
+    "includes": ["packages/*/src/**"]
   },
   "javascript": {
     "formatter": { "quoteStyle": "double" },

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { execSync } from "child_process";
 import fs from "fs";
+import { createRequire } from "module";
 import os from "os";
 import path from "path";
 import { generater } from "../../generate/generator";
@@ -9,15 +10,7 @@ import { prismaReader } from "../../generate/read/prismaReader";
 import { extractRelations } from "../../generate/read/extractRelations";
 import { extractOptionalFields } from "../../generate/read/extractOptionalFields";
 
-const tscPath = path.join(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "node_modules",
-  ".bin",
-  "tsc",
-);
+const tscPath = createRequire(import.meta.url).resolve("typescript/bin/tsc");
 
 const runTsc = (tmpDir: string, tsconfigPath: string): string => {
   try {
