@@ -1,0 +1,1 @@
+export { gasEsbuildPlugin } from "./gasEsbuildPlugin";
