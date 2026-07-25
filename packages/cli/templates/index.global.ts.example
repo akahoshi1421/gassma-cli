@@ -1,0 +1,9 @@
+const main = () => console.log("Hello GAS!");
+
+interface Global {
+  main: typeof main;
+}
+
+declare const global: Global;
+
+global.main = main;

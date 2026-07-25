@@ -3,6 +3,7 @@ import type { PackageManager } from "../env/detectPackageManager";
 import type { ExecFn } from "../env/execCommand";
 import type { FetchTextFn } from "../env/fetchLatestLibraryVersion";
 import type { FileStore } from "../env/fileStore";
+import type { BootstrapTemplates } from "../env/readTemplate";
 import type { FunctionStyle } from "../functionStyle";
 import type { Prompter } from "./prompts";
 
@@ -28,7 +29,7 @@ type BootstrapDeps = {
   dryRun: boolean;
   skipInstall: boolean;
   gassmaVersion: string;
-  gitignoreTemplate: string;
+  templates: BootstrapTemplates;
 };
 
 type BootstrapStep = {

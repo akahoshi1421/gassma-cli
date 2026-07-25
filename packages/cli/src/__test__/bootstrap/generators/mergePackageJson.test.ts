@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { readTemplate } from "../../../bootstrap/env/readTemplate";
 import { mergePackageJson } from "../../../bootstrap/generators/mergePackageJson";
+import { patchPackageJson } from "../../../bootstrap/generators/patchPackageJson";
 
-const options = {
+const desired = patchPackageJson(readTemplate("package.json.example"), {
   name: "my-app",
   gassmaVersion: "1.1.0",
   style: "export",
-} satisfies Parameters<typeof mergePackageJson>[1];
+});
 
 const parse = (text: string) => JSON.parse(text);
 
@@ -16,7 +18,7 @@ describe("mergePackageJson", () => {
       scripts: { build: "my-own-build", test: "vitest" },
     });
 
-    const pkg = parse(mergePackageJson(existing, options));
+    const pkg = parse(mergePackageJson(existing, desired));
 
     expect(pkg.scripts.build).toBe("my-own-build");
     expect(pkg.scripts.test).toBe("vitest");
@@ -27,7 +29,7 @@ describe("mergePackageJson", () => {
   it("should keep the existing name and version", () => {
     const existing = JSON.stringify({ name: "keep-me", version: "9.9.9" });
 
-    const pkg = parse(mergePackageJson(existing, options));
+    const pkg = parse(mergePackageJson(existing, desired));
 
     expect(pkg.name).toBe("keep-me");
     expect(pkg.version).toBe("9.9.9");
@@ -39,7 +41,7 @@ describe("mergePackageJson", () => {
       devDependencies: { esbuild: "^0.20.0" },
     });
 
-    const pkg = parse(mergePackageJson(existing, options));
+    const pkg = parse(mergePackageJson(existing, desired));
 
     expect(pkg.dependencies.gassma).toBe("^0.5.0");
     expect(pkg.devDependencies.esbuild).toBe("^0.20.0");
@@ -49,7 +51,7 @@ describe("mergePackageJson", () => {
   it("should add missing sections to a minimal package.json", () => {
     const existing = JSON.stringify({ name: "minimal" });
 
-    const pkg = parse(mergePackageJson(existing, options));
+    const pkg = parse(mergePackageJson(existing, desired));
 
     expect(pkg.dependencies).toEqual({ gassma: "^1.1.0" });
     expect(pkg.scripts.build).toBe("node esbuild.mjs");
@@ -64,7 +66,7 @@ describe("mergePackageJson", () => {
       keywords: ["gas"],
     });
 
-    const pkg = parse(mergePackageJson(existing, options));
+    const pkg = parse(mergePackageJson(existing, desired));
 
     expect(pkg.type).toBe("module");
     expect(pkg.license).toBe("MIT");
@@ -72,15 +74,15 @@ describe("mergePackageJson", () => {
   });
 
   it("should produce JSON ending with a newline", () => {
-    const merged = mergePackageJson(JSON.stringify({}), options);
+    const merged = mergePackageJson(JSON.stringify({}), desired);
     expect(merged.endsWith("\n")).toBe(true);
   });
 
   it("should throw for invalid JSON", () => {
-    expect(() => mergePackageJson("{ broken", options)).toThrow();
+    expect(() => mergePackageJson("{ broken", desired)).toThrow();
   });
 
   it("should throw for JSON that is not an object", () => {
-    expect(() => mergePackageJson('["array"]', options)).toThrow();
+    expect(() => mergePackageJson('["array"]', desired)).toThrow();
   });
 });

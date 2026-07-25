@@ -1,11 +1,10 @@
 import path from "path";
-import { generateEsbuildConfig } from "../../generators/generateEsbuildConfig";
 import { mergeGitignore } from "../../generators/mergeGitignore";
-import { generatePackageJson } from "../../generators/generatePackageJson";
-import type { GeneratePackageJsonOptions } from "../../generators/generatePackageJson";
-import { generateSampleIndex } from "../../generators/generateSampleIndex";
-import { generateTsconfig } from "../../generators/generateTsconfig";
 import { mergePackageJson } from "../../generators/mergePackageJson";
+import {
+  patchPackageJson,
+  renderPackageJson,
+} from "../../generators/patchPackageJson";
 import { sanitizePackageName } from "../../generators/sanitizePackageName";
 import { init } from "../../../init/initCommand";
 import type {
@@ -16,20 +15,20 @@ import type {
 
 const writePackageJson = (context: BootstrapContext, deps: BootstrapDeps) => {
   const packageJsonPath = path.join(context.cwd, "package.json");
-  const options: GeneratePackageJsonOptions = {
+  const desired = patchPackageJson(deps.templates.packageJson, {
     name: sanitizePackageName(path.basename(context.cwd)),
     gassmaVersion: deps.gassmaVersion,
     style: context.style,
-  };
+  });
 
   if (!deps.store.exists(packageJsonPath)) {
-    deps.store.write(packageJsonPath, generatePackageJson(options));
+    deps.store.write(packageJsonPath, renderPackageJson(desired));
     deps.prompter.info("Created package.json");
     return;
   }
 
   try {
-    const merged = mergePackageJson(deps.store.read(packageJsonPath), options);
+    const merged = mergePackageJson(deps.store.read(packageJsonPath), desired);
     deps.store.write(packageJsonPath, merged);
     deps.prompter.info("Merged bootstrap settings into existing package.json");
   } catch {
@@ -56,13 +55,13 @@ const writeIfMissing = (
 const writeGitignore = (context: BootstrapContext, deps: BootstrapDeps) => {
   const gitignorePath = path.join(context.cwd, ".gitignore");
   if (!deps.store.exists(gitignorePath)) {
-    deps.store.write(gitignorePath, deps.gitignoreTemplate);
+    deps.store.write(gitignorePath, deps.templates.gitignore);
     deps.prompter.info("Created .gitignore");
     return;
   }
 
   const existing = deps.store.read(gitignorePath);
-  const merged = mergeGitignore(deps.gitignoreTemplate, existing);
+  const merged = mergeGitignore(deps.templates.gitignore, existing);
   if (merged === existing) return;
 
   deps.store.write(gitignorePath, merged);
@@ -76,13 +75,13 @@ const projectFilesStep: BootstrapStep = {
     writeIfMissing(
       deps,
       path.join(context.cwd, "esbuild.mjs"),
-      generateEsbuildConfig(context.style),
+      deps.templates.esbuild[context.style],
       "esbuild.mjs",
     );
     writeIfMissing(
       deps,
       path.join(context.cwd, "tsconfig.json"),
-      generateTsconfig(),
+      deps.templates.tsconfig,
       "tsconfig.json",
     );
     writeGitignore(context, deps);
@@ -103,7 +102,7 @@ const sampleIndexStep: BootstrapStep = {
       return Promise.resolve(context);
     }
 
-    deps.store.write(indexPath, generateSampleIndex(context.style));
+    deps.store.write(indexPath, deps.templates.sampleIndex[context.style]);
     deps.prompter.info("Created src/index.ts");
     return Promise.resolve(context);
   },

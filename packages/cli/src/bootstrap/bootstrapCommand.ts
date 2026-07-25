@@ -6,7 +6,7 @@ import type { ExecFn } from "./env/execCommand";
 import { createDefaultFetchText } from "./env/fetchLatestLibraryVersion";
 import type { FetchTextFn } from "./env/fetchLatestLibraryVersion";
 import { createFsFileStore } from "./env/fileStore";
-import { readGitignoreTemplate } from "./env/readGitignoreTemplate";
+import { loadBootstrapTemplates } from "./env/readTemplate";
 import { buildBootstrapSteps } from "./flow/buildSteps";
 import { createInitialContext, runSteps } from "./flow/context";
 import type { BootstrapDeps } from "./flow/context";
@@ -98,7 +98,7 @@ const bootstrap = async (
     dryRun,
     skipInstall: options.skipInstall === true,
     gassmaVersion: getVersion(),
-    gitignoreTemplate: readGitignoreTemplate(),
+    templates: loadBootstrapTemplates(),
   };
   const initialContext = createInitialContext({
     cwd,

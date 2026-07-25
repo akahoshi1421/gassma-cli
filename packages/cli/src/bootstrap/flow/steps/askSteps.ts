@@ -1,6 +1,5 @@
 import path from "path";
 import { formatInstallCommand } from "../../env/installCommand";
-import { generateSampleIndex } from "../../generators/generateSampleIndex";
 import type { BootstrapStep } from "../context";
 
 const titleStep: BootstrapStep = {
@@ -33,10 +32,13 @@ const styleStep: BootstrapStep = {
   id: "style",
   run: async (context, deps) => {
     deps.prompter.note(
-      generateSampleIndex("export").trimEnd(),
+      deps.templates.sampleIndex.export.trimEnd(),
       "export style (recommended)",
     );
-    deps.prompter.note(generateSampleIndex("global").trimEnd(), "global style");
+    deps.prompter.note(
+      deps.templates.sampleIndex.global.trimEnd(),
+      "global style",
+    );
 
     const style = await deps.prompter.select(
       "Function exposure style?",

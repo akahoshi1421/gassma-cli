@@ -1,35 +1,35 @@
 import { isRecord } from "../util/isRecord";
-import { buildPackageJsonObject } from "./generatePackageJson";
-import type { GeneratePackageJsonOptions } from "./generatePackageJson";
+import { renderPackageJson } from "./patchPackageJson";
 
 const mergeSection = (
-  generated: Record<string, string>,
+  desired: unknown,
   existing: unknown,
-): Record<string, unknown> =>
-  isRecord(existing) ? { ...generated, ...existing } : { ...generated };
+): Record<string, unknown> => ({
+  ...(isRecord(desired) ? desired : {}),
+  ...(isRecord(existing) ? existing : {}),
+});
 
 const mergePackageJson = (
   existingText: string,
-  options: GeneratePackageJsonOptions,
+  desired: Record<string, unknown>,
 ): string => {
   const existing: unknown = JSON.parse(existingText);
   if (!isRecord(existing)) {
     throw new Error("Existing package.json is not a JSON object.");
   }
 
-  const generated = buildPackageJsonObject(options);
   const merged = {
-    ...generated,
+    ...desired,
     ...existing,
-    scripts: mergeSection(generated.scripts, existing.scripts),
-    dependencies: mergeSection(generated.dependencies, existing.dependencies),
+    scripts: mergeSection(desired.scripts, existing.scripts),
+    dependencies: mergeSection(desired.dependencies, existing.dependencies),
     devDependencies: mergeSection(
-      generated.devDependencies,
+      desired.devDependencies,
       existing.devDependencies,
     ),
   };
 
-  return `${JSON.stringify(merged, null, 2)}\n`;
+  return renderPackageJson(merged);
 };
 
 export { mergePackageJson };

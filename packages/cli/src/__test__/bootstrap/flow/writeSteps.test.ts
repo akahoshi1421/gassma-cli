@@ -111,7 +111,11 @@ describe("projectFilesStep", () => {
   it("should write the injected template verbatim to a fresh .gitignore", async () => {
     const ignorePath = path.join(CWD, ".gitignore");
     const { files, store } = createMemoryStore({});
-    const deps = createTestDeps({ store, gitignoreTemplate: "a/\nb\n" });
+    const base = createTestDeps({ store });
+    const deps = {
+      ...base,
+      templates: { ...base.templates, gitignore: "a/\nb\n" },
+    };
 
     await projectFilesStep.run(baseContext(), deps);
 
