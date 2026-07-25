@@ -66,6 +66,7 @@ describe("debugCommand", () => {
     homedir: homeDir,
     stdinIsTty: false,
     stdoutIsTty: false,
+    detectCi: () => false,
   });
 
   it("should render every section for a fully set up project", async () => {
@@ -146,7 +147,7 @@ describe("debugCommand", () => {
     expect(output).toContain("Skipped (schema not found)");
   });
 
-  it("should reflect the injected environment variables", async () => {
+  it("should reflect the injected environment and CI detector", async () => {
     await debugCommand(
       {},
       {
@@ -154,6 +155,7 @@ describe("debugCommand", () => {
         env: { CI: "true", TERM: "dumb" },
         exec: noClaspExec,
         stdinIsTty: true,
+        detectCi: () => true,
       },
     );
 

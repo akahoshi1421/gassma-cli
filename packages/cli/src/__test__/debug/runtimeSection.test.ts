@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   buildCiLines,
   buildInteractiveLines,
-  isCiEnv,
   isInteractive,
 } from "../../debug/sections/runtimeSection";
 import { createStyler } from "../../debug/styles";
@@ -24,25 +23,6 @@ describe("isInteractive", () => {
 
   it("should be false when TERM is dumb", () => {
     expect(isInteractive(true, "dumb")).toBe(false);
-  });
-});
-
-describe("isCiEnv", () => {
-  it("should be false when CI is not set", () => {
-    expect(isCiEnv(undefined)).toBe(false);
-  });
-
-  it("should be false when CI is empty", () => {
-    expect(isCiEnv("")).toBe(false);
-  });
-
-  it("should be false when CI is the string false", () => {
-    expect(isCiEnv("false")).toBe(false);
-  });
-
-  it("should be true when CI is truthy", () => {
-    expect(isCiEnv("true")).toBe(true);
-    expect(isCiEnv("1")).toBe(true);
   });
 });
 

@@ -3,6 +3,7 @@ import { logLoadedConfig } from "../config/logLoadedConfig";
 import { getVersion } from "../version/getVersion";
 import { createDebugFs } from "./env/debugFs";
 import type { DebugFs } from "./env/debugFs";
+import { detectCi as defaultDetectCi } from "./env/detectCi";
 import { createTimedExec } from "./env/execWithTimeout";
 import type { TimedExecFn } from "./env/execWithTimeout";
 import {
@@ -19,7 +20,6 @@ import {
 import {
   buildCiLines,
   buildInteractiveLines,
-  isCiEnv,
   isInteractive,
 } from "./sections/runtimeSection";
 import {
@@ -41,6 +41,7 @@ type DebugOverrides = {
   homedir?: string;
   stdinIsTty?: boolean;
   stdoutIsTty?: boolean;
+  detectCi?: () => boolean;
 };
 
 const CLASP_TIMEOUT_MS = 3000;
@@ -68,6 +69,7 @@ const runDebug = async (
   const homedir = overrides.homedir ?? os.homedir();
   const stdinIsTty = overrides.stdinIsTty ?? process.stdin.isTTY === true;
   const stdoutIsTty = overrides.stdoutIsTty ?? process.stdout.isTTY === true;
+  const detectCi = overrides.detectCi ?? defaultDetectCi;
   const cwd = process.cwd();
   const styler = createStyler(resolveColorEnabled(env, stdoutIsTty));
 
@@ -112,7 +114,7 @@ const runDebug = async (
     buildInteractiveLines(isInteractive(stdinIsTty, env.TERM), styler),
   );
   console.log("");
-  printLines(buildCiLines(isCiEnv(env.CI), styler));
+  printLines(buildCiLines(detectCi(), styler));
 };
 
 const debugCommand = async (
