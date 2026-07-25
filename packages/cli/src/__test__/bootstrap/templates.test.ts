@@ -94,31 +94,31 @@ global.main = main;
 `;
 
 describe("bundled templates", () => {
-  it("should ship .gitignore.example byte for byte", () => {
-    expect(readTemplate(".gitignore.example")).toBe(GITIGNORE);
+  it("should ship .gitignore.template byte for byte", () => {
+    expect(readTemplate(".gitignore.template")).toBe(GITIGNORE);
   });
 
-  it("should ship tsconfig.json.example byte for byte", () => {
-    expect(readTemplate("tsconfig.json.example")).toBe(TSCONFIG);
+  it("should ship tsconfig.json.template byte for byte", () => {
+    expect(readTemplate("tsconfig.json.template")).toBe(TSCONFIG);
   });
 
-  it("should ship package.json.example byte for byte", () => {
-    expect(readTemplate("package.json.example")).toBe(PACKAGE_JSON);
+  it("should ship package.json.template byte for byte", () => {
+    expect(readTemplate("package.json.template")).toBe(PACKAGE_JSON);
   });
 
-  it("should ship esbuild.export.mjs.example byte for byte", () => {
-    expect(readTemplate("esbuild.export.mjs.example")).toBe(ESBUILD_EXPORT);
+  it("should ship esbuild.export.mjs.template byte for byte", () => {
+    expect(readTemplate("esbuild.export.mjs.template")).toBe(ESBUILD_EXPORT);
   });
 
-  it("should ship esbuild.global.mjs.example byte for byte", () => {
-    expect(readTemplate("esbuild.global.mjs.example")).toBe(ESBUILD_GLOBAL);
+  it("should ship esbuild.global.mjs.template byte for byte", () => {
+    expect(readTemplate("esbuild.global.mjs.template")).toBe(ESBUILD_GLOBAL);
   });
 
-  it("should ship index.export.ts.example byte for byte", () => {
-    expect(readTemplate("index.export.ts.example")).toBe(INDEX_EXPORT);
+  it("should ship index.export.ts.template byte for byte", () => {
+    expect(readTemplate("index.export.ts.template")).toBe(INDEX_EXPORT);
   });
 
-  it("should ship index.global.ts.example byte for byte", () => {
-    expect(readTemplate("index.global.ts.example")).toBe(INDEX_GLOBAL);
+  it("should ship index.global.ts.template byte for byte", () => {
+    expect(readTemplate("index.global.ts.template")).toBe(INDEX_GLOBAL);
   });
 });

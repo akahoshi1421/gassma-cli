@@ -25,17 +25,17 @@ describe("readTemplate", () => {
     );
     fs.mkdirSync(path.join(tmpDir, "templates"));
     fs.writeFileSync(
-      path.join(tmpDir, "templates", ".gitignore.example"),
+      path.join(tmpDir, "templates", ".gitignore.template"),
       "custom\n",
     );
     const startDir = path.join(tmpDir, "dist");
     fs.mkdirSync(startDir);
 
-    expect(readTemplate(".gitignore.example", startDir)).toBe("custom\n");
+    expect(readTemplate(".gitignore.template", startDir)).toBe("custom\n");
   });
 
   it("should throw when no gassma package root exists up the tree", () => {
-    expect(() => readTemplate(".gitignore.example", tmpDir)).toThrow(
+    expect(() => readTemplate(".gitignore.template", tmpDir)).toThrow(
       /installation/,
     );
   });
@@ -46,8 +46,8 @@ describe("readTemplate", () => {
       JSON.stringify({ name: "gassma", version: "1.0.0" }),
     );
 
-    expect(() => readTemplate("tsconfig.json.example", tmpDir)).toThrow(
-      /tsconfig.json.example/,
+    expect(() => readTemplate("tsconfig.json.template", tmpDir)).toThrow(
+      /tsconfig.json.template/,
     );
   });
 });

@@ -5,7 +5,7 @@ import {
   renderPackageJson,
 } from "../../../bootstrap/generators/patchPackageJson";
 
-const template = readTemplate("package.json.example");
+const template = readTemplate("package.json.template");
 
 const baseOptions = {
   name: "my-app",

@@ -32,16 +32,16 @@ const readTemplate = (name: string, startDir: string = __dirname): string => {
 const loadBootstrapTemplates = (
   startDir: string = __dirname,
 ): BootstrapTemplates => ({
-  gitignore: readTemplate(".gitignore.example", startDir),
-  tsconfig: readTemplate("tsconfig.json.example", startDir),
-  packageJson: readTemplate("package.json.example", startDir),
+  gitignore: readTemplate(".gitignore.template", startDir),
+  tsconfig: readTemplate("tsconfig.json.template", startDir),
+  packageJson: readTemplate("package.json.template", startDir),
   esbuild: {
-    export: readTemplate("esbuild.export.mjs.example", startDir),
-    global: readTemplate("esbuild.global.mjs.example", startDir),
+    export: readTemplate("esbuild.export.mjs.template", startDir),
+    global: readTemplate("esbuild.global.mjs.template", startDir),
   },
   sampleIndex: {
-    export: readTemplate("index.export.ts.example", startDir),
-    global: readTemplate("index.global.ts.example", startDir),
+    export: readTemplate("index.export.ts.template", startDir),
+    global: readTemplate("index.global.ts.template", startDir),
   },
 });
 

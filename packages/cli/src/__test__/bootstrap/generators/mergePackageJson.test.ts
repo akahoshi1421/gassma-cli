@@ -3,7 +3,7 @@ import { readTemplate } from "../../../bootstrap/env/readTemplate";
 import { mergePackageJson } from "../../../bootstrap/generators/mergePackageJson";
 import { patchPackageJson } from "../../../bootstrap/generators/patchPackageJson";
 
-const desired = patchPackageJson(readTemplate("package.json.example"), {
+const desired = patchPackageJson(readTemplate("package.json.template"), {
   name: "my-app",
   gassmaVersion: "1.1.0",
   style: "export",

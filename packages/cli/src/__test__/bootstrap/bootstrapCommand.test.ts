@@ -86,7 +86,7 @@ describe("bootstrap", () => {
     expect(fs.existsSync(path.join(tmpDir, "tsconfig.json"))).toBe(true);
     expect(fs.readFileSync(path.join(tmpDir, ".gitignore"), "utf-8")).toBe(
       fs.readFileSync(
-        path.resolve(__dirname, "../../../templates/.gitignore.example"),
+        path.resolve(__dirname, "../../../templates/.gitignore.template"),
         "utf-8",
       ),
     );
