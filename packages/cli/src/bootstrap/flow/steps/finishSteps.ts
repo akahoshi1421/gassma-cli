@@ -56,7 +56,7 @@ const buildNextStepsMessage = (
     "Edit gassma/schema.prisma to define your models",
     'Run "npx gassma generate" to generate the typed client',
     `Run "${packageManager} run deploy" to build and push to Apps Script`,
-    'Run "npx clasp open" to open the project in the Apps Script editor',
+    `Run "${packageManager} run open" to open the project in the Apps Script editor`,
   ];
   const numbered = lines.map((line, index) => `${index + 1}. ${line}`);
 

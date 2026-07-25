@@ -3,23 +3,37 @@ name: CI (cli)
 on:
   pull_request:
     branches: [ main ]
-    paths:
-      - 'packages/cli/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'biome.json'
-      - '.github/workflows/ci-cli.yml'
   push:
     branches: [ main ]
-    paths:
-      - 'packages/cli/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'biome.json'
-      - '.github/workflows/ci-cli.yml'
 
 jobs:
+  changes-cli:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      cli: ${{ steps.filter.outputs.cli }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            cli:
+              - 'packages/cli/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'biome.json'
+              - '.github/workflows/ci-cli.yml'
+
   lint-cli:
+    needs: changes-cli
+    if: needs.changes-cli.outputs.cli == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -51,6 +65,8 @@ jobs:
         run: npm run format:check -w packages/cli
 
   test-cli:
+    needs: changes-cli
+    if: needs.changes-cli.outputs.cli == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -85,6 +101,8 @@ jobs:
         run: npm run typecheck -w packages/cli
 
   build-cli:
+    needs: changes-cli
+    if: needs.changes-cli.outputs.cli == 'true'
     runs-on: ubuntu-latest
 
     steps:

@@ -26,7 +26,7 @@ describe("patchPackageJson", () => {
     expect(pkg.scripts).toEqual({
       build: "node esbuild.mjs",
       push: "clasp push",
-      open: "clasp open",
+      open: "clasp open-script",
       deploy: "npm run build && npm run push",
     });
   });

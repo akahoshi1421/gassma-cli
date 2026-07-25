@@ -3,23 +3,37 @@ name: CI (gas-esbuild-plugin)
 on:
   pull_request:
     branches: [ main ]
-    paths:
-      - 'packages/gas-esbuild-plugin/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'biome.json'
-      - '.github/workflows/ci-gas-esbuild-plugin.yml'
   push:
     branches: [ main ]
-    paths:
-      - 'packages/gas-esbuild-plugin/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'biome.json'
-      - '.github/workflows/ci-gas-esbuild-plugin.yml'
 
 jobs:
+  changes-gas-esbuild-plugin:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      plugin: ${{ steps.filter.outputs.plugin }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            plugin:
+              - 'packages/gas-esbuild-plugin/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'biome.json'
+              - '.github/workflows/ci-gas-esbuild-plugin.yml'
+
   lint-gas-esbuild-plugin:
+    needs: changes-gas-esbuild-plugin
+    if: needs.changes-gas-esbuild-plugin.outputs.plugin == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -51,6 +65,8 @@ jobs:
         run: npx biome format packages/gas-esbuild-plugin/src
 
   test-gas-esbuild-plugin:
+    needs: changes-gas-esbuild-plugin
+    if: needs.changes-gas-esbuild-plugin.outputs.plugin == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -82,6 +98,8 @@ jobs:
         run: npm run typecheck -w packages/gas-esbuild-plugin
 
   build-gas-esbuild-plugin:
+    needs: changes-gas-esbuild-plugin
+    if: needs.changes-gas-esbuild-plugin.outputs.plugin == 'true'
     runs-on: ubuntu-latest
 
     steps:
