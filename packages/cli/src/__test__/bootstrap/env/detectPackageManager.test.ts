@@ -4,6 +4,9 @@ import path from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { detectPackageManager } from "../../../bootstrap/env/detectPackageManager";
 
+// Lockfile/packageManager-field recognition itself belongs to
+// package-manager-detector; these tests only cover our own responsibilities:
+// the fallback chain, the unsupported-agent filter, and the wiring.
 describe("detectPackageManager", () => {
   let tmpDir: string;
 
@@ -24,56 +27,7 @@ describe("detectPackageManager", () => {
     return path.dirname(filePath);
   };
 
-  it("should detect pnpm from pnpm-lock.yaml", async () => {
-    const cwd = touch(tmpDir, "pnpm-lock.yaml");
-
-    await expect(detectPackageManager({ cwd })).resolves.toBe("pnpm");
-  });
-
-  it("should detect yarn from yarn.lock", async () => {
-    const cwd = touch(tmpDir, "yarn.lock");
-
-    await expect(detectPackageManager({ cwd })).resolves.toBe("yarn");
-  });
-
-  it("should detect bun from bun.lockb and bun.lock", async () => {
-    const lockbDir = touch(tmpDir, "lockb", "bun.lockb");
-    const lockDir = touch(tmpDir, "lock", "bun.lock");
-
-    await expect(detectPackageManager({ cwd: lockbDir })).resolves.toBe("bun");
-    await expect(detectPackageManager({ cwd: lockDir })).resolves.toBe("bun");
-  });
-
-  it("should detect npm from package-lock.json", async () => {
-    const cwd = touch(tmpDir, "package-lock.json");
-
-    await expect(detectPackageManager({ cwd })).resolves.toBe("npm");
-  });
-
-  it("should detect npm from npm-shrinkwrap.json", async () => {
-    const cwd = touch(tmpDir, "npm-shrinkwrap.json");
-
-    await expect(detectPackageManager({ cwd })).resolves.toBe("npm");
-  });
-
-  it("should detect a lockfile in a parent directory", async () => {
-    touch(tmpDir, "pnpm-lock.yaml");
-    const nested = path.join(tmpDir, "apps", "web");
-    fs.mkdirSync(nested, { recursive: true });
-
-    await expect(detectPackageManager({ cwd: nested })).resolves.toBe("pnpm");
-  });
-
-  it("should detect from the packageManager field in package.json", async () => {
-    fs.writeFileSync(
-      path.join(tmpDir, "package.json"),
-      JSON.stringify({ name: "sample", packageManager: "yarn@4.1.0" }),
-    );
-
-    await expect(detectPackageManager({ cwd: tmpDir })).resolves.toBe("yarn");
-  });
-
-  it("should prefer a lockfile over the user agent", async () => {
+  it("should prefer the detector's result over the user agent", async () => {
     const cwd = touch(tmpDir, "yarn.lock");
 
     await expect(
