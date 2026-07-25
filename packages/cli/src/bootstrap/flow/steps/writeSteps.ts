@@ -1,9 +1,6 @@
 import path from "path";
 import { generateEsbuildConfig } from "../../generators/generateEsbuildConfig";
-import {
-  generateGitignore,
-  mergeGitignore,
-} from "../../generators/generateGitignore";
+import { mergeGitignore } from "../../generators/mergeGitignore";
 import { generatePackageJson } from "../../generators/generatePackageJson";
 import type { GeneratePackageJsonOptions } from "../../generators/generatePackageJson";
 import { generateSampleIndex } from "../../generators/generateSampleIndex";
@@ -59,13 +56,13 @@ const writeIfMissing = (
 const writeGitignore = (context: BootstrapContext, deps: BootstrapDeps) => {
   const gitignorePath = path.join(context.cwd, ".gitignore");
   if (!deps.store.exists(gitignorePath)) {
-    deps.store.write(gitignorePath, generateGitignore());
+    deps.store.write(gitignorePath, deps.gitignoreTemplate);
     deps.prompter.info("Created .gitignore");
     return;
   }
 
   const existing = deps.store.read(gitignorePath);
-  const merged = mergeGitignore(existing);
+  const merged = mergeGitignore(deps.gitignoreTemplate, existing);
   if (merged === existing) return;
 
   deps.store.write(gitignorePath, merged);

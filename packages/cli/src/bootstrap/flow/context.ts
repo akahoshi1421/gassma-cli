@@ -27,6 +27,7 @@ type BootstrapDeps = {
   dryRun: boolean;
   skipInstall: boolean;
   gassmaVersion: string;
+  gitignoreTemplate: string;
 };
 
 type BootstrapStep = {

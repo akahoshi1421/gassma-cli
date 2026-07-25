@@ -108,6 +108,28 @@ describe("projectFilesStep", () => {
     expect(files.get(tsconfigPath)).toBe("my tsconfig");
   });
 
+  it("should write the injected template verbatim to a fresh .gitignore", async () => {
+    const ignorePath = path.join(CWD, ".gitignore");
+    const { files, store } = createMemoryStore({});
+    const deps = createTestDeps({ store, gitignoreTemplate: "a/\nb\n" });
+
+    await projectFilesStep.run(baseContext(), deps);
+
+    expect(files.get(ignorePath)).toBe("a/\nb\n");
+  });
+
+  it("should write the bundled template content to a fresh .gitignore", async () => {
+    const ignorePath = path.join(CWD, ".gitignore");
+    const { files, store } = createMemoryStore({});
+    const deps = createTestDeps({ store });
+
+    await projectFilesStep.run(baseContext(), deps);
+
+    expect(files.get(ignorePath)).toBe(
+      ".clasp.json\n.clasprc.json\n.env\nnode_modules/\ndist/*\n!dist/appsscript.json\n",
+    );
+  });
+
   it("should append missing entries to an existing .gitignore", async () => {
     const ignorePath = path.join(CWD, ".gitignore");
     const { files, store } = createMemoryStore({

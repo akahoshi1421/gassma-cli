@@ -3,6 +3,7 @@ import type {
   ExecOptions,
   ExecResult,
 } from "../../../bootstrap/env/execCommand";
+import { readGitignoreTemplate } from "../../../bootstrap/env/readGitignoreTemplate";
 import type { FileStore } from "../../../bootstrap/env/fileStore";
 import type { BootstrapDeps } from "../../../bootstrap/flow/context";
 import type { Prompter, SelectChoice } from "../../../bootstrap/flow/prompts";
@@ -112,6 +113,7 @@ const createTestDeps = (
     dryRun: false,
     skipInstall: false,
     gassmaVersion: "1.1.0",
+    gitignoreTemplate: readGitignoreTemplate(),
     ...overrides,
   };
 };

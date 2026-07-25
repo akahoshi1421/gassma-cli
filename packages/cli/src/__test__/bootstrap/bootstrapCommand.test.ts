@@ -83,7 +83,12 @@ describe("bootstrap", () => {
     expect(fs.existsSync(path.join(tmpDir, "package.json"))).toBe(true);
     expect(fs.existsSync(path.join(tmpDir, "esbuild.mjs"))).toBe(true);
     expect(fs.existsSync(path.join(tmpDir, "tsconfig.json"))).toBe(true);
-    expect(fs.existsSync(path.join(tmpDir, ".gitignore"))).toBe(true);
+    expect(fs.readFileSync(path.join(tmpDir, ".gitignore"), "utf-8")).toBe(
+      fs.readFileSync(
+        path.resolve(__dirname, "../../../templates/.gitignore.example"),
+        "utf-8",
+      ),
+    );
     expect(fs.existsSync(path.join(tmpDir, "src", "index.ts"))).toBe(true);
     expect(fs.existsSync(path.join(tmpDir, "dist", "appsscript.json"))).toBe(
       true,

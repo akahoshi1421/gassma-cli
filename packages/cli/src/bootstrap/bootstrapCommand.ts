@@ -4,6 +4,7 @@ import { detectPackageManager } from "./env/detectPackageManager";
 import { createDefaultExec } from "./env/execCommand";
 import type { ExecFn } from "./env/execCommand";
 import { createFsFileStore } from "./env/fileStore";
+import { readGitignoreTemplate } from "./env/readGitignoreTemplate";
 import { buildBootstrapSteps } from "./flow/buildSteps";
 import { createInitialContext, runSteps } from "./flow/context";
 import type { BootstrapDeps } from "./flow/context";
@@ -89,6 +90,7 @@ const bootstrap = async (
     dryRun,
     skipInstall: options.skipInstall === true,
     gassmaVersion: getVersion(),
+    gitignoreTemplate: readGitignoreTemplate(),
   };
   const initialContext = createInitialContext({
     cwd,
