@@ -1,7 +1,7 @@
 import path from "path";
-import { GASSMA_LIBRARY } from "../const/gassmaLibrary";
 import type { PackageManager } from "../env/detectPackageManager";
 import type { ExecFn } from "../env/execCommand";
+import type { FetchTextFn } from "../env/fetchLatestLibraryVersion";
 import type { FileStore } from "../env/fileStore";
 import type { FunctionStyle } from "../functionStyle";
 import type { Prompter } from "./prompts";
@@ -14,7 +14,7 @@ type BootstrapContext = {
   wantSample: boolean;
   wantInstall: boolean;
   packageManager: PackageManager;
-  libraryVersion: string;
+  libraryVersion: string | null;
   claspCreateSkipped: boolean;
 };
 
@@ -22,6 +22,7 @@ type BootstrapDeps = {
   prompter: Prompter;
   store: FileStore;
   exec: ExecFn;
+  fetchText: FetchTextFn;
   plan: (action: string) => void;
   plannedActions: readonly string[];
   dryRun: boolean;
@@ -53,7 +54,7 @@ const createInitialContext = (
   wantSample: true,
   wantInstall: true,
   packageManager: options.packageManager,
-  libraryVersion: GASSMA_LIBRARY.latestVersion,
+  libraryVersion: null,
   claspCreateSkipped: false,
 });
 

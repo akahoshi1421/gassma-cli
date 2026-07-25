@@ -3,6 +3,8 @@ import { checkClaspAvailable } from "./env/checkClaspAvailable";
 import { detectPackageManager } from "./env/detectPackageManager";
 import { createDefaultExec } from "./env/execCommand";
 import type { ExecFn } from "./env/execCommand";
+import { createDefaultFetchText } from "./env/fetchLatestLibraryVersion";
+import type { FetchTextFn } from "./env/fetchLatestLibraryVersion";
 import { createFsFileStore } from "./env/fileStore";
 import { readGitignoreTemplate } from "./env/readGitignoreTemplate";
 import { buildBootstrapSteps } from "./flow/buildSteps";
@@ -25,6 +27,7 @@ type BootstrapOptions = {
 
 type BootstrapOverrides = {
   exec?: ExecFn;
+  fetchText?: FetchTextFn;
   prompter?: Prompter;
   isTty?: boolean;
   userAgent?: string;
@@ -76,7 +79,11 @@ const bootstrap = async (
   const realStore = createFsFileStore();
   const env = dryRun
     ? createDryEnv(realStore, cwd)
-    : createRealEnv(realStore, baseExec);
+    : createRealEnv(
+        realStore,
+        baseExec,
+        overrides.fetchText ?? createDefaultFetchText(),
+      );
   const basePrompter =
     overrides.prompter ?? (yes ? createAutoPrompter() : createClackPrompter());
   const prompter = dryRun ? createDryRunPrompter(basePrompter) : basePrompter;
@@ -85,6 +92,7 @@ const bootstrap = async (
     prompter,
     store: env.store,
     exec: env.exec,
+    fetchText: env.fetchText,
     plan: env.plan,
     plannedActions: env.plannedActions,
     dryRun,

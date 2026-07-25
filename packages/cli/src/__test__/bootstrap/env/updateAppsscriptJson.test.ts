@@ -70,6 +70,18 @@ describe("updateAppsscriptJson", () => {
     expect(written.timeZone).toBe("Asia/Tokyo");
   });
 
+  it("should apply manifest defaults without a library entry for a null version", () => {
+    const { files, store } = createMemoryStore({});
+
+    updateAppsscriptJson({ store, ...OPTIONS, libraryVersion: null });
+
+    const written = JSON.parse(files.get(MANIFEST_PATH) ?? "{}");
+    expect(written.timeZone).toBe("Asia/Tokyo");
+    expect(written.exceptionLogging).toBe("STACKDRIVER");
+    expect(written.runtimeVersion).toBe("V8");
+    expect(written.dependencies.libraries).toEqual([]);
+  });
+
   it("should write two-space indented JSON with a trailing newline", () => {
     const { files, store } = createMemoryStore({});
 

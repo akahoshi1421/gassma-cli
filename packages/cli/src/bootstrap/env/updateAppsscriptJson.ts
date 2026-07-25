@@ -5,7 +5,7 @@ type UpdateAppsscriptJsonOptions = {
   store: FileStore;
   manifestPath: string;
   timeZone: string;
-  libraryVersion: string;
+  libraryVersion: string | null;
 };
 
 const readManifest = (store: FileStore, manifestPath: string): unknown => {

@@ -3,7 +3,7 @@ import { isRecord } from "../util/isRecord";
 
 type AppsscriptEditOptions = {
   timeZone: string;
-  libraryVersion: string;
+  libraryVersion: string | null;
 };
 
 const hasGassmaLibrary = (libraries: unknown[]): boolean =>
@@ -14,8 +14,9 @@ const hasGassmaLibrary = (libraries: unknown[]): boolean =>
 
 const buildLibraries = (
   libraries: unknown[],
-  libraryVersion: string,
+  libraryVersion: string | null,
 ): unknown[] => {
+  if (libraryVersion === null) return libraries;
   if (hasGassmaLibrary(libraries)) return libraries;
 
   return [

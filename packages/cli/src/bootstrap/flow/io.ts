@@ -1,17 +1,24 @@
 import path from "path";
 import type { ExecFn } from "../env/execCommand";
+import type { FetchTextFn } from "../env/fetchLatestLibraryVersion";
 import type { FileStore } from "../env/fileStore";
 
 type BootstrapEnv = {
   store: FileStore;
   exec: ExecFn;
+  fetchText: FetchTextFn;
   plan: (action: string) => void;
   plannedActions: readonly string[];
 };
 
-const createRealEnv = (store: FileStore, exec: ExecFn): BootstrapEnv => ({
+const createRealEnv = (
+  store: FileStore,
+  exec: ExecFn,
+  fetchText: FetchTextFn,
+): BootstrapEnv => ({
   store,
   exec,
+  fetchText,
   plan: () => undefined,
   plannedActions: [],
 });
@@ -39,7 +46,10 @@ const createDryEnv = (realStore: FileStore, cwd: string): BootstrapEnv => {
     return Promise.resolve({ ok: true, exitCode: 0, stdout: "", stderr: "" });
   };
 
-  return { store, exec, plan, plannedActions: actions };
+  const fetchText: FetchTextFn = () =>
+    Promise.reject(new Error("network is not used in dry-run mode"));
+
+  return { store, exec, fetchText, plan, plannedActions: actions };
 };
 
 export { createDryEnv, createRealEnv };

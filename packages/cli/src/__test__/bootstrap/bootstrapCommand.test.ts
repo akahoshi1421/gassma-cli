@@ -3,6 +3,7 @@ import os from "os";
 import path from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { bootstrap } from "../../bootstrap/bootstrapCommand";
+import { GASSMA_LIBRARY } from "../../bootstrap/const/gassmaLibrary";
 import { BootstrapCancelledError } from "../../bootstrap/flow/prompts";
 import type { ExecCall } from "./flow/testHelpers";
 import { createFakePrompter, createScriptedExec } from "./flow/testHelpers";
@@ -125,6 +126,62 @@ describe("bootstrap", () => {
       developmentMode: false,
     });
     expect(manifest.runtimeVersion).toBe("V8");
+  });
+
+  it("should resolve the library version from GitHub when clasp list-versions fails", async () => {
+    const { exec } = createScriptedExec((call: ExecCall) => {
+      if (call.args[0] === "list-versions") {
+        return { ok: false, exitCode: 1, stdout: "", stderr: "boom" };
+      }
+      return undefined;
+    });
+    const prompter = createFakePrompter();
+
+    await bootstrap(
+      { yes: true, skipInstall: true },
+      {
+        exec,
+        prompter,
+        isTty: true,
+        fetchText: () =>
+          Promise.resolve(JSON.stringify({ name: "gassma", version: "9" })),
+      },
+    );
+
+    const manifest = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "dist", "appsscript.json"), "utf-8"),
+    );
+    expect(manifest.dependencies.libraries[0]).toMatchObject({ version: "9" });
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it("should continue without the library entry when clasp and GitHub both fail", async () => {
+    const { exec } = createScriptedExec((call: ExecCall) => {
+      if (call.args[0] === "list-versions") {
+        return { ok: false, exitCode: 1, stdout: "", stderr: "boom" };
+      }
+      return undefined;
+    });
+    const prompter = createFakePrompter();
+
+    await bootstrap(
+      { yes: true, skipInstall: true },
+      {
+        exec,
+        prompter,
+        isTty: true,
+        fetchText: () => Promise.reject(new Error("network down")),
+      },
+    );
+
+    const manifest = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "dist", "appsscript.json"), "utf-8"),
+    );
+    expect(manifest.dependencies.libraries).toEqual([]);
+    expect(manifest.timeZone).toBeTypeOf("string");
+    expect(manifest.runtimeVersion).toBe("V8");
+    expect(prompter.warns.join(" ")).toContain(GASSMA_LIBRARY.scriptId);
+    expect(process.exitCode).toBeUndefined();
   });
 
   it("should not run the install with --skip-install", async () => {

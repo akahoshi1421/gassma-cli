@@ -110,7 +110,7 @@ describe("manifestStep", () => {
     expect(manifest.runtimeVersion).toBe("V8");
   });
 
-  it("should fall back to the pinned version when clasp fails", async () => {
+  it("should resolve the version from GitHub when clasp fails", async () => {
     const { exec } = createScriptedExec(() => ({
       ok: false,
       exitCode: 1,
@@ -118,17 +118,62 @@ describe("manifestStep", () => {
       stderr: "not logged in",
     }));
     const { files, store } = createMemoryStore({});
-    const deps = createTestDeps({ exec, store });
+    const deps = createTestDeps({
+      exec,
+      store,
+      fetchText: () =>
+        Promise.resolve(JSON.stringify({ name: "gassma", version: "7" })),
+    });
 
     const ctx = await manifestStep.run(baseContext(), deps);
 
-    expect(ctx.libraryVersion).toBe(GASSMA_LIBRARY.latestVersion);
+    expect(ctx.libraryVersion).toBe("7");
     const manifest = JSON.parse(
       files.get("/project/dist/appsscript.json") ?? "{}",
     );
-    expect(manifest.dependencies.libraries[0].version).toBe(
-      GASSMA_LIBRARY.latestVersion,
+    expect(manifest.dependencies.libraries[0].version).toBe("7");
+  });
+
+  it("should skip the library entry and warn when clasp and GitHub both fail", async () => {
+    const { exec } = createScriptedExec(() => ({
+      ok: false,
+      exitCode: 1,
+      stdout: "",
+      stderr: "not logged in",
+    }));
+    const { files, store } = createMemoryStore({});
+    const prompter = createFakePrompter();
+    const deps = createTestDeps({
+      exec,
+      store,
+      prompter,
+      fetchText: () => Promise.reject(new Error("network down")),
+    });
+
+    const ctx = await manifestStep.run(baseContext(), deps);
+
+    expect(ctx.libraryVersion).toBeNull();
+    const manifest = JSON.parse(
+      files.get("/project/dist/appsscript.json") ?? "{}",
     );
+    expect(manifest.dependencies.libraries).toEqual([]);
+    expect(manifest.timeZone).toBeTypeOf("string");
+    expect(manifest.exceptionLogging).toBe("STACKDRIVER");
+    expect(manifest.runtimeVersion).toBe("V8");
+
+    const warning = prompter.warns.join(" ");
+    expect(warning).toContain(GASSMA_LIBRARY.scriptId);
+    expect(warning).toContain("https://github.com/akahoshi1421/gassma");
+  });
+
+  it("should report an unresolved version display in dry-run mode", async () => {
+    const prompter = createFakePrompter();
+    const deps = createTestDeps({ prompter, dryRun: true });
+
+    await manifestStep.run(baseContext(), deps);
+
+    expect(prompter.warns).toEqual([]);
+    expect(prompter.infos.join(" ")).toContain("latest, resolved at run time");
   });
 
   it("should preserve fields of an existing manifest pulled by clasp", async () => {

@@ -121,6 +121,34 @@ describe("applyAppsscriptEdits", () => {
     expect(getLibraries(result)).toHaveLength(1);
   });
 
+  it("should not add a library entry when the version is unresolved", () => {
+    const result = applyAppsscriptEdits(freshManifest(), {
+      timeZone: "Asia/Tokyo",
+      libraryVersion: null,
+    });
+
+    expect(getLibraries(result)).toEqual([]);
+    expect(result.timeZone).toBe("Asia/Tokyo");
+    expect(result.exceptionLogging).toBe("STACKDRIVER");
+    expect(result.runtimeVersion).toBe("V8");
+  });
+
+  it("should keep an existing Gassma entry when the version is unresolved", () => {
+    const existing = {
+      userSymbol: "Gassma",
+      libraryId: GASSMA_LIBRARY.scriptId,
+      version: "5",
+    };
+    const manifest = { dependencies: { libraries: [existing] } };
+
+    const result = applyAppsscriptEdits(manifest, {
+      timeZone: "Asia/Tokyo",
+      libraryVersion: null,
+    });
+
+    expect(getLibraries(result)).toEqual([existing]);
+  });
+
   it("should use the given library version for new entries", () => {
     const result = applyAppsscriptEdits(
       {},

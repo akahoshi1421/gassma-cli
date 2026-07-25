@@ -31,7 +31,7 @@ describe("createInitialContext", () => {
     expect(ctx.wantInstall).toBe(true);
     expect(ctx.packageManager).toBe("pnpm");
     expect(ctx.claspCreateSkipped).toBe(false);
-    expect(ctx.libraryVersion).toBe("7");
+    expect(ctx.libraryVersion).toBeNull();
   });
 });
 
