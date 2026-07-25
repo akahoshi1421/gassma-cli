@@ -137,6 +137,20 @@ Validate .prisma files.
 |--|--|
 |`--schema <path>`|Path to a specific .prisma file to validate|
 
+### bootstrap
+
+Interactively set up a local GAS development environment (clasp + esbuild + TypeScript + GASsma) in the current directory. It creates an Apps Script project via `clasp create-script`, registers the GASsma library in `dist/appsscript.json`, generates `package.json`, `esbuild.mjs`, `tsconfig.json`, `.gitignore` and a sample `src/index.ts`, runs `gassma init`, and installs dependencies.
+
+Requires [clasp](https://github.com/google/clasp): `npm install -g @google/clasp`, then `clasp login`.
+
+#### options
+
+|name|description|
+|--|--|
+|`--yes`|Answer all prompts with their default values|
+|`--skip-install`|Skip dependency installation|
+|`--dry-run`|Show planned actions without writing files or running commands|
+
 ## Detail reference
 
 https://akahoshi1421.github.io/gassma-reference/en/docs/reference/type-generation/

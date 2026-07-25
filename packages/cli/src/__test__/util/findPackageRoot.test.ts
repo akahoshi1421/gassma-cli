@@ -2,30 +2,13 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { findGassmaVersion, getVersion } from "../../version/getVersion";
+import { findPackageRoot } from "../../util/findPackageRoot";
 
-describe("getVersion", () => {
-  it("should return version string from package.json", () => {
-    const version = getVersion();
-
-    expect(typeof version).toBe("string");
-    expect(version).toMatch(/^\d+\.\d+\.\d+$/);
-  });
-
-  it("should match package.json version", () => {
-    const packageJsonPath = path.resolve(__dirname, "../../../package.json");
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-    const version = getVersion();
-
-    expect(version).toBe(packageJson.version);
-  });
-});
-
-describe("findGassmaVersion", () => {
+describe("findPackageRoot", () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "gassma-version-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "gassma-package-root-"));
   });
 
   afterEach(() => {
@@ -48,25 +31,30 @@ describe("findGassmaVersion", () => {
     return startDir;
   };
 
-  it("should resolve the version from a bundled dist layout", () => {
+  it("should resolve the package root from a bundled dist layout", () => {
     writePackageJson(tmpDir, { name: "gassma", version: "9.9.9" });
     const startDir = makeStartDir(tmpDir, "dist");
 
-    expect(findGassmaVersion(startDir)).toBe("9.9.9");
+    expect(findPackageRoot(startDir)).toEqual({
+      dir: tmpDir,
+      version: "9.9.9",
+    });
   });
 
-  it("should resolve the version from an unbundled dist layout", () => {
+  it("should resolve the package root from a nested src layout", () => {
     writePackageJson(tmpDir, { name: "gassma", version: "1.2.3" });
-    const startDir = makeStartDir(tmpDir, "dist", "version");
+    const startDir = makeStartDir(tmpDir, "src", "bootstrap", "env");
 
-    expect(findGassmaVersion(startDir)).toBe("1.2.3");
+    expect(findPackageRoot(startDir)).toEqual({
+      dir: tmpDir,
+      version: "1.2.3",
+    });
   });
 
-  it("should resolve the version from the src layout", () => {
-    writePackageJson(tmpDir, { name: "gassma", version: "4.5.6" });
-    const startDir = makeStartDir(tmpDir, "src", "version");
+  it("should return the package root itself as a start dir", () => {
+    writePackageJson(tmpDir, { name: "gassma", version: "2.0.0" });
 
-    expect(findGassmaVersion(startDir)).toBe("4.5.6");
+    expect(findPackageRoot(tmpDir)).toEqual({ dir: tmpDir, version: "2.0.0" });
   });
 
   it("should skip package.json files that are not the gassma package", () => {
@@ -75,7 +63,10 @@ describe("findGassmaVersion", () => {
     writePackageJson(nested, { name: "gassma-cli-monorepo" });
     const startDir = makeStartDir(nested, "dist");
 
-    expect(findGassmaVersion(startDir)).toBe("7.7.7");
+    expect(findPackageRoot(startDir)).toEqual({
+      dir: tmpDir,
+      version: "7.7.7",
+    });
   });
 
   it("should skip a gassma package.json without a version string", () => {
@@ -84,7 +75,10 @@ describe("findGassmaVersion", () => {
     writePackageJson(nested, { name: "gassma" });
     const startDir = makeStartDir(nested, "dist");
 
-    expect(findGassmaVersion(startDir)).toBe("3.3.3");
+    expect(findPackageRoot(startDir)).toEqual({
+      dir: tmpDir,
+      version: "3.3.3",
+    });
   });
 
   it("should skip an unparsable package.json and keep walking up", () => {
@@ -93,12 +87,22 @@ describe("findGassmaVersion", () => {
     writePackageJson(nested, "{ broken");
     const startDir = makeStartDir(nested, "dist");
 
-    expect(findGassmaVersion(startDir)).toBe("5.5.5");
+    expect(findPackageRoot(startDir)).toEqual({
+      dir: tmpDir,
+      version: "5.5.5",
+    });
   });
 
-  it("should throw when no gassma package.json exists up the tree", () => {
+  it("should return undefined when no gassma package.json exists up the tree", () => {
     const startDir = makeStartDir(tmpDir, "dist");
 
-    expect(() => findGassmaVersion(startDir)).toThrow(/gassma/);
+    expect(findPackageRoot(startDir)).toBeUndefined();
+  });
+
+  it("should resolve the real gassma package root from this test file", () => {
+    const found = findPackageRoot(__dirname);
+    const expectedRoot = path.resolve(__dirname, "../../..");
+
+    expect(found?.dir).toBe(expectedRoot);
   });
 });

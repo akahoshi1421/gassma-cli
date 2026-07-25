@@ -1,10 +1,15 @@
-import path from "path";
-import fs from "fs";
+import { findPackageRoot } from "../util/findPackageRoot";
 
-const getVersion = (): string => {
-  const packageJsonPath = path.resolve(__dirname, "../../package.json");
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-  return packageJson.version;
+const findGassmaVersion = (startDir: string): string => {
+  const packageRoot = findPackageRoot(startDir);
+  if (packageRoot === undefined) {
+    throw new Error(
+      `Could not find the gassma package.json above ${startDir}. The CLI installation looks broken.`,
+    );
+  }
+  return packageRoot.version;
 };
 
-export { getVersion };
+const getVersion = (): string => findGassmaVersion(__dirname);
+
+export { findGassmaVersion, getVersion };
