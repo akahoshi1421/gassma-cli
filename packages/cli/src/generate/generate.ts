@@ -144,5 +144,5 @@ function generateFromSchema(
   console.log("✅ Generated type definitions successfully");
 }
 
-export { generate };
+export { deriveSchemaName, findBaseDir, generate };
 export type { GenerateOptions };
