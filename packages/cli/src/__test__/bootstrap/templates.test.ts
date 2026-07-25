@@ -27,7 +27,7 @@ const TSCONFIG = `{
 `;
 
 const PACKAGE_JSON = `{
-  "name": "gassma-project",
+  "name": "",
   "version": "1.0.0",
   "type": "commonjs",
   "scripts": {
@@ -37,7 +37,7 @@ const PACKAGE_JSON = `{
     "deploy": "npm run build && npm run push"
   },
   "dependencies": {
-    "gassma": "^0.0.0"
+    "gassma": ""
   },
   "devDependencies": {
     "@gassma/gas-esbuild-plugin": "^0.1.0",
