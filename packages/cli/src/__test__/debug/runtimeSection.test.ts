@@ -1,0 +1,67 @@
+import { describe, expect, it } from "vitest";
+import {
+  buildCiLines,
+  buildInteractiveLines,
+  isCiEnv,
+  isInteractive,
+} from "../../debug/sections/runtimeSection";
+import { createStyler } from "../../debug/styles";
+
+const plain = createStyler(false);
+
+describe("isInteractive", () => {
+  it("should be true for a TTY stdin with a normal TERM", () => {
+    expect(isInteractive(true, "xterm-256color")).toBe(true);
+  });
+
+  it("should be true for a TTY stdin without TERM", () => {
+    expect(isInteractive(true, undefined)).toBe(true);
+  });
+
+  it("should be false when stdin is not a TTY", () => {
+    expect(isInteractive(false, "xterm-256color")).toBe(false);
+  });
+
+  it("should be false when TERM is dumb", () => {
+    expect(isInteractive(true, "dumb")).toBe(false);
+  });
+});
+
+describe("isCiEnv", () => {
+  it("should be false when CI is not set", () => {
+    expect(isCiEnv(undefined)).toBe(false);
+  });
+
+  it("should be false when CI is empty", () => {
+    expect(isCiEnv("")).toBe(false);
+  });
+
+  it("should be false when CI is the string false", () => {
+    expect(isCiEnv("false")).toBe(false);
+  });
+
+  it("should be true when CI is truthy", () => {
+    expect(isCiEnv("true")).toBe(true);
+    expect(isCiEnv("1")).toBe(true);
+  });
+});
+
+describe("buildInteractiveLines", () => {
+  it("should render the heading and the boolean value", () => {
+    expect(buildInteractiveLines(true, plain)).toEqual([
+      "-- Terminal is interactive? --",
+      "true",
+    ]);
+    expect(buildInteractiveLines(false, plain)).toEqual([
+      "-- Terminal is interactive? --",
+      "false",
+    ]);
+  });
+});
+
+describe("buildCiLines", () => {
+  it("should render the heading and the boolean value", () => {
+    expect(buildCiLines(false, plain)).toEqual(["-- CI detected? --", "false"]);
+    expect(buildCiLines(true, plain)).toEqual(["-- CI detected? --", "true"]);
+  });
+});

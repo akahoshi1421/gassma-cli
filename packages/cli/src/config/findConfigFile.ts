@@ -17,4 +17,4 @@ const buildCandidates = (cwd: string): string[] => {
 const findConfigFile = (cwd: string): string | undefined =>
   buildCandidates(cwd).find((candidate) => fs.existsSync(candidate));
 
-export { findConfigFile };
+export { CONFIG_EXTENSIONS, findConfigFile };

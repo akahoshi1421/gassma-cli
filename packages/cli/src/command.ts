@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { bootstrap } from "./bootstrap/bootstrapCommand";
+import { debugCommand } from "./debug/debugCommand";
 import { ArgumentError } from "./error/mainError";
 import { format } from "./format/formatCommand";
 import { generate } from "./generate/generate";
@@ -92,6 +93,15 @@ program
   .option("--config <path>", "Custom path to your GASsma config file")
   .action(async (options) => {
     await studioCommand({ config: options.config });
+  });
+
+program
+  .command("debug")
+  .description("Print information helpful for debugging and bug reports")
+  .option("--schema <path>", "Path to a specific .prisma file to inspect")
+  .option("--config <path>", "Custom path to your GASsma config file")
+  .action(async (options) => {
+    await debugCommand({ schema: options.schema, config: options.config });
   });
 
 program
