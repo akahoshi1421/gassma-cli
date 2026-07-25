@@ -1,10 +1,12 @@
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
-  entry: ["src/**/*.ts", "!src/__test__/**"],
+  entry: {
+    command: "src/command.ts",
+    "config/defineConfig": "src/config/defineConfig.ts",
+  },
   format: ["cjs"],
   dts: true,
-  unbundle: true,
   outDir: "dist",
   clean: true,
   target: "es2016",
