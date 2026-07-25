@@ -6,6 +6,13 @@
   "bin": {
     "gassma": "bin/index.js"
   },
+  "files": [
+    "bin",
+    "dist",
+    "templates",
+    "index.d.ts",
+    "docs/README.ja.md"
+  ],
   "exports": {
     ".": {
       "types": "./index.d.ts"
