@@ -92,10 +92,9 @@ const bootstrap = async (
   };
   const initialContext = createInitialContext({
     cwd,
-    packageManager: detectPackageManager({
-      dir: cwd,
-      store: realStore,
-      userAgent: overrides.userAgent ?? process.env.npm_config_user_agent,
+    packageManager: await detectPackageManager({
+      cwd,
+      userAgent: overrides.userAgent,
     }),
   });
 

@@ -23,7 +23,7 @@ describe("installRunStep", () => {
     expect(calls).toEqual([
       {
         command: "pnpm",
-        args: ["install"],
+        args: ["i"],
         options: { cwd: "/project", inherit: true },
       },
     ]);
@@ -37,7 +37,7 @@ describe("installRunStep", () => {
     await installRunStep.run(baseContext(), deps);
 
     expect(calls).toHaveLength(0);
-    expect(prompter.infos.join(" ")).toContain("pnpm install");
+    expect(prompter.infos.join(" ")).toContain('"pnpm i"');
   });
 
   it("should skip the run when the user declined the install", async () => {
@@ -48,7 +48,7 @@ describe("installRunStep", () => {
     await installRunStep.run({ ...baseContext(), wantInstall: false }, deps);
 
     expect(calls).toHaveLength(0);
-    expect(prompter.infos.join(" ")).toContain("pnpm install");
+    expect(prompter.infos.join(" ")).toContain('"pnpm i"');
   });
 
   it("should warn but not fail when the install fails", async () => {
@@ -64,7 +64,7 @@ describe("installRunStep", () => {
     const ctx = await installRunStep.run(baseContext(), deps);
 
     expect(ctx.wantInstall).toBe(true);
-    expect(prompter.warns.join(" ")).toContain("pnpm install");
+    expect(prompter.warns.join(" ")).toContain('"pnpm i"');
   });
 });
 
@@ -90,7 +90,7 @@ describe("nextStepsStep", () => {
 
     await nextStepsStep.run(baseContext(), deps);
 
-    expect(prompter.notes[0].message).not.toContain("pnpm install");
+    expect(prompter.notes[0].message).not.toContain("pnpm i");
   });
 
   it("should tell the user to install first when the install was skipped", async () => {
@@ -99,7 +99,7 @@ describe("nextStepsStep", () => {
 
     await nextStepsStep.run(baseContext(), deps);
 
-    expect(prompter.notes[0].message).toContain('"pnpm install"');
+    expect(prompter.notes[0].message).toContain('"pnpm i"');
   });
 
   it("should list planned actions instead in dry-run mode", async () => {

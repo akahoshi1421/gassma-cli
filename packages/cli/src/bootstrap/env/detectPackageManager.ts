@@ -1,47 +1,41 @@
-import path from "path";
-import type { FileStore } from "./fileStore";
+import { detect, getUserAgent } from "package-manager-detector/detect";
 
 type PackageManager = "npm" | "pnpm" | "yarn" | "bun";
 
 type DetectPackageManagerOptions = {
-  dir: string;
-  store: FileStore;
+  cwd: string;
   userAgent?: string;
 };
 
-const LOCKFILES: { file: string; packageManager: PackageManager }[] = [
-  { file: "pnpm-lock.yaml", packageManager: "pnpm" },
-  { file: "yarn.lock", packageManager: "yarn" },
-  { file: "bun.lockb", packageManager: "bun" },
-  { file: "bun.lock", packageManager: "bun" },
-  { file: "package-lock.json", packageManager: "npm" },
+const PACKAGE_MANAGERS: readonly PackageManager[] = [
+  "npm",
+  "pnpm",
+  "yarn",
+  "bun",
 ];
 
-const USER_AGENT_PREFIXES: {
-  prefix: string;
-  packageManager: PackageManager;
-}[] = [
-  { prefix: "pnpm/", packageManager: "pnpm" },
-  { prefix: "yarn/", packageManager: "yarn" },
-  { prefix: "bun/", packageManager: "bun" },
-  { prefix: "npm/", packageManager: "npm" },
-];
+const toPackageManager = (
+  name: string | undefined,
+): PackageManager | undefined =>
+  PACKAGE_MANAGERS.find((packageManager) => packageManager === name);
 
-const fromUserAgent = (userAgent?: string): PackageManager | undefined => {
-  if (userAgent === undefined) return undefined;
-  return USER_AGENT_PREFIXES.find((entry) => userAgent.startsWith(entry.prefix))
-    ?.packageManager;
+const fromUserAgent = (
+  userAgent: string | undefined,
+): PackageManager | undefined => {
+  if (userAgent === undefined)
+    return toPackageManager(getUserAgent() ?? undefined);
+  return toPackageManager(userAgent.split("/")[0]);
 };
 
-const detectPackageManager = (
+const detectPackageManager = async (
   options: DetectPackageManagerOptions,
-): PackageManager => {
-  const matched = LOCKFILES.find((entry) =>
-    options.store.exists(path.join(options.dir, entry.file)),
+): Promise<PackageManager> => {
+  const detected = await detect({ cwd: options.cwd });
+  return (
+    toPackageManager(detected?.name) ??
+    fromUserAgent(options.userAgent) ??
+    "npm"
   );
-  if (matched !== undefined) return matched.packageManager;
-
-  return fromUserAgent(options.userAgent) ?? "npm";
 };
 
 export { detectPackageManager };

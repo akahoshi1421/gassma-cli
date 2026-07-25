@@ -1,3 +1,4 @@
+import { formatInstallCommand } from "../../env/installCommand";
 import { runInstall } from "../../env/runInstall";
 import type {
   BootstrapContext,
@@ -8,7 +9,7 @@ import type {
 const installRunStep: BootstrapStep = {
   id: "installRun",
   run: async (context, deps) => {
-    const manualCommand = `${context.packageManager} install`;
+    const manualCommand = formatInstallCommand(context.packageManager);
 
     if (deps.skipInstall) {
       deps.prompter.info(
@@ -45,7 +46,9 @@ const buildNextStepsMessage = (
   const packageManager = context.packageManager;
   const installLine =
     deps.skipInstall || !context.wantInstall
-      ? [`Run "${packageManager} install" to install dependencies`]
+      ? [
+          `Run "${formatInstallCommand(packageManager)}" to install dependencies`,
+        ]
       : [];
 
   const lines = [

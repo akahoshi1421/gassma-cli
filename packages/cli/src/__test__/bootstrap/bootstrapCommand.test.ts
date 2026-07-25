@@ -99,7 +99,7 @@ describe("bootstrap", () => {
     expect(commands[0]).toBe("clasp --version");
     expect(commands.some((c) => c.includes("clasp create-script"))).toBe(true);
     expect(commands.some((c) => c.includes("clasp list-versions"))).toBe(true);
-    expect(commands.some((c) => c === "npm install")).toBe(true);
+    expect(commands.some((c) => c === "npm i")).toBe(true);
   });
 
   it("should write the manifest with the fetched library version", async () => {
@@ -134,7 +134,7 @@ describe("bootstrap", () => {
     const commands = calls.map((call: ExecCall) =>
       [call.command, ...call.args].join(" "),
     );
-    expect(commands.some((c) => c.endsWith("install"))).toBe(false);
+    expect(commands.every((c) => c.startsWith("clasp "))).toBe(true);
   });
 
   it("should not touch the file system or run commands with --dry-run", async () => {

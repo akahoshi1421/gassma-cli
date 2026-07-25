@@ -116,7 +116,7 @@ describe("sampleStep", () => {
 describe("installPromptStep", () => {
   it("should mention the detected package manager in the question", async () => {
     const prompter = createFakePrompter({
-      confirm: { "Install dependencies now? (pnpm install)": false },
+      confirm: { "Install dependencies now? (pnpm i)": false },
     });
     const deps = createTestDeps({ prompter });
     const ctx = {
@@ -130,7 +130,7 @@ describe("installPromptStep", () => {
 
   it("should not ask when --skip-install is given", async () => {
     const prompter = createFakePrompter({
-      confirm: { "Install dependencies now? (npm install)": false },
+      confirm: { "Install dependencies now? (npm i)": false },
     });
     const deps = createTestDeps({ prompter, skipInstall: true });
 

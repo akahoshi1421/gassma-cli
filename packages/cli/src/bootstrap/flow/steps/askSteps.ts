@@ -1,4 +1,5 @@
 import path from "path";
+import { formatInstallCommand } from "../../env/installCommand";
 import { generateSampleIndex } from "../../generators/generateSampleIndex";
 import type { BootstrapStep } from "../context";
 
@@ -66,7 +67,7 @@ const installPromptStep: BootstrapStep = {
     if (deps.skipInstall) return context;
 
     const wantInstall = await deps.prompter.confirm(
-      `Install dependencies now? (${context.packageManager} install)`,
+      `Install dependencies now? (${formatInstallCommand(context.packageManager)})`,
       true,
     );
     return { ...context, wantInstall };

@@ -9,7 +9,7 @@ import { runInstall } from "../../../bootstrap/env/runInstall";
 type Call = { command: string; args: string[]; options?: ExecOptions };
 
 describe("runInstall", () => {
-  it("should run <pm> install in the given cwd with inherited stdio", async () => {
+  it("should run the resolved install command in the given cwd with inherited stdio", async () => {
     const calls: Call[] = [];
     const exec: ExecFn = (command, args, options) => {
       calls.push({ command, args, options });
@@ -21,6 +21,24 @@ describe("runInstall", () => {
     expect(calls).toEqual([
       {
         command: "pnpm",
+        args: ["i"],
+        options: { cwd: "/work/dir", inherit: true },
+      },
+    ]);
+  });
+
+  it("should run yarn install for yarn", async () => {
+    const calls: Call[] = [];
+    const exec: ExecFn = (command, args, options) => {
+      calls.push({ command, args, options });
+      return Promise.resolve({ ok: true, exitCode: 0, stdout: "", stderr: "" });
+    };
+
+    await runInstall(exec, "yarn", "/work/dir");
+
+    expect(calls).toEqual([
+      {
+        command: "yarn",
         args: ["install"],
         options: { cwd: "/work/dir", inherit: true },
       },
