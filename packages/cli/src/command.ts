@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { bootstrap } from "./bootstrap/bootstrapCommand";
 import { ArgumentError } from "./error/mainError";
 import { format } from "./format/formatCommand";
 import { generate } from "./generate/generate";
@@ -64,6 +65,25 @@ program
   .option("--with-model", "Include a sample User model in the schema")
   .action((options) => {
     init({ output: options.output, withModel: options.withModel });
+  });
+
+program
+  .command("bootstrap")
+  .description(
+    "Set up a local GAS development environment (clasp + esbuild + TypeScript + GASsma)",
+  )
+  .option("--yes", "Answer all prompts with their default values")
+  .option("--skip-install", "Skip dependency installation")
+  .option(
+    "--dry-run",
+    "Show planned actions without writing files or running commands",
+  )
+  .action(async (options) => {
+    await bootstrap({
+      yes: options.yes,
+      skipInstall: options.skipInstall,
+      dryRun: options.dryRun,
+    });
   });
 
 program

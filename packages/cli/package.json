@@ -50,6 +50,7 @@
     }
   },
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
     "@loancrate/prisma-schema-parser": "^3.0.0",
     "@prisma/internals": "^7.5.0",
     "commander": "^12.1.0",
