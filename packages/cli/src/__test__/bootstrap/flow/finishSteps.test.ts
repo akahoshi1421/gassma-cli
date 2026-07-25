@@ -79,7 +79,7 @@ describe("nextStepsStep", () => {
     expect(prompter.notes[0].title).toBe("Next steps");
     expect(prompter.notes[0].message).toContain('"pnpm run deploy"');
     expect(prompter.notes[0].message).toContain('"npx gassma generate"');
-    expect(prompter.notes[0].message).toContain('"npx clasp open"');
+    expect(prompter.notes[0].message).toContain('"pnpm run open"');
     expect(prompter.notes[0].message).toContain(".clasp.json is gitignored");
     expect(prompter.outros.join(" ")).toContain("Bootstrap complete");
   });
