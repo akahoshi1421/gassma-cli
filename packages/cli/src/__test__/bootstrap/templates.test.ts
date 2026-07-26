@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readTemplate } from "../../bootstrap/env/readTemplate";
+import { readTemplate } from "../../util/readTemplate";
 
 const GITIGNORE = [
   ".clasp.json",

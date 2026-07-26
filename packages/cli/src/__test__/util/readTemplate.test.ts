@@ -2,10 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-  loadBootstrapTemplates,
-  readTemplate,
-} from "../../../bootstrap/env/readTemplate";
+import { readTemplate } from "../../util/readTemplate";
 
 describe("readTemplate", () => {
   let tmpDir: string;
@@ -49,19 +46,5 @@ describe("readTemplate", () => {
     expect(() => readTemplate("tsconfig.json.template", tmpDir)).toThrow(
       /tsconfig.json.template/,
     );
-  });
-});
-
-describe("loadBootstrapTemplates", () => {
-  it("should load every bundled template", () => {
-    const templates = loadBootstrapTemplates();
-
-    expect(templates.gitignore).toContain(".clasp.json");
-    expect(templates.tsconfig).toContain("google-apps-script");
-    expect(templates.packageJson).toContain('"gassma"');
-    expect(templates.esbuild.export).toContain("gasEsbuildPlugin");
-    expect(templates.esbuild.global).toContain("GasPlugin");
-    expect(templates.sampleIndex.export).toContain("export const main");
-    expect(templates.sampleIndex.global).toContain("global.main = main;");
   });
 });

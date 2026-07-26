@@ -3,7 +3,7 @@ import type { PackageManager } from "../env/detectPackageManager";
 import type { ExecFn } from "../env/execCommand";
 import type { FetchTextFn } from "../env/fetchLatestLibraryVersion";
 import type { FileStore } from "../env/fileStore";
-import type { BootstrapTemplates } from "../env/readTemplate";
+import type { BootstrapTemplates } from "../env/loadBootstrapTemplates";
 import type { DirectoryOps } from "../env/targetDirectory";
 import type { FunctionStyle } from "../functionStyle";
 import type { Prompter } from "./prompts";

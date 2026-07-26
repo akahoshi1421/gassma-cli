@@ -6,7 +6,7 @@ import type { ExecFn } from "./env/execCommand";
 import { createDefaultFetchText } from "./env/fetchLatestLibraryVersion";
 import type { FetchTextFn } from "./env/fetchLatestLibraryVersion";
 import { createFsFileStore } from "./env/fileStore";
-import { loadBootstrapTemplates } from "./env/readTemplate";
+import { loadBootstrapTemplates } from "./env/loadBootstrapTemplates";
 import { createDirectoryOps } from "./env/targetDirectory";
 import { buildBootstrapSteps } from "./flow/buildSteps";
 import { createInitialContext, runSteps } from "./flow/context";

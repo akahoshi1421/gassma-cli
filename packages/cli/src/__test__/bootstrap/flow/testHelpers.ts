@@ -3,7 +3,7 @@ import type {
   ExecOptions,
   ExecResult,
 } from "../../../bootstrap/env/execCommand";
-import { loadBootstrapTemplates } from "../../../bootstrap/env/readTemplate";
+import { loadBootstrapTemplates } from "../../../bootstrap/env/loadBootstrapTemplates";
 import type { FileStore } from "../../../bootstrap/env/fileStore";
 import type { BootstrapDeps } from "../../../bootstrap/flow/context";
 import type { Prompter, SelectChoice } from "../../../bootstrap/flow/prompts";
