@@ -2,6 +2,7 @@ type ErrorClassDef = {
   name: string;
   extends: string;
   params: string;
+  members?: string[];
 };
 
 const errorClassDefinitions: ErrorClassDef[] = [
@@ -173,6 +174,12 @@ const errorClassDefinitions: ErrorClassDef[] = [
     params: 'phase: "query" | "commit", timeoutMs: number, elapsedMs: number',
   },
   { name: "GassmaNestedTransactionError", extends: "Error", params: "" },
+  {
+    name: "GassmaTransactionRollbackError",
+    extends: "Error",
+    params: "backupSheetNames: string[]",
+    members: ["readonly backupSheetNames: string[]"],
+  },
 ];
 
 export { errorClassDefinitions };

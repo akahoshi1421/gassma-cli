@@ -18,6 +18,11 @@ describe("getGassmaErrorClasses", () => {
     expect(result).toContain(
       "class GassmaNestedTransactionError extends Error",
     );
+    expect(result).toContain(
+      "class GassmaTransactionRollbackError extends Error",
+    );
+    expect(result).toContain("constructor(backupSheetNames: string[])");
+    expect(result).toContain("readonly backupSheetNames: string[];");
   });
 
   it("should include GassmaSkipNegativeError", () => {

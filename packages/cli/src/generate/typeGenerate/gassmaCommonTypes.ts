@@ -87,6 +87,7 @@ const getGassmaCommonTypes = (strict?: boolean) => {
   type GassmaTransactionOptions = {
     maxWait?: number;
     timeout?: number;
+    rollback?: boolean;
   };
 
   type ManyReturn = {
