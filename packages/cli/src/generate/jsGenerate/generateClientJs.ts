@@ -173,6 +173,7 @@ ${defaultsDecl}${updatedAtDecl}${ignoreDecl}${mapDecl}${ignoreSheetsDecl}${mapSh
     const client = new Gassma.GassmaClient(mergedOptions);
     Object.assign(this, client);
     this.$extends = (extension) => client.$extends(extension);
+    this.$transaction = (fn, options) => client.$transaction(fn, options);
   }
 }
 

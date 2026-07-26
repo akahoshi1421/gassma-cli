@@ -84,6 +84,11 @@ const getGassmaCommonTypes = (strict?: boolean) => {
     ? { [P in keyof S]: number }
     : { [key: string]: number };
 
+  type GassmaTransactionOptions = {
+    maxWait?: number;
+    timeout?: number;
+  };
+
   type ManyReturn = {
     count: number;
   };

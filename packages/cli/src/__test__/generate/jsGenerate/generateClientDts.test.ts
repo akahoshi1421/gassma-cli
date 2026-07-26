@@ -37,6 +37,24 @@ describe("generateClientDts", () => {
     expect(result).toContain("  $extends: GassmaHogeExtendsFn<O, {}>;");
   });
 
+  it("should declare $transaction on the client interface", () => {
+    const result = generateClientDts("Hoge");
+
+    expect(result).toContain(
+      "  $transaction<T>(fn: (tx: GassmaHogeTransactionClient<O>) => T, options?: Gassma.GassmaTransactionOptions): T;",
+    );
+  });
+
+  it("should export a TransactionClient type without $transaction", () => {
+    const result = generateClientDts("Hoge");
+
+    expect(result).toContain(
+      `export type GassmaHogeTransactionClient<O extends Gassma.StrictGlobalOmit<O, GassmaHogeGlobalOmitConfig> = {}> = GassmaHogeSheet<O> & {
+  $extends: GassmaHogeExtendsFn<O, {}>;
+};`,
+    );
+  });
+
   it("should work with different schema names", () => {
     const result = generateClientDts("Fuga");
 
@@ -46,6 +64,10 @@ describe("generateClientDts", () => {
     expect(result).toContain(
       "export interface GassmaClient<O extends Gassma.StrictGlobalOmit<O, GassmaFugaGlobalOmitConfig> = {}> extends GassmaFugaSheet<O>",
     );
+    expect(result).toContain(
+      "  $transaction<T>(fn: (tx: GassmaFugaTransactionClient<O>) => T, options?: Gassma.GassmaTransactionOptions): T;",
+    );
+    expect(result).toContain("export type GassmaFugaTransactionClient");
   });
 
   it("should export enum constants and types", () => {
@@ -109,6 +131,6 @@ describe("generateClientDts", () => {
     const result = generateClientDts("Test", {});
 
     expect(result).not.toContain("export declare const");
-    expect(result).not.toContain("export type");
+    expect(result).not.toContain("[keyof typeof");
   });
 });
