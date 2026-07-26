@@ -7,6 +7,7 @@ import { createDefaultFetchText } from "./env/fetchLatestLibraryVersion";
 import type { FetchTextFn } from "./env/fetchLatestLibraryVersion";
 import { createFsFileStore } from "./env/fileStore";
 import { loadBootstrapTemplates } from "./env/readTemplate";
+import { createDirectoryOps } from "./env/targetDirectory";
 import { buildBootstrapSteps } from "./flow/buildSteps";
 import { createInitialContext, runSteps } from "./flow/context";
 import type { BootstrapDeps } from "./flow/context";
@@ -20,6 +21,7 @@ import {
 import type { Prompter } from "./flow/prompts";
 
 type BootstrapOptions = {
+  directory?: string;
   yes?: boolean;
   skipInstall?: boolean;
   dryRun?: boolean;
@@ -97,16 +99,15 @@ const bootstrap = async (
     plannedActions: env.plannedActions,
     dryRun,
     skipInstall: options.skipInstall === true,
+    assumeYes: yes,
+    directoryArg: options.directory,
+    directories: createDirectoryOps(),
+    detectPackageManager: (directory) =>
+      detectPackageManager({ cwd: directory, userAgent: overrides.userAgent }),
     gassmaVersion: getVersion(),
     templates: loadBootstrapTemplates(),
   };
-  const initialContext = createInitialContext({
-    cwd,
-    packageManager: await detectPackageManager({
-      cwd,
-      userAgent: overrides.userAgent,
-    }),
-  });
+  const initialContext = createInitialContext({ cwd, packageManager: "npm" });
 
   prompter.intro("gassma bootstrap");
   try {
