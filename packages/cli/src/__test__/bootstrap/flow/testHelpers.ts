@@ -113,6 +113,13 @@ const createTestDeps = (
     plannedActions: planned,
     dryRun: false,
     skipInstall: false,
+    assumeYes: false,
+    directories: {
+      inspect: () => "empty",
+      ensure: () => undefined,
+      changeTo: () => undefined,
+    },
+    detectPackageManager: () => Promise.resolve("npm"),
     gassmaVersion: "1.1.0",
     templates: loadBootstrapTemplates(),
     ...overrides,

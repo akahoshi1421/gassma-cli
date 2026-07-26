@@ -76,7 +76,7 @@ describe("bootstrap", () => {
     const prompter = createFakePrompter();
 
     await bootstrap(
-      { yes: true },
+      { yes: true, directory: "." },
       { exec, prompter, isTty: true, userAgent: "npm/10.0.0 node/v20.0.0" },
     );
 
@@ -113,7 +113,7 @@ describe("bootstrap", () => {
     const prompter = createFakePrompter();
 
     await bootstrap(
-      { yes: true, skipInstall: true },
+      { yes: true, skipInstall: true, directory: "." },
       { exec, prompter, isTty: true },
     );
 
@@ -138,7 +138,7 @@ describe("bootstrap", () => {
     const prompter = createFakePrompter();
 
     await bootstrap(
-      { yes: true, skipInstall: true },
+      { yes: true, skipInstall: true, directory: "." },
       {
         exec,
         prompter,
@@ -165,7 +165,7 @@ describe("bootstrap", () => {
     const prompter = createFakePrompter();
 
     await bootstrap(
-      { yes: true, skipInstall: true },
+      { yes: true, skipInstall: true, directory: "." },
       {
         exec,
         prompter,
@@ -189,7 +189,7 @@ describe("bootstrap", () => {
     const prompter = createFakePrompter();
 
     await bootstrap(
-      { yes: true, skipInstall: true },
+      { yes: true, skipInstall: true, directory: "." },
       { exec, prompter, isTty: true },
     );
 
@@ -215,8 +215,9 @@ describe("bootstrap", () => {
       note.title.includes("dry run"),
     );
     expect(planNote).toBeDefined();
+    expect(planNote?.message).toContain("create directory gassma-project");
     expect(planNote?.message).toContain("clasp create-script");
-    expect(planNote?.message).toContain("package.json");
+    expect(planNote?.message).toContain("write gassma-project/package.json");
     expect(planNote?.message).toContain("gassma init");
     expect(
       prompter.infos.every((message) => message.startsWith("[dry-run] ")),
@@ -247,7 +248,10 @@ describe("bootstrap", () => {
     });
     const prompter = createFakePrompter();
 
-    await bootstrap({ yes: true }, { exec, prompter, isTty: true });
+    await bootstrap(
+      { yes: true, directory: "." },
+      { exec, prompter, isTty: true },
+    );
 
     expect(prompter.warns.join(" ")).toContain("clasp create-script failed");
     expect(process.exitCode).toBe(1);
@@ -260,7 +264,7 @@ describe("bootstrap", () => {
     const prompter = createFakePrompter();
 
     await bootstrap(
-      { yes: true, skipInstall: true },
+      { yes: true, skipInstall: true, directory: "." },
       { exec, prompter, isTty: true },
     );
 
@@ -270,5 +274,114 @@ describe("bootstrap", () => {
     expect(commands.some((c) => c.includes("create-script"))).toBe(false);
     expect(prompter.infos.join(" ")).toContain("Skipping clasp create-script");
     expect(fs.existsSync(path.join(tmpDir, "package.json"))).toBe(true);
+  });
+
+  it("should create the given directory and bootstrap inside it", async () => {
+    const { calls, exec } = createClaspExec();
+    const prompter = createFakePrompter();
+
+    await bootstrap(
+      { yes: true, skipInstall: true, directory: "my-app" },
+      { exec, prompter, isTty: true },
+    );
+
+    const appDir = path.join(tmpDir, "my-app");
+    expect(process.exitCode).toBeUndefined();
+    expect(fs.realpathSync(process.cwd())).toBe(fs.realpathSync(appDir));
+    expect(fs.existsSync(path.join(appDir, "package.json"))).toBe(true);
+    expect(fs.existsSync(path.join(appDir, "gassma", "schema.prisma"))).toBe(
+      true,
+    );
+    expect(fs.existsSync(path.join(tmpDir, "package.json"))).toBe(false);
+
+    const createCall = calls.find((call) => call.args[0] === "create-script");
+    expect(createCall?.args).toContain("my-app");
+    expect(fs.realpathSync(createCall?.options?.cwd ?? "")).toBe(
+      fs.realpathSync(appDir),
+    );
+  });
+
+  it("should bootstrap into gassma-project when the directory is omitted with --yes", async () => {
+    const { exec } = createClaspExec();
+    const prompter = createFakePrompter();
+
+    await bootstrap(
+      { yes: true, skipInstall: true },
+      { exec, prompter, isTty: true },
+    );
+
+    expect(
+      fs.existsSync(path.join(tmpDir, "gassma-project", "package.json")),
+    ).toBe(true);
+  });
+
+  it("should stop when the target directory is not empty and the user declines", async () => {
+    fs.mkdirSync(path.join(tmpDir, "my-app"));
+    fs.writeFileSync(path.join(tmpDir, "my-app", "keep.txt"), "x");
+    const { calls, exec } = createClaspExec();
+    const prompter = createFakePrompter();
+
+    await bootstrap({ directory: "my-app" }, { exec, prompter, isTty: true });
+
+    expect(process.exitCode).toBe(1);
+    expect(prompter.warns.join(" ")).toContain("cancelled");
+    expect(fs.existsSync(path.join(tmpDir, "my-app", "package.json"))).toBe(
+      false,
+    );
+    expect(calls.some((call) => call.args[0] === "create-script")).toBe(false);
+  });
+
+  it("should continue when the user accepts a non-empty directory", async () => {
+    fs.mkdirSync(path.join(tmpDir, "my-app"));
+    fs.writeFileSync(path.join(tmpDir, "my-app", "keep.txt"), "x");
+    const { exec } = createClaspExec();
+    const prompter = createFakePrompter({
+      confirm: { 'Directory "my-app" is not empty. Continue?': true },
+    });
+
+    await bootstrap(
+      { skipInstall: true, directory: "my-app" },
+      { exec, prompter, isTty: true },
+    );
+
+    expect(process.exitCode).toBeUndefined();
+    expect(fs.existsSync(path.join(tmpDir, "my-app", "package.json"))).toBe(
+      true,
+    );
+  });
+
+  it("should resume idempotently in a bootstrapped directory with --yes", async () => {
+    fs.mkdirSync(path.join(tmpDir, "my-app"));
+    fs.writeFileSync(path.join(tmpDir, "my-app", ".clasp.json"), "{}");
+    const { calls, exec } = createClaspExec();
+    const prompter = createFakePrompter();
+
+    await bootstrap(
+      { yes: true, skipInstall: true, directory: "my-app" },
+      { exec, prompter, isTty: true },
+    );
+
+    expect(process.exitCode).toBeUndefined();
+    expect(calls.some((call) => call.args[0] === "create-script")).toBe(false);
+    expect(fs.existsSync(path.join(tmpDir, "my-app", "package.json"))).toBe(
+      true,
+    );
+  });
+
+  it("should not create the directory with --dry-run", async () => {
+    const { exec } = createClaspExec();
+    const prompter = createFakePrompter();
+
+    await bootstrap(
+      { yes: true, dryRun: true, directory: "my-app" },
+      { exec, prompter, isTty: true },
+    );
+
+    expect(fs.readdirSync(tmpDir)).toEqual([]);
+    const planNote = prompter.notes.find((note) =>
+      note.title.includes("dry run"),
+    );
+    expect(planNote?.message).toContain("create directory my-app");
+    expect(planNote?.message).toContain("write my-app/package.json");
   });
 });
