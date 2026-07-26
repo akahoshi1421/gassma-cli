@@ -49,14 +49,18 @@ declare const strictClient: StrictGassmaClient;
   });
 }
 
-// options は maxWait / timeout のみ
+// options は maxWait / timeout / rollback のみ
 {
   client.$transaction(() => 1, {});
   client.$transaction(() => 1, { maxWait: 1000 });
   client.$transaction(() => 1, { maxWait: 1000, timeout: 2000 });
-
-  // @ts-expect-error rollback オプションは存在しない
   client.$transaction(() => 1, { rollback: false });
+  client.$transaction(() => 1, { rollback: true });
+  client.$transaction(() => 1, {
+    maxWait: 1000,
+    timeout: 2000,
+    rollback: true,
+  });
 
   // @ts-expect-error isolationLevel オプションは存在しない
   client.$transaction(() => 1, { isolationLevel: "Serializable" });
@@ -120,4 +124,11 @@ declare const strictClient: StrictGassmaClient;
   >().toEqualTypeOf<
     [phase: "query" | "commit", timeoutMs: number, elapsedMs: number]
   >();
+  expectTypeOf<Gassma.GassmaTransactionRollbackError>().toExtend<Error>();
+  expectTypeOf<
+    ConstructorParameters<typeof Gassma.GassmaTransactionRollbackError>
+  >().toEqualTypeOf<[backupSheetNames: string[]]>();
+  expectTypeOf<
+    Gassma.GassmaTransactionRollbackError["backupSheetNames"]
+  >().toEqualTypeOf<string[]>();
 }
