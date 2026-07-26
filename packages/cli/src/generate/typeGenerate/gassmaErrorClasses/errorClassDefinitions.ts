@@ -162,6 +162,17 @@ const errorClassDefinitions: ErrorClassDef[] = [
     extends: "Error",
     params: "sheetName: string, field: string, value: unknown",
   },
+  {
+    name: "GassmaTransactionLockTimeoutError",
+    extends: "Error",
+    params: "maxWaitMs: number",
+  },
+  {
+    name: "GassmaTransactionTimeoutError",
+    extends: "Error",
+    params: 'phase: "query" | "commit", timeoutMs: number, elapsedMs: number',
+  },
+  { name: "GassmaNestedTransactionError", extends: "Error", params: "" },
 ];
 
 export { errorClassDefinitions };

@@ -87,6 +87,61 @@ describe("generateClientJs", () => {
     expect(received).toEqual([extension]);
   });
 
+  it("should delegate $transaction to the core client instance", () => {
+    const result = generateClientJs({}, "Hoge");
+
+    expect(result).toContain(
+      "    this.$transaction = (fn, options) => client.$transaction(fn, options);",
+    );
+  });
+
+  it("should expose a working $transaction even though core defines it on the prototype", () => {
+    const code = generateClientJs({}, "Hoge");
+    const coreInstances: unknown[] = [];
+    const received: { self: unknown; fn: unknown; options: unknown }[] = [];
+    const txStub = { User: { findMany: () => [] } };
+    class FakeCoreClient {
+      User = { findMany: () => [] };
+      constructor() {
+        coreInstances.push(this);
+      }
+      $transaction(fn: (tx: unknown) => unknown, options?: unknown) {
+        received.push({ self: this, fn, options });
+        return fn(txStub);
+      }
+    }
+    const exportsObject: {
+      GassmaClient?: new (
+        options?: unknown,
+      ) => {
+        $transaction?: (
+          fn: (tx: unknown) => unknown,
+          options?: unknown,
+        ) => unknown;
+      };
+    } = {};
+    const run = new Function("Gassma", "exports", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject);
+
+    const GeneratedClient = exportsObject.GassmaClient;
+    if (!GeneratedClient) throw new Error("GassmaClient not exported");
+    const instance = new GeneratedClient({});
+    expect(typeof instance.$transaction).toBe("function");
+
+    const seenTx: unknown[] = [];
+    const options = { maxWait: 100, timeout: 200 };
+    const result = instance.$transaction?.((tx) => {
+      seenTx.push(tx);
+      return "tx-result";
+    }, options);
+
+    expect(result).toBe("tx-result");
+    expect(seenTx).toEqual([txStub]);
+    expect(received).toHaveLength(1);
+    expect(received[0].options).toBe(options);
+    expect(received[0].self).toBe(coreInstances[0]);
+  });
+
   it("should include onDelete and onUpdate when present", () => {
     const relations = {
       Post: {

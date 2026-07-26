@@ -1,8 +1,12 @@
 import type { EnumsConfig } from "../read/extractEnums";
 
 const generateClientDts = (schemaName: string, enums?: EnumsConfig): string => {
-  let result = `export interface GassmaClient<O extends Gassma.StrictGlobalOmit<O, Gassma${schemaName}GlobalOmitConfig> = {}> extends Gassma${schemaName}Sheet<O> {
+  let result = `export type Gassma${schemaName}TransactionClient<O extends Gassma.StrictGlobalOmit<O, Gassma${schemaName}GlobalOmitConfig> = {}> = Gassma${schemaName}Sheet<O> & {
   $extends: Gassma${schemaName}ExtendsFn<O, {}>;
+};
+export interface GassmaClient<O extends Gassma.StrictGlobalOmit<O, Gassma${schemaName}GlobalOmitConfig> = {}> extends Gassma${schemaName}Sheet<O> {
+  $extends: Gassma${schemaName}ExtendsFn<O, {}>;
+  $transaction<T>(fn: (tx: Gassma${schemaName}TransactionClient<O>) => T, options?: Gassma.GassmaTransactionOptions): T;
 }
 export declare class GassmaClient<O extends Gassma.StrictGlobalOmit<O, Gassma${schemaName}GlobalOmitConfig> = {}> {
   constructor(options?: Gassma${schemaName}ClientOptions<O>);

@@ -4,6 +4,22 @@ import { getGassmaErrorClasses } from "../../../generate/typeGenerate/gassmaErro
 describe("getGassmaErrorClasses", () => {
   const result = getGassmaErrorClasses();
 
+  it("should include transaction error classes", () => {
+    expect(result).toContain(
+      "class GassmaTransactionLockTimeoutError extends Error",
+    );
+    expect(result).toContain("constructor(maxWaitMs: number)");
+    expect(result).toContain(
+      "class GassmaTransactionTimeoutError extends Error",
+    );
+    expect(result).toContain(
+      'constructor(phase: "query" | "commit", timeoutMs: number, elapsedMs: number)',
+    );
+    expect(result).toContain(
+      "class GassmaNestedTransactionError extends Error",
+    );
+  });
+
   it("should include GassmaSkipNegativeError", () => {
     expect(result).toContain("class GassmaSkipNegativeError extends Error");
     expect(result).toContain("constructor(value: number)");

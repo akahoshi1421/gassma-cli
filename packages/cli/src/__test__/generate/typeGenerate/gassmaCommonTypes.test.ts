@@ -34,6 +34,14 @@ describe("getGassmaCommonTypes", () => {
     expect(result).toContain("gte?: T | FieldRef");
   });
 
+  it("should generate GassmaTransactionOptions type", () => {
+    expect(result).toContain("type GassmaTransactionOptions = {");
+    expect(result).toContain("maxWait?: number");
+    expect(result).toContain("timeout?: number");
+    expect(result).not.toContain("rollback");
+    expect(result).not.toContain("isolationLevel");
+  });
+
   it("should generate ManyReturn types", () => {
     expect(result).toContain("type ManyReturn =");
     expect(result).toContain("count: number");
