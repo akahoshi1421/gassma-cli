@@ -1,12 +1,15 @@
 import fs from "fs";
 import path from "path";
-import { generateTemplate } from "./generateTemplate";
-import { generateConfigTemplate } from "./generateConfigTemplate";
+import { readTemplate } from "../util/readTemplate";
+import { patchSchemaOutput } from "./patchSchemaOutput";
 
 type InitOptions = {
   output?: string;
   withModel?: boolean;
 };
+
+const schemaTemplateName = (withModel: boolean): string =>
+  withModel ? "schema.with-model.prisma.template" : "schema.prisma.template";
 
 function init(options?: InitOptions) {
   const gassmaDir = "./gassma";
@@ -24,19 +27,20 @@ function init(options?: InitOptions) {
     console.log(`📁 Created ${gassmaDir}/ directory`);
   }
 
-  const template = generateTemplate({
-    output: options?.output,
-    withModel: options?.withModel,
-  });
+  const template = patchSchemaOutput(
+    readTemplate(schemaTemplateName(options?.withModel === true)),
+    options?.output,
+  );
 
   fs.writeFileSync(schemaPath, template, "utf-8");
   console.log(`📄 Created ${schemaPath}`);
 
   if (!fs.existsSync(configPath)) {
-    const configTemplate = generateConfigTemplate({
-      schemaPath: "gassma/schema.prisma",
-    });
-    fs.writeFileSync(configPath, configTemplate, "utf-8");
+    fs.writeFileSync(
+      configPath,
+      readTemplate("gassma.config.ts.template"),
+      "utf-8",
+    );
     console.log(`📄 Created ${configPath}`);
   }
 
