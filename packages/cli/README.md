@@ -139,9 +139,23 @@ Validate .prisma files.
 
 ### bootstrap
 
-Interactively set up a local GAS development environment (clasp + esbuild + TypeScript + GASsma) in the current directory. It creates an Apps Script project via `clasp create-script`, registers the GASsma library in `dist/appsscript.json`, generates `package.json`, `esbuild.mjs`, `tsconfig.json`, `.gitignore` and a sample `src/index.ts`, runs `gassma init`, and installs dependencies.
+Interactively set up a local GAS development environment (clasp + esbuild + TypeScript + GASsma). It creates an Apps Script project via `clasp create-script`, registers the GASsma library in `dist/appsscript.json`, generates `package.json`, `esbuild.mjs`, `tsconfig.json`, `.gitignore` and a sample `src/index.ts`, runs `gassma init`, and installs dependencies.
+
+```sh
+npx gassma bootstrap my-app   # create my-app/ and set up inside it
+npx gassma bootstrap          # ask for a directory first (default: gassma-project)
+npx gassma bootstrap .        # set up in the current directory
+```
+
+If the target directory does not exist, it is created. If it exists and is not empty, bootstrap asks for confirmation before continuing (`--yes` continues automatically), so re-running the same command resumes an interrupted setup.
 
 Requires [clasp](https://github.com/google/clasp): `npm install -g @google/clasp`, then `clasp login`.
+
+#### arguments
+
+|name|description|
+|--|--|
+|`[directory]`|Directory to set up the project in (`.` for the current directory). Omitting it prompts for one|
 
 #### options
 

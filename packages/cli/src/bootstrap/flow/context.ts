@@ -4,6 +4,7 @@ import type { ExecFn } from "../env/execCommand";
 import type { FetchTextFn } from "../env/fetchLatestLibraryVersion";
 import type { FileStore } from "../env/fileStore";
 import type { BootstrapTemplates } from "../env/readTemplate";
+import type { DirectoryOps } from "../env/targetDirectory";
 import type { FunctionStyle } from "../functionStyle";
 import type { Prompter } from "./prompts";
 
@@ -28,6 +29,10 @@ type BootstrapDeps = {
   plannedActions: readonly string[];
   dryRun: boolean;
   skipInstall: boolean;
+  assumeYes: boolean;
+  directoryArg?: string;
+  directories: DirectoryOps;
+  detectPackageManager: (cwd: string) => Promise<PackageManager>;
   gassmaVersion: string;
   templates: BootstrapTemplates;
 };

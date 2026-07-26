@@ -7,6 +7,7 @@ import {
   titleStep,
 } from "./steps/askSteps";
 import { claspCreateStep, manifestStep } from "./steps/claspSteps";
+import { directoryStep } from "./steps/directoryStep";
 import { installRunStep, nextStepsStep } from "./steps/finishSteps";
 import {
   initStep,
@@ -16,6 +17,7 @@ import {
 
 // Future questions (e.g. linter selection) are added by inserting a step here.
 const buildBootstrapSteps = (): BootstrapStep[] => [
+  directoryStep,
   titleStep,
   sheetsStep,
   claspCreateStep,

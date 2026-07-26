@@ -46,9 +46,27 @@ describe("gassma bootstrap (e2e)", () => {
         { cwd: tmpDir, stdio: "pipe" },
       ).toString();
 
+      expect(output).toContain("create directory gassma-project");
       expect(output).toContain("clasp create-script");
-      expect(output).toContain("write package.json");
+      expect(output).toContain("write gassma-project/package.json");
       expect(output).toContain("gassma init");
+      expect(output).toContain("Dry run complete");
+      expect(fs.readdirSync(tmpDir)).toEqual([]);
+    },
+  );
+
+  it(
+    "should plan the given directory for --dry-run --yes with a directory argument",
+    { timeout: 120_000 },
+    () => {
+      const output = execFileSync(
+        process.execPath,
+        [tsxCli, commandTs, "bootstrap", "my-app", "--dry-run", "--yes"],
+        { cwd: tmpDir, stdio: "pipe" },
+      ).toString();
+
+      expect(output).toContain("create directory my-app");
+      expect(output).toContain("write my-app/package.json");
       expect(output).toContain("Dry run complete");
       expect(fs.readdirSync(tmpDir)).toEqual([]);
     },

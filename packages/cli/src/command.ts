@@ -73,14 +73,19 @@ program
   .description(
     "Set up a local GAS development environment (clasp + esbuild + TypeScript + GASsma)",
   )
+  .argument(
+    "[directory]",
+    'Directory to set up the project in ("." for the current directory)',
+  )
   .option("--yes", "Answer all prompts with their default values")
   .option("--skip-install", "Skip dependency installation")
   .option(
     "--dry-run",
     "Show planned actions without writing files or running commands",
   )
-  .action(async (options) => {
+  .action(async (directory, options) => {
     await bootstrap({
+      directory,
       yes: options.yes,
       skipInstall: options.skipInstall,
       dryRun: options.dryRun,
