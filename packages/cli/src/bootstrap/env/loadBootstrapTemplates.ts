@@ -1,6 +1,4 @@
-import fs from "fs";
-import path from "path";
-import { findPackageRoot } from "../../util/findPackageRoot";
+import { readTemplate } from "../../util/readTemplate";
 import type { FunctionStyle } from "../functionStyle";
 
 type BootstrapTemplates = {
@@ -9,24 +7,6 @@ type BootstrapTemplates = {
   packageJson: string;
   esbuild: Record<FunctionStyle, string>;
   sampleIndex: Record<FunctionStyle, string>;
-};
-
-const readTemplate = (name: string, startDir: string = __dirname): string => {
-  const packageRoot = findPackageRoot(startDir);
-  if (packageRoot === undefined) {
-    throw new Error(
-      `Could not find the gassma package root above ${startDir}. The CLI installation looks broken.`,
-    );
-  }
-
-  const templatePath = path.join(packageRoot.dir, "templates", name);
-  if (!fs.existsSync(templatePath)) {
-    throw new Error(
-      `Could not find the bundled template ${templatePath}. The CLI installation looks broken.`,
-    );
-  }
-
-  return fs.readFileSync(templatePath, "utf-8");
 };
 
 const loadBootstrapTemplates = (
@@ -45,5 +25,5 @@ const loadBootstrapTemplates = (
   },
 });
 
-export { loadBootstrapTemplates, readTemplate };
+export { loadBootstrapTemplates };
 export type { BootstrapTemplates };

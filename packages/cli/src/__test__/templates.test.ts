@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readTemplate } from "../../bootstrap/env/readTemplate";
+import { readTemplate } from "../util/readTemplate";
 
 const GITIGNORE = [
   ".clasp.json",
@@ -93,6 +93,30 @@ declare const global: Global;
 global.main = main;
 `;
 
+const SCHEMA = `generator client {
+  provider = "prisma-client-js"
+  output   = "./src/generated/gassma"
+}
+`;
+
+const SCHEMA_WITH_MODEL = `${SCHEMA}
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String
+}
+`;
+
+const GASSMA_CONFIG = `import { defineConfig } from "gassma/config";
+
+export default defineConfig({
+  schema: "gassma/schema.prisma",
+  datasource: {
+    url: "",
+  },
+});
+`;
+
 describe("bundled templates", () => {
   it("should ship .gitignore.template byte for byte", () => {
     expect(readTemplate(".gitignore.template")).toBe(GITIGNORE);
@@ -120,5 +144,19 @@ describe("bundled templates", () => {
 
   it("should ship index.global.ts.template byte for byte", () => {
     expect(readTemplate("index.global.ts.template")).toBe(INDEX_GLOBAL);
+  });
+
+  it("should ship schema.prisma.template byte for byte", () => {
+    expect(readTemplate("schema.prisma.template")).toBe(SCHEMA);
+  });
+
+  it("should ship schema.with-model.prisma.template byte for byte", () => {
+    expect(readTemplate("schema.with-model.prisma.template")).toBe(
+      SCHEMA_WITH_MODEL,
+    );
+  });
+
+  it("should ship gassma.config.ts.template byte for byte", () => {
+    expect(readTemplate("gassma.config.ts.template")).toBe(GASSMA_CONFIG);
   });
 });
