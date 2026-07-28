@@ -74,22 +74,26 @@ const recordMigration = (
   content: string,
   name: string | undefined,
   deps: MigrateDeps,
-): void => {
+): boolean => {
   const migrationsDir = path.join(baseDir, "migrations");
   if (findLatestMigrationContent(migrationsDir) === content) {
     console.log(
       "Already in sync, no schema change or pending migration was found.",
     );
-    return;
+    return false;
   }
 
   const dirName = buildMigrationDirName(deps.now(), name);
   const trailPath = writeMigrationTrail(migrationsDir, dirName, content);
   console.log(`📄 Created ${trailPath}`);
+  return true;
 };
 
-const printNextSteps = (stubPath: string): void => {
-  console.log("\n✅ Migration generated\n");
+const printNextSteps = (stubPath: string, recorded: boolean): void => {
+  const headline = recorded
+    ? "✅ Migration generated"
+    : `✅ Refreshed ${STUB_FILE_NAME} (no new migration recorded)`;
+  console.log(`\n${headline}\n`);
   console.log("Next steps:");
   console.log(`  1. Run "clasp push" (or "npm run push") to upload ${STUB_FILE_NAME}
   2. In the Apps Script editor, run the "gassmaMigrate" function once`);
@@ -127,8 +131,8 @@ function migrate(options?: MigrateOptions, deps: MigrateDeps = defaultDeps) {
   );
 
   const stubPath = writeMigrationStub(outputDir, content);
-  recordMigration(baseDir, content, options?.name, deps);
-  printNextSteps(stubPath);
+  const recorded = recordMigration(baseDir, content, options?.name, deps);
+  printNextSteps(stubPath, recorded);
 }
 
 export { migrate };

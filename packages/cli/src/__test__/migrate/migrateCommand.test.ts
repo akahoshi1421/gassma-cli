@@ -203,6 +203,23 @@ describe("migrate", () => {
     );
   });
 
+  it("should not claim a migration was generated when already in sync", () => {
+    writeSchema(schemaWithDatasource);
+    migrate({ output: "./out" }, fixedDeps);
+    vi.mocked(console.log).mockClear();
+
+    migrate({ output: "./out" }, fixedDeps);
+
+    const logged = vi
+      .mocked(console.log)
+      .mock.calls.map((call) => call.join(" "))
+      .join("\n");
+    expect(logged).not.toContain("Migration generated");
+    expect(logged).toContain("Refreshed gassma-migration.js");
+    expect(logged).toContain("clasp push");
+    expect(logged).toContain("gassmaMigrate");
+  });
+
   it("should rewrite gassma-migration.js even when already in sync", () => {
     writeSchema(schemaWithDatasource);
     migrate({ output: "./out" }, fixedDeps);
