@@ -85,6 +85,12 @@ const projectFilesStep: BootstrapStep = {
       "tsconfig.json",
     );
     writeGitignore(context, deps);
+    writeIfMissing(
+      deps,
+      path.join(context.cwd, "AGENTS.md"),
+      deps.templates.agentsMd,
+      "AGENTS.md",
+    );
     return Promise.resolve(context);
   },
 };

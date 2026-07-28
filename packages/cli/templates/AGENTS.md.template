@@ -1,0 +1,26 @@
+# GAS project (Clasp + GASsma)
+
+A local development environment for Google Apps Script, powered by Clasp and GASsma.
+
+## Commands
+
+- `npx gassma generate` — generates the types and the client from gassma/schema.prisma
+- `npm run build` — bundles src/ into dist/ with esbuild
+- `npm run deploy` — build + clasp push (deploys to GAS)
+
+## Development flow
+
+1. To change the schema, edit `gassma/schema.prisma` and re-run `npx gassma generate`
+2. Write code in `src/`. **Never edit `src/generated/` by hand — it is generated output**
+3. Deploy to GAS with `npm run deploy`. Code is executed in the GAS editor
+
+## Constraints
+
+- The runtime is GAS. `SpreadsheetApp` and the other GAS globals do not work locally (running or testing the code locally is not possible)
+- `.clasp.json` / `.clasprc.json` contain credentials. Never commit them (already gitignored)
+- `dist/appsscript.json` is effectively source code — it contains the library dependencies. Do not delete or regenerate it
+
+## About GASsma
+
+GASsma is a GAS library + CLI that lets you work with spreadsheets the way Prisma works with databases. CRUD, aggregation, relations, and transactions are handled with almost the same syntax as Prisma.
+**Before touching anything related to the API, consult https://akahoshi1421.github.io/gassma-reference/llms.txt** (it is a link index — follow the links and read the pages you need).

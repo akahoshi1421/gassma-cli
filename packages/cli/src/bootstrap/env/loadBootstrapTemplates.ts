@@ -3,6 +3,7 @@ import type { FunctionStyle } from "../functionStyle";
 
 type BootstrapTemplates = {
   gitignore: string;
+  agentsMd: string;
   tsconfig: string;
   packageJson: string;
   esbuild: Record<FunctionStyle, string>;
@@ -13,6 +14,7 @@ const loadBootstrapTemplates = (
   startDir: string = __dirname,
 ): BootstrapTemplates => ({
   gitignore: readTemplate(".gitignore.template", startDir),
+  agentsMd: readTemplate("AGENTS.md.template", startDir),
   tsconfig: readTemplate("tsconfig.json.template", startDir),
   packageJson: readTemplate("package.json.template", startDir),
   esbuild: {
