@@ -144,6 +144,19 @@ Validate `.prisma` files.
 |`--schema <path>`|Path to a specific .prisma file to validate|
 |`--config <path>`|Custom path to your GASsma config file|
 
+### migrate
+
+Generate a GAS function that syncs spreadsheet sheets with your schema. It writes the runnable stub `gassma-migration.js` into the output directory and a migration trail at `migrations/<timestamp>[_name]/migration.js` next to your schema. `clasp push` is not run automatically: push the stub yourself, then run the `gassmaMigrate` function once in the Apps Script editor.
+
+#### options
+
+|name|description|
+|--|--|
+|`--name <name>`|Name for the new migration|
+|`--output <dir>`|Directory to write gassma-migration.js (defaults to rootDir in .clasp.json)|
+|`--schema <path>`|Path to a specific .prisma file to migrate from|
+|`--config <path>`|Custom path to your GASsma config file|
+
 ### bootstrap
 
 Interactively set up a local GAS development environment (clasp + esbuild + TypeScript + GASsma). It creates an Apps Script project via clasp, registers the GASsma library, generates project files (`package.json`, `esbuild.mjs`, `tsconfig.json`, `.gitignore`, a sample `src/index.ts`), runs `gassma init`, and installs dependencies.
