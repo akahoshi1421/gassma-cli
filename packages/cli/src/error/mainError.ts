@@ -48,6 +48,16 @@ class GassmaConfigLoadError extends Error {
   }
 }
 
+class MigrateOutputDirError extends Error {
+  constructor() {
+    super(
+      "GASsmaMigrateOutputDirError: could not determine where to write gassma-migration.js.\n" +
+        "Pass --output <dir> (e.g. npx gassma migrate --output ./dist), " +
+        'or run in a project whose .clasp.json has "rootDir".',
+    );
+  }
+}
+
 export {
   ArgumentError,
   NoModelsError,
@@ -55,4 +65,5 @@ export {
   ConfigFileNotFoundError,
   GassmaConfigEnvError,
   GassmaConfigLoadError,
+  MigrateOutputDirError,
 };
