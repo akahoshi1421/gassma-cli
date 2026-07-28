@@ -10,8 +10,13 @@ const formatMigrationTimestamp = (date: Date): string =>
     pad2(date.getUTCSeconds()),
   ].join("");
 
-const sanitizeMigrationName = (name: string): string =>
+const decamelize = (name: string): string =>
   name
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2");
+
+const sanitizeMigrationName = (name: string): string =>
+  decamelize(name)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");

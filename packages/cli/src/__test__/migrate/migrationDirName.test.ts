@@ -90,5 +90,27 @@ describe("buildMigrationDirName", () => {
         "20260729040506_v2_rollout",
       );
     });
+
+    it("should decamelize like Prisma does", () => {
+      expect(buildMigrationDirName(date, "addUserTable")).toBe(
+        "20260729040506_add_user_table",
+      );
+    });
+
+    it("should split acronym runs like Prisma does", () => {
+      expect(buildMigrationDirName(date, "addAPIKeyV2 andHTTPStuff")).toBe(
+        "20260729040506_add_api_key_v2_and_http_stuff",
+      );
+    });
+
+    it("should keep an acronym-only name as a single word", () => {
+      expect(buildMigrationDirName(date, "API")).toBe("20260729040506_api");
+    });
+
+    it("should split before an uppercase letter after a digit", () => {
+      expect(buildMigrationDirName(date, "v2Rollout")).toBe(
+        "20260729040506_v2_rollout",
+      );
+    });
   });
 });
