@@ -10,6 +10,8 @@ GASsma-cli を使わない場合、リレーションやデフォルト値など
 
 ## 使い方
 
+> 新規プロジェクトなら `npx gassma bootstrap` 一発で、GAS のローカル開発環境（clasp + esbuild + TypeScript + GASsma）をまとめてセットアップできます。詳細は下の [bootstrap](#bootstrap) を参照してください。以下の手順は既存プロジェクトに GASsma を追加する場合のものです。
+
 1. GASsma-cli をインストール
 
 ```sh
@@ -22,7 +24,7 @@ npm i gassma
 npx gassma init
 ```
 
-上記コマンドを実行すると、`schema.prisma` と `gassma.config.ts` が生成されます。
+上記コマンドを実行すると、`gassma/schema.prisma` と `gassma.config.ts` が生成されます。
 
 3. データベース定義と設定を記述
 
@@ -31,14 +33,14 @@ npx gassma init
 ```prisma
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/gassma"
+  output   = "./src/generated/gassma"
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  name  String
-  email String?
-  age   Int
+  id      Int      @id @default(autoincrement())
+  name    String
+  email   String?
+  age     Int
   profile Profile?
 }
 
@@ -46,7 +48,7 @@ model Profile {
   id      Int     @id @default(autoincrement())
   bio     String?
   website String?
-  userId  Int     @id
+  userId  Int     @unique
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 ```
@@ -70,14 +72,16 @@ export default defineConfig({
 npx gassma generate
 ```
 
-`schemaClient.js` と `schemaClient.d.ts` が生成されます。
+generator ブロックの `output` ディレクトリに `schemaClient.js` と `schemaClient.d.ts` が生成されます。
+
+ファイル名はスキーマファイル名から決まります（`schema.prisma` -> `schemaClient.*`）。スキーマは同じディレクトリ内の複数の `.prisma` ファイルに分割することもでき、自動でマージされます。その場合のファイル名はディレクトリ名から決まります（`gassma/` -> `gassmaClient.*`）。
 
 5. 開発
 
 生成されたクライアントファイル（`schemaClient.js`）をインポートすることで、データベースのリレーションやその他の定義が組み込まれた状態で、Prisma と同じように GASsma で開発できます。
 
 ```ts
-import { GassmaClient } from "../generated/gassma2/schemaClient";
+import { GassmaClient } from "./generated/gassma/schemaClient";
 
 const gassma = new GassmaClient();
 
@@ -96,7 +100,7 @@ function myFunction() {
 
 ### init
 
-スキーマファイルと `gassma.config.ts` ファイルを生成します。
+`gassma/schema.prisma` と `gassma.config.ts` ファイルを生成します。
 
 #### オプション
 
@@ -114,6 +118,7 @@ function myFunction() {
 |名前|説明|
 |--|--|
 |`--schema <path>`|生成対象の `.prisma` ファイルのパス|
+|`--config <path>`|GASsma config ファイルのカスタムパス|
 |`--watch`|変更を監視して自動的に再生成|
 
 ### format
@@ -125,6 +130,7 @@ function myFunction() {
 |名前|説明|
 |--|--|
 |`--schema <path>`|フォーマット対象の `.prisma` ファイルのパス|
+|`--config <path>`|GASsma config ファイルのカスタムパス|
 |`--check`|ファイルを変更せずにフォーマット済みかチェック|
 
 ### validate
@@ -136,6 +142,70 @@ function myFunction() {
 |名前|説明|
 |--|--|
 |`--schema <path>`|バリデーション対象の `.prisma` ファイルのパス|
+|`--config <path>`|GASsma config ファイルのカスタムパス|
+
+### bootstrap
+
+GAS のローカル開発環境（clasp + esbuild + TypeScript + GASsma）を対話形式でセットアップします。clasp で Apps Script プロジェクトを作成し、GASsma ライブラリを登録し、プロジェクトファイル（`package.json`・`esbuild.mjs`・`tsconfig.json`・`.gitignore`・サンプルの `src/index.ts`）を生成して `gassma init` を実行し、依存関係をインストールします。
+
+```sh
+npx gassma bootstrap my-app   # my-app/ を作成してその中にセットアップ
+npx gassma bootstrap          # 最初にディレクトリを質問
+npx gassma bootstrap .        # カレントディレクトリにセットアップ
+```
+
+[clasp](https://github.com/google/clasp) が必要です: `npm install -g @google/clasp` の後、`clasp login` してください。詳細は [bootstrap リファレンス](https://akahoshi1421.github.io/gassma-reference/docs/reference/bootstrap)を参照してください。
+
+#### 引数
+
+|名前|説明|
+|--|--|
+|`[directory]`|セットアップ先のディレクトリ（カレントディレクトリなら `.`）。省略すると対話で質問|
+
+#### オプション
+
+|名前|説明|
+|--|--|
+|`--yes`|すべての質問にデフォルト値で回答|
+|`--skip-install`|依存関係のインストールをスキップ|
+|`--dry-run`|ファイルの書き込みやコマンド実行をせずに実行予定の内容を表示|
+
+### studio
+
+データソースのスプレッドシートをデフォルトブラウザで開きます。
+
+#### オプション
+
+|名前|説明|
+|--|--|
+|`--config <path>`|GASsma config ファイルのカスタムパス|
+
+### debug
+
+デバッグやバグ報告に役立つ情報（ランタイム・config・スキーマ・clasp など）を表示します。
+
+#### オプション
+
+|名前|説明|
+|--|--|
+|`--schema <path>`|調査対象の `.prisma` ファイルのパス|
+|`--config <path>`|GASsma config ファイルのカスタムパス|
+
+### version
+
+GASsma CLI の現在のバージョンを表示します。
+
+#### オプション
+
+|名前|説明|
+|--|--|
+|`--json`|バージョン情報を JSON で出力|
+
+## config ファイル
+
+config ファイルはカレントディレクトリから `gassma.config.{js,ts,mjs,cjs,mts,cts}`、次に `.config/gassma.{js,ts,mjs,cjs,mts,cts}` の順で探索されます。`--config <path>` で探索を上書きできます。`gassma/config` の `env("NAME")` ヘルパーで config ファイル内から環境変数を読み取れます。
+
+スキーマの generator ブロックでは `previewFeatures = ["strictUndefinedChecks"]` もサポートしています。詳細は [strictUndefinedChecks リファレンス](https://akahoshi1421.github.io/gassma-reference/docs/reference/config/strict-undefined-checks)を参照してください。
 
 ## 詳細リファレンス
 
