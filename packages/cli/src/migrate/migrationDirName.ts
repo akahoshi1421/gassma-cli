@@ -10,10 +10,17 @@ const formatMigrationTimestamp = (date: Date): string =>
     pad2(date.getUTCSeconds()),
   ].join("");
 
+const sanitizeMigrationName = (name: string): string =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
 const buildMigrationDirName = (date: Date, name?: string): string => {
   const timestamp = formatMigrationTimestamp(date);
-  if (name === undefined || name === "") return timestamp;
-  return `${timestamp}_${name}`;
+  const sanitized = sanitizeMigrationName(name ?? "");
+  if (sanitized === "") return timestamp;
+  return `${timestamp}_${sanitized}`;
 };
 
 export { buildMigrationDirName };

@@ -152,6 +152,40 @@ describe("migrate", () => {
     ]);
   });
 
+  it("should keep a name with path separators inside a single flat directory", () => {
+    writeSchema(schemaWithDatasource);
+
+    migrate({ output: "./out", name: "evil/sub" }, fixedDeps);
+
+    expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
+      "20260729040506_evil_sub",
+    ]);
+
+    const laterDeps = {
+      now: () => new Date(Date.UTC(2026, 6, 30, 0, 0, 0)),
+    };
+    migrate({ output: "./out" }, laterDeps);
+
+    expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
+      "20260729040506_evil_sub",
+    ]);
+  });
+
+  it("should keep a traversal name inside the migrations directory", () => {
+    writeSchema(schemaWithDatasource);
+
+    migrate({ output: "./out", name: "../../../outside-trail" }, fixedDeps);
+
+    expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
+      "20260729040506_outside_trail",
+    ]);
+    expect(fs.readdirSync("gassma").sort()).toEqual([
+      "migrations",
+      "schema.prisma",
+    ]);
+    expect(fs.existsSync("outside-trail")).toBe(false);
+  });
+
   it("should not record a second migration when nothing changed", () => {
     writeSchema(schemaWithDatasource);
     migrate({ output: "./out" }, fixedDeps);
