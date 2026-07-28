@@ -90,6 +90,12 @@ describe("bootstrap", () => {
         "utf-8",
       ),
     );
+    expect(fs.readFileSync(path.join(tmpDir, "AGENTS.md"), "utf-8")).toBe(
+      fs.readFileSync(
+        path.resolve(__dirname, "../../../templates/AGENTS.md.template"),
+        "utf-8",
+      ),
+    );
     expect(fs.existsSync(path.join(tmpDir, "src", "index.ts"))).toBe(true);
     expect(fs.existsSync(path.join(tmpDir, "dist", "appsscript.json"))).toBe(
       true,
@@ -218,6 +224,7 @@ describe("bootstrap", () => {
     expect(planNote?.message).toContain("create directory gassma-project");
     expect(planNote?.message).toContain("clasp create-script");
     expect(planNote?.message).toContain("write gassma-project/package.json");
+    expect(planNote?.message).toContain("write gassma-project/AGENTS.md");
     expect(planNote?.message).toContain("gassma init");
     expect(
       prompter.infos.every((message) => message.startsWith("[dry-run] ")),

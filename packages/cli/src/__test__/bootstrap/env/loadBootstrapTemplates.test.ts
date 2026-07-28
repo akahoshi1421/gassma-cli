@@ -6,6 +6,7 @@ describe("loadBootstrapTemplates", () => {
     const templates = loadBootstrapTemplates();
 
     expect(templates.gitignore).toContain(".clasp.json");
+    expect(templates.agentsMd).toContain("# GAS project (Clasp + GASsma)");
     expect(templates.tsconfig).toContain("google-apps-script");
     expect(templates.packageJson).toContain('"gassma"');
     expect(templates.esbuild.export).toContain("gasEsbuildPlugin");

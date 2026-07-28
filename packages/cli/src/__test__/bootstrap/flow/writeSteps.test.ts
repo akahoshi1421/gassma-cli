@@ -30,6 +30,42 @@ describe("projectFilesStep", () => {
     expect(files.has(path.join(CWD, "esbuild.mjs"))).toBe(true);
     expect(files.has(path.join(CWD, "tsconfig.json"))).toBe(true);
     expect(files.has(path.join(CWD, ".gitignore"))).toBe(true);
+    expect(files.has(path.join(CWD, "AGENTS.md"))).toBe(true);
+  });
+
+  it("should write an AGENTS.md that matches the generated scripts", async () => {
+    const { files, store } = createMemoryStore({});
+    const deps = createTestDeps({ store });
+
+    await projectFilesStep.run(baseContext(), deps);
+
+    const content = files.get(path.join(CWD, "AGENTS.md")) ?? "";
+    const pkg = JSON.parse(files.get(path.join(CWD, "package.json")) ?? "{}");
+    expect(content).toContain("# GAS project (Clasp + GASsma)");
+    expect(content).toContain("npx gassma generate");
+    expect(content).toContain("npm run build");
+    expect(content).toContain("npm run deploy");
+    expect(pkg.scripts.build).toBeDefined();
+    expect(pkg.scripts.deploy).toBeDefined();
+    expect(content).toContain("gassma/schema.prisma");
+    expect(content).toContain("src/generated/");
+    expect(content).toContain(".clasp.json");
+    expect(content).toContain("dist/appsscript.json");
+    expect(content).toContain(
+      "https://akahoshi1421.github.io/gassma-reference/llms.txt",
+    );
+  });
+
+  it("should not overwrite an existing AGENTS.md", async () => {
+    const agentsPath = path.join(CWD, "AGENTS.md");
+    const { files, store } = createMemoryStore({ [agentsPath]: "my notes" });
+    const prompter = createFakePrompter();
+    const deps = createTestDeps({ store, prompter });
+
+    await projectFilesStep.run(baseContext(), deps);
+
+    expect(files.get(agentsPath)).toBe("my notes");
+    expect(prompter.infos.join(" ")).toContain("AGENTS.md");
   });
 
   it("should sanitize the directory name for the package name", async () => {
