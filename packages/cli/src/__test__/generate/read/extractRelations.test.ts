@@ -212,6 +212,126 @@ model Apple {
     });
   });
 
+  it("should name the through sheet after the named relation", () => {
+    const schema = `
+model User {
+  id         Int    @id
+  follows    User[] @relation("Follows")
+  followedBy User[] @relation("Follows")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.User.follows.through).toEqual({
+      sheet: "_Follows",
+      field: "userBId",
+      reference: "userAId",
+    });
+    expect(result.User.followedBy.through).toEqual({
+      sheet: "_Follows",
+      field: "userAId",
+      reference: "userBId",
+    });
+  });
+
+  it("should split two named relations on the same pair into distinct sheets", () => {
+    const schema = `
+model User {
+  id         Int    @id
+  follows    User[] @relation("Follows")
+  followedBy User[] @relation("Follows")
+  blocks     User[] @relation("Blocks")
+  blockedBy  User[] @relation("Blocks")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.User.follows.through).toEqual({
+      sheet: "_Follows",
+      field: "userBId",
+      reference: "userAId",
+    });
+    expect(result.User.followedBy.through).toEqual({
+      sheet: "_Follows",
+      field: "userAId",
+      reference: "userBId",
+    });
+    expect(result.User.blocks.through).toEqual({
+      sheet: "_Blocks",
+      field: "userBId",
+      reference: "userAId",
+    });
+    expect(result.User.blockedBy.through).toEqual({
+      sheet: "_Blocks",
+      field: "userAId",
+      reference: "userBId",
+    });
+  });
+
+  it("should keep model-name columns for a named non-self manyToMany", () => {
+    const schema = `
+model Post {
+  id   Int   @id
+  tags Tag[] @relation("PostTags")
+}
+
+model Tag {
+  id    Int    @id
+  posts Post[] @relation("PostTags")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Post.tags.through).toEqual({
+      sheet: "_PostTags",
+      field: "postId",
+      reference: "tagId",
+    });
+    expect(result.Tag.posts.through).toEqual({
+      sheet: "_PostTags",
+      field: "tagId",
+      reference: "postId",
+    });
+  });
+
+  it("should split two named relations between two models into distinct sheets", () => {
+    const schema = `
+model Post {
+  id       Int   @id
+  tags     Tag[] @relation("PostTags")
+  featured Tag[] @relation("FeaturedTags")
+}
+
+model Tag {
+  id         Int    @id
+  posts      Post[] @relation("PostTags")
+  featuredIn Post[] @relation("FeaturedTags")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Post.tags.through).toEqual({
+      sheet: "_PostTags",
+      field: "postId",
+      reference: "tagId",
+    });
+    expect(result.Post.featured.through).toEqual({
+      sheet: "_FeaturedTags",
+      field: "postId",
+      reference: "tagId",
+    });
+    expect(result.Tag.posts.through).toEqual({
+      sheet: "_PostTags",
+      field: "tagId",
+      reference: "postId",
+    });
+    expect(result.Tag.featuredIn.through).toEqual({
+      sheet: "_FeaturedTags",
+      field: "tagId",
+      reference: "postId",
+    });
+  });
+
   it("should extract self-referencing oneToMany relation", () => {
     const schema = `
 model Category {
@@ -254,7 +374,7 @@ model Tag {
       field: "id",
       reference: "id",
       through: {
-        sheet: "_TagToTag",
+        sheet: "_TagRelations",
         field: "tagAId",
         reference: "tagBId",
       },
@@ -265,7 +385,7 @@ model Tag {
       field: "id",
       reference: "id",
       through: {
-        sheet: "_TagToTag",
+        sheet: "_TagRelations",
         field: "tagBId",
         reference: "tagAId",
       },
@@ -283,12 +403,12 @@ model Tag {
     const result = extractRelations(schema);
 
     expect(result.Tag.related.through).toEqual({
-      sheet: "_TagToTag",
+      sheet: "_TagRelations",
       field: "tagAId",
       reference: "tagBId",
     });
     expect(result.Tag.relatedBy.through).toEqual({
-      sheet: "_TagToTag",
+      sheet: "_TagRelations",
       field: "tagBId",
       reference: "tagAId",
     });
@@ -308,12 +428,12 @@ model Node {
     const result = extractRelations(schema);
 
     expect(result.Node.linked.through).toEqual({
-      sheet: "_NodeToNode",
+      sheet: "_Links",
       field: "nodeAId",
       reference: "nodeBId",
     });
     expect(result.Node.linkedBy.through).toEqual({
-      sheet: "_NodeToNode",
+      sheet: "_Links",
       field: "nodeBId",
       reference: "nodeAId",
     });
@@ -339,12 +459,12 @@ model Node {
     const result = extractRelations(schema);
 
     expect(result.Node.linked.through).toEqual({
-      sheet: "_NodeToNode",
+      sheet: "_Links",
       field: "nodeAId",
       reference: "nodeBId",
     });
     expect(result.Node.linkedBy.through).toEqual({
-      sheet: "_NodeToNode",
+      sheet: "_Links",
       field: "nodeBId",
       reference: "nodeAId",
     });
