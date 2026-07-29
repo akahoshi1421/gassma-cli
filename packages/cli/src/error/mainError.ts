@@ -58,6 +58,16 @@ class MigrateOutputDirError extends Error {
   }
 }
 
+class ThroughSheetConflictError extends Error {
+  constructor(sheetName: string, firstPair: string, secondPair: string) {
+    super(
+      `GASsmaThroughSheetConflictError: the through sheet "${sheetName}" would be shared by two different model pairs: ${firstPair} and ${secondPair}.\n` +
+        "An implicit many-to-many relation needs a through sheet of its own, so the two pairs would overwrite each other.\n" +
+        'Please give one of them a different relation name, e.g. @relation("OtherName") on both sides.',
+    );
+  }
+}
+
 export {
   ArgumentError,
   NoModelsError,
@@ -66,4 +76,5 @@ export {
   GassmaConfigEnvError,
   GassmaConfigLoadError,
   MigrateOutputDirError,
+  ThroughSheetConflictError,
 };

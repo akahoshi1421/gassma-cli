@@ -3,6 +3,7 @@ import {
   findFirstAttribute,
 } from "@loancrate/prisma-schema-parser";
 import type { ModelDeclaration } from "@loancrate/prisma-schema-parser";
+import { assertUniqueThroughSheets } from "./assertUniqueThroughSheets";
 import { detectImplicitManyToMany } from "./detectImplicitManyToMany";
 import {
   getRelationName,
@@ -124,6 +125,7 @@ const extractRelations = (schemaText: string): RelationsConfig => {
   const result = buildRelationsConfig(fieldsideRelations, models);
 
   detectImplicitManyToMany(models, result);
+  assertUniqueThroughSheets(result);
 
   return result;
 };
