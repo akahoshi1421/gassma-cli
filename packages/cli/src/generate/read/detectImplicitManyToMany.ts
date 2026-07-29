@@ -4,7 +4,7 @@ import type {
   ModelDeclaration,
 } from "@loancrate/prisma-schema-parser";
 import type { RelationsConfig } from "./extractRelations";
-import { getFieldReferences } from "./relationHelpers";
+import { getFieldReferences, getRelationName } from "./relationHelpers";
 
 const toLowercaseFirst = (s: string): string =>
   s.charAt(0).toLowerCase() + s.slice(1);
@@ -13,12 +13,15 @@ const isSelfSideA = (
   model: ModelDeclaration,
   member: FieldDeclaration,
 ): boolean => {
+  const relationName = getRelationName(member);
   const partner = model.members.find((m): m is FieldDeclaration => {
     if (m.kind !== "field") return false;
     if (m === member) return false;
     if (m.type.kind !== "list") return false;
     const t = m.type.type;
-    return t.kind === "typeId" && t.name.value === model.name.value;
+    if (t.kind !== "typeId") return false;
+    if (t.name.value !== model.name.value) return false;
+    return getRelationName(m) === relationName;
   });
   if (!partner) return true;
   return member.name.value < partner.name.value;
