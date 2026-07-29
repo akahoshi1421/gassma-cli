@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { ThroughSheetConflictError } from "../../../error/mainError";
 import { extractRelations } from "../../../generate/read/extractRelations";
 
 describe("extractRelations", () => {
@@ -530,6 +531,100 @@ model Label {
       field: "labelId",
       reference: "postId",
     });
+  });
+
+  it("should reject one through sheet shared by two different model pairs", () => {
+    const schema = `
+model Post {
+  id   Int   @id
+  tags Tag[] @relation("Links")
+}
+
+model Tag {
+  id    Int    @id
+  posts Post[] @relation("Links")
+}
+
+model User {
+  id     Int     @id
+  groups Group[] @relation("Links")
+}
+
+model Group {
+  id    Int    @id
+  users User[] @relation("Links")
+}
+`;
+    expect(() => extractRelations(schema)).toThrow(ThroughSheetConflictError);
+    expect(() => extractRelations(schema)).toThrow(/_Links/);
+    expect(() => extractRelations(schema)).toThrow(/Post <-> Tag/);
+    expect(() => extractRelations(schema)).toThrow(/Group <-> User/);
+  });
+
+  it("should reject a relation name colliding with an unnamed through sheet", () => {
+    const schema = `
+model Post {
+  id   Int   @id
+  tags Tag[]
+}
+
+model Tag {
+  id    Int    @id
+  posts Post[]
+}
+
+model Article {
+  id   Int   @id
+  refs Ref[] @relation("PostToTag")
+}
+
+model Ref {
+  id       Int       @id
+  articles Article[] @relation("PostToTag")
+}
+`;
+    expect(() => extractRelations(schema)).toThrow(ThroughSheetConflictError);
+    expect(() => extractRelations(schema)).toThrow(/_PostToTag/);
+    expect(() => extractRelations(schema)).toThrow(/Article <-> Ref/);
+  });
+
+  it("should accept both sides of one relation pointing at the same through sheet", () => {
+    const schema = `
+model Post {
+  id   Int   @id
+  tags Tag[] @relation("PostTags")
+}
+
+model Tag {
+  id    Int    @id
+  posts Post[] @relation("PostTags")
+}
+`;
+    expect(() => extractRelations(schema)).not.toThrow();
+  });
+
+  it("should accept two self-referencing fields sharing one through sheet", () => {
+    const schema = `
+model Tag {
+  id        Int   @id
+  related   Tag[] @relation("TagRelations")
+  relatedBy Tag[] @relation("TagRelations")
+}
+`;
+    expect(() => extractRelations(schema)).not.toThrow();
+  });
+
+  it("should accept two named relations on the same model pair", () => {
+    const schema = `
+model User {
+  id         Int    @id
+  follows    User[] @relation("Follows")
+  followedBy User[] @relation("Follows")
+  blocks     User[] @relation("Blocks")
+  blockedBy  User[] @relation("Blocks")
+}
+`;
+    expect(() => extractRelations(schema)).not.toThrow();
   });
 
   it("should extract self-referencing oneToMany relation", () => {
