@@ -1,0 +1,3 @@
+function gassmaMigrate() {
+  Gassma.migrateSheets({});
+}

@@ -6,6 +6,7 @@ import { format } from "./format/formatCommand";
 import { generate } from "./generate/generate";
 import { watchGenerate } from "./generate/watchGenerate";
 import { init } from "./init/initCommand";
+import { migrate } from "./migrate/migrateCommand";
 import { studioCommand } from "./studio/studioCommand";
 import { validate } from "./validate/validateCommand";
 import { getVersion } from "./version/getVersion";
@@ -57,6 +58,27 @@ program
       console.error("Some files are not formatted.");
       process.exit(1);
     }
+  });
+
+program
+  .command("migrate")
+  .description(
+    "Generate a GAS function that syncs spreadsheet sheets with your schema",
+  )
+  .option("--name <name>", "Name for the new migration")
+  .option(
+    "--output <dir>",
+    "Directory to write gassma-migration.js (defaults to rootDir in .clasp.json)",
+  )
+  .option("--schema <path>", "Path to a specific .prisma file to migrate from")
+  .option("--config <path>", "Custom path to your GASsma config file")
+  .action((options) => {
+    migrate({
+      name: options.name,
+      output: options.output,
+      schema: options.schema,
+      config: options.config,
+    });
   });
 
 program
