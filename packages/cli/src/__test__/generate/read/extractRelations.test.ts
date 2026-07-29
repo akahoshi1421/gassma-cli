@@ -332,6 +332,206 @@ model Tag {
     });
   });
 
+  it("should name the through sheet after a name argument relation", () => {
+    const schema = `
+model Post {
+  id   Int   @id
+  tags Tag[] @relation(name: "PostTags")
+}
+
+model Tag {
+  id    Int    @id
+  posts Post[] @relation(name: "PostTags")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Post.tags.through).toEqual({
+      sheet: "_PostTags",
+      field: "postId",
+      reference: "tagId",
+    });
+    expect(result.Tag.posts.through).toEqual({
+      sheet: "_PostTags",
+      field: "tagId",
+      reference: "postId",
+    });
+  });
+
+  it("should pair self-referencing sides declared with a name argument relation", () => {
+    const schema = `
+model User {
+  id         Int    @id
+  follows    User[] @relation(name: "Follows")
+  followedBy User[] @relation(name: "Follows")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.User.follows.through).toEqual({
+      sheet: "_Follows",
+      field: "userBId",
+      reference: "userAId",
+    });
+    expect(result.User.followedBy.through).toEqual({
+      sheet: "_Follows",
+      field: "userAId",
+      reference: "userBId",
+    });
+  });
+
+  it("should split two name argument relations on the same pair into distinct sheets", () => {
+    const schema = `
+model User {
+  id         Int    @id
+  follows    User[] @relation(name: "Follows")
+  followedBy User[] @relation(name: "Follows")
+  blocks     User[] @relation(name: "Blocks")
+  blockedBy  User[] @relation(name: "Blocks")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.User.follows.through).toEqual({
+      sheet: "_Follows",
+      field: "userBId",
+      reference: "userAId",
+    });
+    expect(result.User.followedBy.through).toEqual({
+      sheet: "_Follows",
+      field: "userAId",
+      reference: "userBId",
+    });
+    expect(result.User.blocks.through).toEqual({
+      sheet: "_Blocks",
+      field: "userBId",
+      reference: "userAId",
+    });
+    expect(result.User.blockedBy.through).toEqual({
+      sheet: "_Blocks",
+      field: "userAId",
+      reference: "userBId",
+    });
+  });
+
+  it("should split two name argument relations between two models into distinct sheets", () => {
+    const schema = `
+model Post {
+  id       Int   @id
+  tags     Tag[] @relation(name: "PostTags")
+  featured Tag[] @relation(name: "FeaturedTags")
+}
+
+model Tag {
+  id         Int    @id
+  posts      Post[] @relation(name: "PostTags")
+  featuredIn Post[] @relation(name: "FeaturedTags")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Post.tags.through).toEqual({
+      sheet: "_PostTags",
+      field: "postId",
+      reference: "tagId",
+    });
+    expect(result.Post.featured.through).toEqual({
+      sheet: "_FeaturedTags",
+      field: "postId",
+      reference: "tagId",
+    });
+    expect(result.Tag.posts.through).toEqual({
+      sheet: "_PostTags",
+      field: "tagId",
+      reference: "postId",
+    });
+    expect(result.Tag.featuredIn.through).toEqual({
+      sheet: "_FeaturedTags",
+      field: "tagId",
+      reference: "postId",
+    });
+  });
+
+  it("should read the relation name regardless of argument order", () => {
+    const schema = `
+model User {
+  id            Int    @id
+  writtenPosts  Post[] @relation(name: "WrittenPosts")
+  favoritePosts Post[] @relation(name: "FavoritePosts")
+}
+
+model Post {
+  id            Int   @id
+  author        User  @relation(fields: [authorId], references: [id], name: "WrittenPosts")
+  authorId      Int
+  favoritedBy   User? @relation(name: "FavoritePosts", fields: [favoritedById], references: [id])
+  favoritedById Int?
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.User.writtenPosts).toEqual({
+      type: "oneToMany",
+      to: "Post",
+      field: "id",
+      reference: "authorId",
+    });
+    expect(result.User.favoritePosts).toEqual({
+      type: "oneToMany",
+      to: "Post",
+      field: "id",
+      reference: "favoritedById",
+    });
+    expect(result.Post.author).toEqual({
+      type: "manyToOne",
+      to: "User",
+      field: "authorId",
+      reference: "id",
+    });
+    expect(result.Post.favoritedBy).toEqual({
+      type: "manyToOne",
+      to: "User",
+      field: "favoritedById",
+      reference: "id",
+    });
+  });
+
+  it("should keep shorthand and unnamed through sheets when mixed with name arguments", () => {
+    const schema = `
+model Post {
+  id       Int     @id
+  tags     Tag[]   @relation(name: "PostTags")
+  featured Tag[]   @relation("FeaturedTags")
+  labels   Label[]
+}
+
+model Tag {
+  id         Int    @id
+  posts      Post[] @relation(name: "PostTags")
+  featuredIn Post[] @relation("FeaturedTags")
+}
+
+model Label {
+  id    Int    @id
+  posts Post[]
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Post.tags.through?.sheet).toBe("_PostTags");
+    expect(result.Post.featured.through?.sheet).toBe("_FeaturedTags");
+    expect(result.Post.labels.through).toEqual({
+      sheet: "_LabelToPost",
+      field: "postId",
+      reference: "labelId",
+    });
+    expect(result.Label.posts.through).toEqual({
+      sheet: "_LabelToPost",
+      field: "labelId",
+      reference: "postId",
+    });
+  });
+
   it("should extract self-referencing oneToMany relation", () => {
     const schema = `
 model Category {

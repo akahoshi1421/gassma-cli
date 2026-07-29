@@ -262,6 +262,36 @@ model Tag {
     ]);
   });
 
+  it("should append through sheets for name argument, shorthand and unnamed relations", () => {
+    const schema = `
+model Post {
+  id       Int     @id
+  tags     Tag[]   @relation(name: "PostTags")
+  featured Tag[]   @relation("FeaturedTags")
+  labels   Label[]
+}
+
+model Tag {
+  id         Int    @id
+  posts      Post[] @relation(name: "PostTags")
+  featuredIn Post[] @relation("FeaturedTags")
+}
+
+model Label {
+  id    Int    @id
+  posts Post[]
+}
+`;
+    expect(buildMigrateModels(schema)).toEqual([
+      { name: "Post", columns: ["id"] },
+      { name: "Tag", columns: ["id"] },
+      { name: "Label", columns: ["id"] },
+      { name: "_PostTags", columns: ["postId", "tagId"] },
+      { name: "_FeaturedTags", columns: ["postId", "tagId"] },
+      { name: "_LabelToPost", columns: ["labelId", "postId"] },
+    ]);
+  });
+
   it("should not create a through sheet for a self-referencing one-to-many", () => {
     const schema = `
 model Category {
