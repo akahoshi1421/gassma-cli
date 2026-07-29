@@ -294,6 +294,62 @@ model Tag {
     });
   });
 
+  it("should pair self-referencing manyToMany fields by relation name", () => {
+    const schema = `
+model Node {
+  id       Int    @id
+  parentId Int?
+  parent   Node?  @relation("Tree", fields: [parentId], references: [id])
+  children Node[] @relation("Tree")
+  linked   Node[] @relation("Links")
+  linkedBy Node[] @relation("Links")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Node.linked.through).toEqual({
+      sheet: "_NodeToNode",
+      field: "nodeAId",
+      reference: "nodeBId",
+    });
+    expect(result.Node.linkedBy.through).toEqual({
+      sheet: "_NodeToNode",
+      field: "nodeBId",
+      reference: "nodeAId",
+    });
+    expect(result.Node.children).toEqual({
+      type: "oneToMany",
+      to: "Node",
+      field: "id",
+      reference: "parentId",
+    });
+  });
+
+  it("should keep A/B sides stable regardless of unrelated field positions", () => {
+    const schema = `
+model Node {
+  id       Int    @id
+  linked   Node[] @relation("Links")
+  linkedBy Node[] @relation("Links")
+  parentId Int?
+  parent   Node?  @relation("Tree", fields: [parentId], references: [id])
+  children Node[] @relation("Tree")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Node.linked.through).toEqual({
+      sheet: "_NodeToNode",
+      field: "nodeAId",
+      reference: "nodeBId",
+    });
+    expect(result.Node.linkedBy.through).toEqual({
+      sheet: "_NodeToNode",
+      field: "nodeBId",
+      reference: "nodeAId",
+    });
+  });
+
   it("should use A/B columns when only one self-referencing list field exists", () => {
     const schema = `
 model Tag {
