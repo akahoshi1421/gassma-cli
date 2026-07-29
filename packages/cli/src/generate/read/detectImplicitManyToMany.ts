@@ -44,6 +44,18 @@ const buildThroughColumns = (
     : { field: `${base}BId`, reference: `${base}AId` };
 };
 
+const buildThroughSheet = (
+  modelA: ModelDeclaration,
+  member: FieldDeclaration,
+  targetName: string,
+): string => {
+  const relationName = getRelationName(member);
+  if (relationName) return `_${relationName}`;
+
+  const sorted = [modelA.name.value, targetName].sort();
+  return `_${sorted[0]}To${sorted[1]}`;
+};
+
 const detectImplicitManyToMany = (
   models: ModelDeclaration[],
   result: RelationsConfig,
@@ -76,9 +88,6 @@ const detectImplicitManyToMany = (
       });
       if (!inverseField || inverseField.kind !== "field") return;
 
-      const sorted = [modelA.name.value, targetName].sort();
-      const throughSheet = `_${sorted[0]}To${sorted[1]}`;
-
       if (!result[modelA.name.value]) result[modelA.name.value] = {};
       result[modelA.name.value][member.name.value] = {
         type: "manyToMany",
@@ -86,7 +95,7 @@ const detectImplicitManyToMany = (
         field: "id",
         reference: "id",
         through: {
-          sheet: throughSheet,
+          sheet: buildThroughSheet(modelA, member, targetName),
           ...buildThroughColumns(modelA, member, targetName),
         },
       };

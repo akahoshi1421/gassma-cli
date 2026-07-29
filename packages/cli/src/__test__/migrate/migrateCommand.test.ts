@@ -3,6 +3,7 @@ import os from "os";
 import path from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GASSMA_LIBRARY } from "../../bootstrap/const/gassmaLibrary";
+import { ThroughSheetConflictError } from "../../error/mainError";
 import { migrate } from "../../migrate/migrateCommand";
 
 const schemaWithDatasource = `
@@ -157,7 +158,84 @@ model Tag {
       "utf-8",
     );
     expect(content).toContain(
-      '{ name: "_TagToTag", columns: ["tagAId", "tagBId"] }',
+      '{ name: "_TagRelations", columns: ["tagAId", "tagBId"] }',
+    );
+    expect(content).toContain(
+      '{ name: "_LabelToPost", columns: ["labelId", "postId"] }',
+    );
+  });
+
+  it("should fail when one through sheet is shared by two different model pairs", () => {
+    writeSchema(`
+datasource db {
+  provider = "gassma"
+  url      = "https://docs.google.com/spreadsheets/d/abc123/edit"
+}
+
+model Post {
+  id   Int   @id
+  tags Tag[] @relation("Links")
+}
+
+model Tag {
+  id    Int    @id
+  posts Post[] @relation("Links")
+}
+
+model User {
+  id     Int     @id
+  groups Group[] @relation("Links")
+}
+
+model Group {
+  id    Int    @id
+  users User[] @relation("Links")
+}
+`);
+
+    expect(() => migrate({ output: "./out" }, fixedDeps)).toThrow(
+      ThroughSheetConflictError,
+    );
+    expect(() => migrate({ output: "./out" }, fixedDeps)).toThrow(/_Links/);
+  });
+
+  it("should write one through sheet per named relation while keeping unnamed names", () => {
+    writeSchema(`
+datasource db {
+  provider = "gassma"
+  url      = "https://docs.google.com/spreadsheets/d/abc123/edit"
+}
+
+model Post {
+  id     Int     @id
+  labels Label[]
+}
+
+model Label {
+  id    Int    @id
+  posts Post[]
+}
+
+model User {
+  id         Int    @id
+  follows    User[] @relation("Follows")
+  followedBy User[] @relation("Follows")
+  blocks     User[] @relation("Blocks")
+  blockedBy  User[] @relation("Blocks")
+}
+`);
+
+    migrate({ output: "./out" }, fixedDeps);
+
+    const content = fs.readFileSync(
+      path.join("out", "gassma-migration.js"),
+      "utf-8",
+    );
+    expect(content).toContain(
+      '{ name: "_Follows", columns: ["userAId", "userBId"] }',
+    );
+    expect(content).toContain(
+      '{ name: "_Blocks", columns: ["userAId", "userBId"] }',
     );
     expect(content).toContain(
       '{ name: "_LabelToPost", columns: ["labelId", "postId"] }',

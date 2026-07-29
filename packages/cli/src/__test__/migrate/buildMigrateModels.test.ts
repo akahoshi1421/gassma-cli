@@ -222,7 +222,73 @@ model Tag {
 `;
     expect(buildMigrateModels(schema)).toEqual([
       { name: "Tag", columns: ["id"] },
-      { name: "_TagToTag", columns: ["tagAId", "tagBId"] },
+      { name: "_TagRelations", columns: ["tagAId", "tagBId"] },
+    ]);
+  });
+
+  it("should append one through sheet per named relation on the same pair", () => {
+    const schema = `
+model User {
+  id         Int    @id
+  follows    User[] @relation("Follows")
+  followedBy User[] @relation("Follows")
+  blocks     User[] @relation("Blocks")
+  blockedBy  User[] @relation("Blocks")
+}
+`;
+    expect(buildMigrateModels(schema)).toEqual([
+      { name: "User", columns: ["id"] },
+      { name: "_Follows", columns: ["userAId", "userBId"] },
+      { name: "_Blocks", columns: ["userAId", "userBId"] },
+    ]);
+  });
+
+  it("should keep model-name columns for a named through sheet between two models", () => {
+    const schema = `
+model Post {
+  id   Int   @id
+  tags Tag[] @relation("PostTags")
+}
+
+model Tag {
+  id    Int    @id
+  posts Post[] @relation("PostTags")
+}
+`;
+    expect(buildMigrateModels(schema)).toEqual([
+      { name: "Post", columns: ["id"] },
+      { name: "Tag", columns: ["id"] },
+      { name: "_PostTags", columns: ["postId", "tagId"] },
+    ]);
+  });
+
+  it("should append through sheets for name argument, shorthand and unnamed relations", () => {
+    const schema = `
+model Post {
+  id       Int     @id
+  tags     Tag[]   @relation(name: "PostTags")
+  featured Tag[]   @relation("FeaturedTags")
+  labels   Label[]
+}
+
+model Tag {
+  id         Int    @id
+  posts      Post[] @relation(name: "PostTags")
+  featuredIn Post[] @relation("FeaturedTags")
+}
+
+model Label {
+  id    Int    @id
+  posts Post[]
+}
+`;
+    expect(buildMigrateModels(schema)).toEqual([
+      { name: "Post", columns: ["id"] },
+      { name: "Tag", columns: ["id"] },
+      { name: "Label", columns: ["id"] },
+      { name: "_PostTags", columns: ["postId", "tagId"] },
+      { name: "_FeaturedTags", columns: ["postId", "tagId"] },
+      { name: "_LabelToPost", columns: ["labelId", "postId"] },
     ]);
   });
 
