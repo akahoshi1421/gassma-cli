@@ -6,6 +6,9 @@ type BootstrapTemplates = {
   agentsMd: string;
   tsconfig: string;
   packageJson: string;
+  oxlintrc: string;
+  eslintConfig: string;
+  prettierrc: string;
   esbuild: Record<FunctionStyle, string>;
   sampleIndex: Record<FunctionStyle, string>;
 };
@@ -17,6 +20,9 @@ const loadBootstrapTemplates = (
   agentsMd: readTemplate("AGENTS.md.template", startDir),
   tsconfig: readTemplate("tsconfig.json.template", startDir),
   packageJson: readTemplate("package.json.template", startDir),
+  oxlintrc: readTemplate(".oxlintrc.json.template", startDir),
+  eslintConfig: readTemplate("eslint.config.mjs.template", startDir),
+  prettierrc: readTemplate(".prettierrc.template", startDir),
   esbuild: {
     export: readTemplate("esbuild.export.mjs.template", startDir),
     global: readTemplate("esbuild.global.mjs.template", startDir),

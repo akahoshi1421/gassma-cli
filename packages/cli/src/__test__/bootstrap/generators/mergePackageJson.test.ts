@@ -7,6 +7,7 @@ const desired = patchPackageJson(readTemplate("package.json.template"), {
   name: "my-app",
   gassmaVersion: "1.1.0",
   style: "export",
+  linter: "oxlint",
 });
 
 const parse = (text: string) => JSON.parse(text);

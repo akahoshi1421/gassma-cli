@@ -14,4 +14,18 @@ describe("loadBootstrapTemplates", () => {
     expect(templates.sampleIndex.export).toContain("export const main");
     expect(templates.sampleIndex.global).toContain("global.main = main;");
   });
+
+  it("should load the linter templates", () => {
+    const templates = loadBootstrapTemplates();
+
+    expect(JSON.parse(templates.oxlintrc)).toEqual({
+      plugins: ["typescript"],
+      categories: { correctness: "error" },
+      ignorePatterns: ["dist/**", "src/generated/**"],
+    });
+    expect(templates.eslintConfig).toContain("typescript-eslint");
+    expect(templates.eslintConfig).toContain("eslint-config-prettier");
+    expect(templates.eslintConfig).toContain("src/generated/**");
+    expect(() => JSON.parse(templates.prettierrc)).not.toThrow();
+  });
 });

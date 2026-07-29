@@ -14,11 +14,18 @@ type PromptAnswers = {
   select?: Record<string, string>;
 };
 
+type SelectCall = {
+  message: string;
+  choices: SelectChoice<string>[];
+  defaultValue: string;
+};
+
 type FakePrompter = Prompter & {
   notes: { title: string; message: string }[];
   infos: string[];
   warns: string[];
   outros: string[];
+  selects: SelectCall[];
 };
 
 const createFakePrompter = (answers: PromptAnswers = {}): FakePrompter => {
@@ -26,12 +33,14 @@ const createFakePrompter = (answers: PromptAnswers = {}): FakePrompter => {
   const infos: string[] = [];
   const warns: string[] = [];
   const outros: string[] = [];
+  const selects: SelectCall[] = [];
 
   return {
     notes,
     infos,
     warns,
     outros,
+    selects,
     intro: () => undefined,
     outro: (message) => {
       outros.push(message);
@@ -54,6 +63,7 @@ const createFakePrompter = (answers: PromptAnswers = {}): FakePrompter => {
       choices: SelectChoice<T>[],
       defaultValue: T,
     ) => {
+      selects.push({ message, choices, defaultValue });
       const wanted = answers.select?.[message];
       const matched = choices.find((choice) => choice.value === wanted);
       return Promise.resolve(
@@ -132,4 +142,4 @@ export {
   createScriptedExec,
   createTestDeps,
 };
-export type { ExecCall, FakePrompter, PromptAnswers };
+export type { ExecCall, FakePrompter, PromptAnswers, SelectCall };

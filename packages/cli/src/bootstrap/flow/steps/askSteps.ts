@@ -52,6 +52,22 @@ const styleStep: BootstrapStep = {
   },
 };
 
+const linterStep: BootstrapStep = {
+  id: "linter",
+  run: async (context, deps) => {
+    const linter = await deps.prompter.select(
+      "Linter and formatter setup?",
+      [
+        { value: "oxlint", label: "oxlint + oxfmt", hint: "recommended" },
+        { value: "eslint", label: "eslint + prettier" },
+        { value: "none", label: "none" },
+      ],
+      "oxlint",
+    );
+    return { ...context, linter };
+  },
+};
+
 const sampleStep: BootstrapStep = {
   id: "sample",
   run: async (context, deps) => ({
@@ -76,4 +92,11 @@ const installPromptStep: BootstrapStep = {
   },
 };
 
-export { installPromptStep, sampleStep, sheetsStep, styleStep, titleStep };
+export {
+  installPromptStep,
+  linterStep,
+  sampleStep,
+  sheetsStep,
+  styleStep,
+  titleStep,
+};

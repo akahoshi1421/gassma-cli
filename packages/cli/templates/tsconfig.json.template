@@ -1,13 +1,7 @@
 {
   "compilerOptions": {
-    "lib": [
-      "esnext"
-    ],
-    "types": [
-      "google-apps-script"
-    ]
+    "lib": ["esnext"],
+    "types": ["google-apps-script"]
   },
-  "include": [
-    "./src"
-  ]
+  "include": ["./src"]
 }

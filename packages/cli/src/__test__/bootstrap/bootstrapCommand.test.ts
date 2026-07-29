@@ -114,6 +114,92 @@ describe("bootstrap", () => {
     expect(commands.some((c) => c === "npm i")).toBe(true);
   });
 
+  it("should default to the oxlint setup with --yes", async () => {
+    const { exec } = createClaspExec();
+    const prompter = createFakePrompter();
+
+    await bootstrap(
+      { yes: true, skipInstall: true, directory: "." },
+      { exec, prompter, isTty: true },
+    );
+
+    expect(fs.readFileSync(path.join(tmpDir, ".oxlintrc.json"), "utf-8")).toBe(
+      fs.readFileSync(
+        path.resolve(__dirname, "../../../templates/.oxlintrc.json.template"),
+        "utf-8",
+      ),
+    );
+    expect(fs.existsSync(path.join(tmpDir, "eslint.config.mjs"))).toBe(false);
+    expect(fs.existsSync(path.join(tmpDir, ".prettierrc"))).toBe(false);
+
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "package.json"), "utf-8"),
+    );
+    expect(pkg.scripts.lint).toBe("oxlint");
+    expect(pkg.scripts["format:check"]).toBe("oxfmt --check");
+    expect(pkg.devDependencies.oxlint).toBeTypeOf("string");
+    expect(pkg.devDependencies.oxfmt).toBeTypeOf("string");
+  });
+
+  it("should write the eslint setup when it is selected", async () => {
+    const { exec } = createClaspExec();
+    const prompter = createFakePrompter({
+      select: { "Linter and formatter setup?": "eslint" },
+    });
+
+    await bootstrap(
+      { skipInstall: true, directory: "." },
+      { exec, prompter, isTty: true },
+    );
+
+    expect(fs.existsSync(path.join(tmpDir, "eslint.config.mjs"))).toBe(true);
+    expect(fs.existsSync(path.join(tmpDir, ".prettierrc"))).toBe(true);
+    expect(fs.existsSync(path.join(tmpDir, ".oxlintrc.json"))).toBe(false);
+
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "package.json"), "utf-8"),
+    );
+    expect(pkg.scripts.lint).toBe("eslint .");
+    expect(pkg.devDependencies.prettier).toBeTypeOf("string");
+  });
+
+  it("should write no linter files when none is selected", async () => {
+    const { exec } = createClaspExec();
+    const prompter = createFakePrompter({
+      select: { "Linter and formatter setup?": "none" },
+    });
+
+    await bootstrap(
+      { skipInstall: true, directory: "." },
+      { exec, prompter, isTty: true },
+    );
+
+    expect(fs.existsSync(path.join(tmpDir, ".oxlintrc.json"))).toBe(false);
+    expect(fs.existsSync(path.join(tmpDir, "eslint.config.mjs"))).toBe(false);
+    expect(fs.existsSync(path.join(tmpDir, ".prettierrc"))).toBe(false);
+
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(tmpDir, "package.json"), "utf-8"),
+    );
+    expect(pkg.scripts.lint).toBeUndefined();
+    expect(pkg.devDependencies.oxlint).toBeUndefined();
+  });
+
+  it("should keep an existing .oxlintrc.json untouched", async () => {
+    fs.writeFileSync(path.join(tmpDir, ".oxlintrc.json"), "my rules");
+    const { exec } = createClaspExec();
+    const prompter = createFakePrompter();
+
+    await bootstrap(
+      { yes: true, skipInstall: true, directory: "." },
+      { exec, prompter, isTty: true },
+    );
+
+    expect(fs.readFileSync(path.join(tmpDir, ".oxlintrc.json"), "utf-8")).toBe(
+      "my rules",
+    );
+  });
+
   it("should write the manifest with the fetched library version", async () => {
     const { exec } = createClaspExec();
     const prompter = createFakePrompter();
@@ -225,6 +311,7 @@ describe("bootstrap", () => {
     expect(planNote?.message).toContain("clasp create-script");
     expect(planNote?.message).toContain("write gassma-project/package.json");
     expect(planNote?.message).toContain("write gassma-project/AGENTS.md");
+    expect(planNote?.message).toContain("write gassma-project/.oxlintrc.json");
     expect(planNote?.message).toContain("gassma init");
     expect(
       prompter.infos.every((message) => message.startsWith("[dry-run] ")),

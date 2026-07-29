@@ -45,6 +45,8 @@ describe("projectFilesStep", () => {
     expect(content).toContain("npx gassma generate");
     expect(content).toContain("npm run build");
     expect(content).toContain("npm run deploy");
+    expect(content).toContain("npm run lint");
+    expect(content).toContain("npm run format");
     expect(pkg.scripts.build).toBeDefined();
     expect(pkg.scripts.deploy).toBeDefined();
     expect(content).toContain("gassma/schema.prisma");
@@ -183,6 +185,56 @@ describe("projectFilesStep", () => {
     expect(content.startsWith("node_modules/\n")).toBe(true);
     expect(content).toContain(".clasp.json");
     expect(content).toContain("!dist/appsscript.json");
+  });
+});
+
+describe("projectFilesStep linter files", () => {
+  const oxlintPath = path.join(CWD, ".oxlintrc.json");
+  const eslintPath = path.join(CWD, "eslint.config.mjs");
+  const prettierPath = path.join(CWD, ".prettierrc");
+
+  it("should write .oxlintrc.json for the oxlint choice", async () => {
+    const { files, store } = createMemoryStore({});
+    const deps = createTestDeps({ store });
+
+    await projectFilesStep.run({ ...baseContext(), linter: "oxlint" }, deps);
+
+    expect(files.get(oxlintPath)).toBe(deps.templates.oxlintrc);
+    expect(files.has(eslintPath)).toBe(false);
+    expect(files.has(prettierPath)).toBe(false);
+  });
+
+  it("should write eslint.config.mjs and .prettierrc for the eslint choice", async () => {
+    const { files, store } = createMemoryStore({});
+    const deps = createTestDeps({ store });
+
+    await projectFilesStep.run({ ...baseContext(), linter: "eslint" }, deps);
+
+    expect(files.get(eslintPath)).toBe(deps.templates.eslintConfig);
+    expect(files.get(prettierPath)).toBe(deps.templates.prettierrc);
+    expect(files.has(oxlintPath)).toBe(false);
+  });
+
+  it("should write no linter config for the none choice", async () => {
+    const { files, store } = createMemoryStore({});
+    const deps = createTestDeps({ store });
+
+    await projectFilesStep.run({ ...baseContext(), linter: "none" }, deps);
+
+    expect(files.has(oxlintPath)).toBe(false);
+    expect(files.has(eslintPath)).toBe(false);
+    expect(files.has(prettierPath)).toBe(false);
+  });
+
+  it("should not overwrite an existing linter config", async () => {
+    const { files, store } = createMemoryStore({ [oxlintPath]: "my rules" });
+    const prompter = createFakePrompter();
+    const deps = createTestDeps({ store, prompter });
+
+    await projectFilesStep.run({ ...baseContext(), linter: "oxlint" }, deps);
+
+    expect(files.get(oxlintPath)).toBe("my rules");
+    expect(prompter.infos.join(" ")).toContain(".oxlintrc.json");
   });
 });
 

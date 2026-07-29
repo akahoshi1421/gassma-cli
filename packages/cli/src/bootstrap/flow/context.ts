@@ -6,6 +6,7 @@ import type { FileStore } from "../env/fileStore";
 import type { BootstrapTemplates } from "../env/loadBootstrapTemplates";
 import type { DirectoryOps } from "../env/targetDirectory";
 import type { FunctionStyle } from "../functionStyle";
+import type { LinterChoice } from "../linterChoice";
 import type { Prompter } from "./prompts";
 
 type BootstrapContext = {
@@ -13,6 +14,7 @@ type BootstrapContext = {
   title: string;
   withSheets: boolean;
   style: FunctionStyle;
+  linter: LinterChoice;
   wantSample: boolean;
   wantInstall: boolean;
   packageManager: PackageManager;
@@ -57,6 +59,7 @@ const createInitialContext = (
   title: path.basename(options.cwd) || "gassma-project",
   withSheets: true,
   style: "export",
+  linter: "oxlint",
   wantSample: true,
   wantInstall: true,
   packageManager: options.packageManager,

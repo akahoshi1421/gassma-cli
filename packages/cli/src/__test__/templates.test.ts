@@ -13,16 +13,37 @@ const GITIGNORE = [
 
 const TSCONFIG = `{
   "compilerOptions": {
-    "lib": [
-      "esnext"
-    ],
-    "types": [
-      "google-apps-script"
-    ]
+    "lib": ["esnext"],
+    "types": ["google-apps-script"]
   },
-  "include": [
-    "./src"
-  ]
+  "include": ["./src"]
+}
+`;
+
+const OXLINTRC = `{
+  "plugins": ["typescript"],
+  "categories": { "correctness": "error" },
+  "ignorePatterns": ["dist/**", "src/generated/**"]
+}
+`;
+
+const ESLINT_CONFIG = `import { defineConfig, globalIgnores } from "eslint/config";
+import prettier from "eslint-config-prettier/flat";
+import tseslint from "typescript-eslint";
+
+export default defineConfig([
+  globalIgnores(["dist/**", "src/generated/**"]),
+  {
+    files: ["**/*.ts"],
+    extends: [tseslint.configs.recommended, prettier],
+  },
+]);
+`;
+
+const PRETTIERRC = `{
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "all"
 }
 `;
 
@@ -124,6 +145,18 @@ describe("bundled templates", () => {
 
   it("should ship tsconfig.json.template byte for byte", () => {
     expect(readTemplate("tsconfig.json.template")).toBe(TSCONFIG);
+  });
+
+  it("should ship .oxlintrc.json.template byte for byte", () => {
+    expect(readTemplate(".oxlintrc.json.template")).toBe(OXLINTRC);
+  });
+
+  it("should ship eslint.config.mjs.template byte for byte", () => {
+    expect(readTemplate("eslint.config.mjs.template")).toBe(ESLINT_CONFIG);
+  });
+
+  it("should ship .prettierrc.template byte for byte", () => {
+    expect(readTemplate(".prettierrc.template")).toBe(PRETTIERRC);
   });
 
   it("should ship package.json.template byte for byte", () => {
