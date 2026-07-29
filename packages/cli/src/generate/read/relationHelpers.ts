@@ -23,12 +23,11 @@ type FieldsideRelation = {
 const getRelationName = (field: FieldDeclaration): string | null => {
   const attr = findFirstAttribute(field.attributes, "relation");
   if (!attr) return null;
-  const firstArg = attr.args?.[0];
-  if (!firstArg) return null;
-  if ("kind" in firstArg && firstArg.kind !== "namedArgument") {
-    if (firstArg.kind === "literal" && typeof firstArg.value === "string")
-      return firstArg.value;
-  }
+  const arg = findArgument(attr.args, "name", 0);
+  if (!arg) return null;
+  const expr = arg.expression;
+  if (expr.kind === "literal" && typeof expr.value === "string")
+    return expr.value;
   return null;
 };
 
