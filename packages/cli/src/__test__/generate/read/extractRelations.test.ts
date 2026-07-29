@@ -238,6 +238,155 @@ model Category {
     });
   });
 
+  it("should assign A/B columns to a self-referencing implicit manyToMany", () => {
+    const schema = `
+model Tag {
+  id        Int   @id
+  related   Tag[] @relation("TagRelations")
+  relatedBy Tag[] @relation("TagRelations")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Tag.related).toEqual({
+      type: "manyToMany",
+      to: "Tag",
+      field: "id",
+      reference: "id",
+      through: {
+        sheet: "_TagToTag",
+        field: "tagAId",
+        reference: "tagBId",
+      },
+    });
+    expect(result.Tag.relatedBy).toEqual({
+      type: "manyToMany",
+      to: "Tag",
+      field: "id",
+      reference: "id",
+      through: {
+        sheet: "_TagToTag",
+        field: "tagBId",
+        reference: "tagAId",
+      },
+    });
+  });
+
+  it("should keep self-referencing A/B sides stable across declaration order", () => {
+    const schema = `
+model Tag {
+  id        Int   @id
+  relatedBy Tag[] @relation("TagRelations")
+  related   Tag[] @relation("TagRelations")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Tag.related.through).toEqual({
+      sheet: "_TagToTag",
+      field: "tagAId",
+      reference: "tagBId",
+    });
+    expect(result.Tag.relatedBy.through).toEqual({
+      sheet: "_TagToTag",
+      field: "tagBId",
+      reference: "tagAId",
+    });
+  });
+
+  it("should pair self-referencing manyToMany fields by relation name", () => {
+    const schema = `
+model Node {
+  id       Int    @id
+  parentId Int?
+  parent   Node?  @relation("Tree", fields: [parentId], references: [id])
+  children Node[] @relation("Tree")
+  linked   Node[] @relation("Links")
+  linkedBy Node[] @relation("Links")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Node.linked.through).toEqual({
+      sheet: "_NodeToNode",
+      field: "nodeAId",
+      reference: "nodeBId",
+    });
+    expect(result.Node.linkedBy.through).toEqual({
+      sheet: "_NodeToNode",
+      field: "nodeBId",
+      reference: "nodeAId",
+    });
+    expect(result.Node.children).toEqual({
+      type: "oneToMany",
+      to: "Node",
+      field: "id",
+      reference: "parentId",
+    });
+  });
+
+  it("should keep A/B sides stable regardless of unrelated field positions", () => {
+    const schema = `
+model Node {
+  id       Int    @id
+  linked   Node[] @relation("Links")
+  linkedBy Node[] @relation("Links")
+  parentId Int?
+  parent   Node?  @relation("Tree", fields: [parentId], references: [id])
+  children Node[] @relation("Tree")
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Node.linked.through).toEqual({
+      sheet: "_NodeToNode",
+      field: "nodeAId",
+      reference: "nodeBId",
+    });
+    expect(result.Node.linkedBy.through).toEqual({
+      sheet: "_NodeToNode",
+      field: "nodeBId",
+      reference: "nodeAId",
+    });
+  });
+
+  it("should use A/B columns when only one self-referencing list field exists", () => {
+    const schema = `
+model Tag {
+  id      Int   @id
+  related Tag[]
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Tag.related.through).toEqual({
+      sheet: "_TagToTag",
+      field: "tagAId",
+      reference: "tagBId",
+    });
+  });
+
+  it("should not create a through sheet for a self-referencing oneToMany", () => {
+    const schema = `
+model Category {
+  id       Int        @id
+  parentId Int?
+  parent   Category?  @relation(fields: [parentId], references: [id])
+  children Category[]
+}
+`;
+    const result = extractRelations(schema);
+
+    expect(result.Category.children).toEqual({
+      type: "oneToMany",
+      to: "Category",
+      field: "id",
+      reference: "parentId",
+    });
+    const types = Object.values(result.Category).map((rel) => rel.type);
+    expect(types).not.toContain("manyToMany");
+  });
+
   it("should extract manyToMany relation with through table", () => {
     const schema = `
 model Post {

@@ -126,6 +126,44 @@ describe("migrate", () => {
     expect(content).toContain("MyGassma.migrateSheets(");
   });
 
+  it("should write distinct columns for self-referencing and normal through sheets", () => {
+    writeSchema(`
+datasource db {
+  provider = "gassma"
+  url      = "https://docs.google.com/spreadsheets/d/abc123/edit"
+}
+
+model Post {
+  id     Int     @id
+  labels Label[]
+}
+
+model Label {
+  id    Int    @id
+  posts Post[]
+}
+
+model Tag {
+  id        Int   @id
+  related   Tag[] @relation("TagRelations")
+  relatedBy Tag[] @relation("TagRelations")
+}
+`);
+
+    migrate({ output: "./out" }, fixedDeps);
+
+    const content = fs.readFileSync(
+      path.join("out", "gassma-migration.js"),
+      "utf-8",
+    );
+    expect(content).toContain(
+      '{ name: "_TagToTag", columns: ["tagAId", "tagBId"] }',
+    );
+    expect(content).toContain(
+      '{ name: "_LabelToPost", columns: ["labelId", "postId"] }',
+    );
+  });
+
   it("should record the migration next to the schema with the timestamped name", () => {
     writeSchema(schemaWithDatasource);
 

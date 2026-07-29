@@ -212,6 +212,34 @@ model Tag {
     expect(models[2].columns).toEqual(["postId", "tagId"]);
   });
 
+  it("should build distinct A/B columns for a self-referencing through sheet", () => {
+    const schema = `
+model Tag {
+  id        Int   @id
+  related   Tag[] @relation("TagRelations")
+  relatedBy Tag[] @relation("TagRelations")
+}
+`;
+    expect(buildMigrateModels(schema)).toEqual([
+      { name: "Tag", columns: ["id"] },
+      { name: "_TagToTag", columns: ["tagAId", "tagBId"] },
+    ]);
+  });
+
+  it("should not create a through sheet for a self-referencing one-to-many", () => {
+    const schema = `
+model Category {
+  id       Int        @id
+  parentId Int?
+  parent   Category?  @relation(fields: [parentId], references: [id])
+  children Category[]
+}
+`;
+    expect(buildMigrateModels(schema)).toEqual([
+      { name: "Category", columns: ["id", "parentId"] },
+    ]);
+  });
+
   it("should not create a through sheet for one-to-many relations", () => {
     const schema = `
 model Post {
