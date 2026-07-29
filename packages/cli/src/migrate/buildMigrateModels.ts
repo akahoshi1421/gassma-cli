@@ -29,6 +29,15 @@ const buildSheetModels = (schemaText: string): MigrateModelDefinition[] => {
   }));
 };
 
+const buildThroughColumns = (
+  modelName: string,
+  to: string,
+  through: { field: string; reference: string },
+): string[] => {
+  if (modelName === to) return [through.field, through.reference].sort();
+  return [modelName, to].sort().map((name) => `${toLowercaseFirst(name)}Id`);
+};
+
 const buildThroughModels = (schemaText: string): MigrateModelDefinition[] => {
   const relations = extractRelations(schemaText);
   const seenSheets = new Set<string>();
@@ -41,10 +50,13 @@ const buildThroughModels = (schemaText: string): MigrateModelDefinition[] => {
       if (seenSheets.has(definition.through.sheet)) return;
       seenSheets.add(definition.through.sheet);
 
-      const sorted = [modelName, definition.to].sort();
       models.push({
         name: definition.through.sheet,
-        columns: sorted.map((name) => `${toLowercaseFirst(name)}Id`),
+        columns: buildThroughColumns(
+          modelName,
+          definition.to,
+          definition.through,
+        ),
       });
     });
   });
