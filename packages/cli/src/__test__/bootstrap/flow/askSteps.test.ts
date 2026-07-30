@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createInitialContext } from "../../../bootstrap/flow/context";
 import {
   installPromptStep,
+  linterStep,
   sampleStep,
   sheetsStep,
   styleStep,
@@ -97,6 +98,53 @@ describe("styleStep", () => {
     const ctx = await styleStep.run(baseContext(), deps);
 
     expect(ctx.style).toBe("export");
+  });
+});
+
+describe("linterStep", () => {
+  it("should offer oxlint, eslint and none", async () => {
+    const prompter = createFakePrompter();
+    const deps = createTestDeps({ prompter });
+
+    await linterStep.run(baseContext(), deps);
+
+    expect(prompter.selects).toHaveLength(1);
+    expect(prompter.selects[0].message).toBe("Linter and formatter setup?");
+    expect(prompter.selects[0].choices).toEqual([
+      { value: "oxlint", label: "oxlint + oxfmt", hint: "recommended" },
+      { value: "eslint", label: "eslint + prettier" },
+      { value: "none", label: "none" },
+    ]);
+  });
+
+  it("should store the selected linter", async () => {
+    const prompter = createFakePrompter({
+      select: { "Linter and formatter setup?": "eslint" },
+    });
+    const deps = createTestDeps({ prompter });
+
+    const ctx = await linterStep.run(baseContext(), deps);
+
+    expect(ctx.linter).toBe("eslint");
+  });
+
+  it("should store the none choice", async () => {
+    const prompter = createFakePrompter({
+      select: { "Linter and formatter setup?": "none" },
+    });
+    const deps = createTestDeps({ prompter });
+
+    const ctx = await linterStep.run(baseContext(), deps);
+
+    expect(ctx.linter).toBe("none");
+  });
+
+  it("should default to oxlint", async () => {
+    const deps = createTestDeps();
+
+    const ctx = await linterStep.run(baseContext(), deps);
+
+    expect(ctx.linter).toBe("oxlint");
   });
 });
 

@@ -7,6 +7,7 @@ A local development environment for Google Apps Script, powered by Clasp and GAS
 - `npx gassma generate` — generates the types and the client from gassma/schema.prisma
 - `npm run build` — bundles src/ into dist/ with esbuild
 - `npm run deploy` — build + clasp push (deploys to GAS)
+- `npm run lint` / `npm run format` — available if you chose a linter setup during bootstrap
 
 ## Development flow
 

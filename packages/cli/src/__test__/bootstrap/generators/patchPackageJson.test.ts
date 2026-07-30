@@ -11,6 +11,7 @@ const baseOptions = {
   name: "my-app",
   gassmaVersion: "1.1.0",
   style: "export",
+  linter: "none",
 } satisfies Parameters<typeof patchPackageJson>[1];
 
 describe("patchPackageJson", () => {
@@ -57,6 +58,94 @@ describe("patchPackageJson", () => {
       "esbuild-gas-plugin": "^0.10.0",
       typescript: "^6.0.3",
     });
+  });
+
+  it("should add the oxlint toolchain when oxlint is chosen", () => {
+    const pkg = patchPackageJson(template, {
+      ...baseOptions,
+      linter: "oxlint",
+    });
+
+    expect(pkg.devDependencies).toMatchObject({
+      oxlint: "^1.76.0",
+      oxfmt: "^0.61.0",
+    });
+    expect(pkg.scripts).toMatchObject({
+      lint: "oxlint",
+      "lint:fix": "oxlint --fix",
+      format: "oxfmt",
+      "format:check": "oxfmt --check",
+    });
+  });
+
+  it("should keep devDependencies sorted so that oxfmt --check passes", () => {
+    const pkg = patchPackageJson(template, {
+      ...baseOptions,
+      linter: "oxlint",
+    });
+
+    expect(JSON.stringify(pkg.devDependencies)).toBe(
+      JSON.stringify({
+        "@gassma/gas-esbuild-plugin": "^0.1.0",
+        "@types/google-apps-script": "^2.0.11",
+        esbuild: "^0.28.0",
+        oxfmt: "^0.61.0",
+        oxlint: "^1.76.0",
+        typescript: "^6.0.3",
+      }),
+    );
+  });
+
+  it("should not add oxlint-tsgolint for the oxlint choice", () => {
+    const pkg = patchPackageJson(template, {
+      ...baseOptions,
+      linter: "oxlint",
+    });
+
+    expect(pkg.devDependencies).not.toHaveProperty("oxlint-tsgolint");
+    expect(JSON.stringify(pkg.scripts)).not.toContain("--type-aware");
+  });
+
+  it("should add the eslint toolchain when eslint is chosen", () => {
+    const pkg = patchPackageJson(template, {
+      ...baseOptions,
+      linter: "eslint",
+    });
+
+    expect(pkg.devDependencies).toMatchObject({
+      eslint: "^10.8.0",
+      "typescript-eslint": "^8.65.0",
+      prettier: "^3.9.6",
+      "eslint-config-prettier": "^10.1.8",
+    });
+    expect(pkg.scripts).toMatchObject({
+      lint: "eslint .",
+      "lint:fix": "eslint . --fix",
+      format: "prettier --write .",
+      "format:check": "prettier --check .",
+    });
+  });
+
+  it("should keep the two toolchains apart", () => {
+    const oxlintPkg = patchPackageJson(template, {
+      ...baseOptions,
+      linter: "oxlint",
+    });
+    const eslintPkg = patchPackageJson(template, {
+      ...baseOptions,
+      linter: "eslint",
+    });
+
+    expect(oxlintPkg.devDependencies).not.toHaveProperty("eslint");
+    expect(eslintPkg.devDependencies).not.toHaveProperty("oxlint");
+  });
+
+  it("should add no scripts and no devDependencies for the none choice", () => {
+    const pkg = patchPackageJson(template, baseOptions);
+
+    expect(pkg.scripts).not.toHaveProperty("lint");
+    expect(pkg.devDependencies).not.toHaveProperty("oxlint");
+    expect(pkg.devDependencies).not.toHaveProperty("prettier");
   });
 
   it("should preserve the template key order", () => {

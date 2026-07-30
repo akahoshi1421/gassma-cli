@@ -1,4 +1,5 @@
 import path from "path";
+import { linterConfigFiles } from "../../generators/linterSetup";
 import { mergeGitignore } from "../../generators/mergeGitignore";
 import { mergePackageJson } from "../../generators/mergePackageJson";
 import {
@@ -19,6 +20,7 @@ const writePackageJson = (context: BootstrapContext, deps: BootstrapDeps) => {
     name: sanitizePackageName(path.basename(context.cwd)),
     gassmaVersion: deps.gassmaVersion,
     style: context.style,
+    linter: context.linter,
   });
 
   if (!deps.store.exists(packageJsonPath)) {
@@ -68,6 +70,17 @@ const writeGitignore = (context: BootstrapContext, deps: BootstrapDeps) => {
   deps.prompter.info("Added missing entries to .gitignore");
 };
 
+const writeLinterConfigs = (context: BootstrapContext, deps: BootstrapDeps) => {
+  linterConfigFiles(context.linter, deps.templates).forEach((file) => {
+    writeIfMissing(
+      deps,
+      path.join(context.cwd, file.fileName),
+      file.content,
+      file.fileName,
+    );
+  });
+};
+
 const projectFilesStep: BootstrapStep = {
   id: "projectFiles",
   run: (context, deps) => {
@@ -91,6 +104,7 @@ const projectFilesStep: BootstrapStep = {
       deps.templates.agentsMd,
       "AGENTS.md",
     );
+    writeLinterConfigs(context, deps);
     return Promise.resolve(context);
   },
 };

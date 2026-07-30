@@ -1,6 +1,7 @@
 import type { BootstrapStep } from "./context";
 import {
   installPromptStep,
+  linterStep,
   sampleStep,
   sheetsStep,
   styleStep,
@@ -15,7 +16,7 @@ import {
   sampleIndexStep,
 } from "./steps/writeSteps";
 
-// Future questions (e.g. linter selection) are added by inserting a step here.
+// Future questions are added by inserting a step here.
 const buildBootstrapSteps = (): BootstrapStep[] => [
   directoryStep,
   titleStep,
@@ -23,6 +24,7 @@ const buildBootstrapSteps = (): BootstrapStep[] => [
   claspCreateStep,
   manifestStep,
   styleStep,
+  linterStep,
   sampleStep,
   installPromptStep,
   projectFilesStep,
