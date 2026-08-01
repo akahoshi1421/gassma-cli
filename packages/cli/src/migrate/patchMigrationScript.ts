@@ -2,6 +2,7 @@ import type { MigrateModelDefinition } from "./buildMigrateModels";
 
 type MigrateSheetsDefinition = {
   spreadsheetId?: string;
+  acceptDataLoss?: boolean;
   models: MigrateModelDefinition[];
 };
 
@@ -22,6 +23,8 @@ const renderDefinition = (definition: MigrateSheetsDefinition): string => {
     definition.spreadsheetId === undefined
       ? []
       : [`    spreadsheetId: ${quote(definition.spreadsheetId)},`];
+  const acceptDataLossLines =
+    definition.acceptDataLoss === true ? ["    acceptDataLoss: true,"] : [];
   const lastIndex = definition.models.length - 1;
   const modelLines = definition.models.map(
     (model, index) =>
@@ -31,6 +34,7 @@ const renderDefinition = (definition: MigrateSheetsDefinition): string => {
   return [
     "{",
     ...spreadsheetIdLines,
+    ...acceptDataLossLines,
     "    models: [",
     ...modelLines,
     "    ]",

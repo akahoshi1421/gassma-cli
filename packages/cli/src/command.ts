@@ -72,12 +72,17 @@ program
   )
   .option("--schema <path>", "Path to a specific .prisma file to migrate from")
   .option("--config <path>", "Custom path to your GASsma config file")
+  .option(
+    "--accept-data-loss",
+    "Delete sheets and columns that are not in the schema",
+  )
   .action((options) => {
     migrate({
       name: options.name,
       output: options.output,
       schema: options.schema,
       config: options.config,
+      acceptDataLoss: options.acceptDataLoss,
     });
   });
 

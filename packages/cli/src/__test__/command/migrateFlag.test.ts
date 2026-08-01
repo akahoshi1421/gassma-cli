@@ -66,4 +66,35 @@ describe("gassma migrate (e2e)", () => {
       expect(migrations[0]).toMatch(/^\d{14}_init$/);
     },
   );
+
+  it(
+    "should include acceptDataLoss in the stub when --accept-data-loss is given",
+    { timeout: 120_000 },
+    () => {
+      fs.mkdirSync(path.join(tmpDir, "gassma"), { recursive: true });
+      fs.writeFileSync(
+        path.join(tmpDir, "gassma", "schema.prisma"),
+        "model User {\n  id   Int    @id\n  name String\n}\n",
+      );
+
+      execFileSync(
+        process.execPath,
+        [
+          tsxCli,
+          commandTs,
+          "migrate",
+          "--output",
+          "./dist",
+          "--accept-data-loss",
+        ],
+        { cwd: tmpDir, stdio: "pipe" },
+      );
+
+      const stub = fs.readFileSync(
+        path.join(tmpDir, "dist", "gassma-migration.js"),
+        "utf-8",
+      );
+      expect(stub).toContain("acceptDataLoss: true,");
+    },
+  );
 });

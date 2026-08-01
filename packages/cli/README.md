@@ -156,6 +156,7 @@ Generate a GAS function that syncs spreadsheet sheets with your schema. It write
 |`--output <dir>`|Directory to write gassma-migration.js (defaults to rootDir in .clasp.json)|
 |`--schema <path>`|Path to a specific .prisma file to migrate from|
 |`--config <path>`|Custom path to your GASsma config file|
+|`--accept-data-loss`|Delete sheets and columns that are not in the schema|
 
 ### bootstrap
 

@@ -60,6 +60,49 @@ describe("patchMigrationScript", () => {
     expect(result).not.toContain("spreadsheetId");
   });
 
+  it("should include acceptDataLoss after spreadsheetId when true", () => {
+    const result = patchMigrationScript(template, {
+      ...baseOptions,
+      definition: {
+        ...baseOptions.definition,
+        spreadsheetId: "abc123",
+        acceptDataLoss: true,
+      },
+    });
+    expect(result).toBe(`function gassmaMigrate() {
+  Gassma.migrateSheets({
+    spreadsheetId: "abc123",
+    acceptDataLoss: true,
+    models: [
+      { name: "User", columns: ["id", "name"] }
+    ]
+  });
+}
+`);
+  });
+
+  it("should include acceptDataLoss when spreadsheetId is absent", () => {
+    const result = patchMigrationScript(template, {
+      ...baseOptions,
+      definition: { ...baseOptions.definition, acceptDataLoss: true },
+    });
+    expect(result).toContain("acceptDataLoss: true,");
+    expect(result).not.toContain("spreadsheetId");
+  });
+
+  it("should omit acceptDataLoss when not given", () => {
+    const result = patchMigrationScript(template, baseOptions);
+    expect(result).not.toContain("acceptDataLoss");
+  });
+
+  it("should omit acceptDataLoss when false", () => {
+    const result = patchMigrationScript(template, {
+      ...baseOptions,
+      definition: { ...baseOptions.definition, acceptDataLoss: false },
+    });
+    expect(result).not.toContain("acceptDataLoss");
+  });
+
   it("should escape double quotes in sheet and column names", () => {
     const result = patchMigrationScript(template, {
       ...baseOptions,
@@ -80,6 +123,18 @@ describe("patchMigrationScript", () => {
           { name: "User", columns: ["id", "name"] },
           { name: "_PostToTag", columns: ["postId", "tagId"] },
         ],
+      },
+    });
+    expect(() => new Function(result)).not.toThrow();
+  });
+
+  it("should produce syntactically valid JavaScript with acceptDataLoss", () => {
+    const result = patchMigrationScript(template, {
+      ...baseOptions,
+      definition: {
+        spreadsheetId: "abc123",
+        acceptDataLoss: true,
+        models: [{ name: "User", columns: ["id", "name"] }],
       },
     });
     expect(() => new Function(result)).not.toThrow();

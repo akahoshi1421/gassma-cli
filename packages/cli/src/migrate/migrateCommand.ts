@@ -26,6 +26,7 @@ type MigrateOptions = {
   output?: string;
   schema?: string;
   config?: string;
+  acceptDataLoss?: boolean;
 };
 
 type MigrateDeps = {
@@ -50,6 +51,7 @@ const buildDefinition = (
   schemaText: string,
   configUrl: string | undefined,
   schemaLocation: string,
+  acceptDataLoss: boolean,
 ): MigrateSheetsDefinition => {
   const models = buildMigrateModels(schemaText);
   if (models.length === 0) throw new NoModelsError(schemaLocation);
@@ -57,6 +59,7 @@ const buildDefinition = (
   const spreadsheetId = resolveSpreadsheetId(schemaText, configUrl);
   return {
     ...(spreadsheetId === undefined ? {} : { spreadsheetId }),
+    ...(acceptDataLoss ? { acceptDataLoss: true } : {}),
     models,
   };
 };
@@ -89,11 +92,19 @@ const recordMigration = (
   return true;
 };
 
-const printNextSteps = (stubPath: string, recorded: boolean): void => {
+const printNextSteps = (
+  stubPath: string,
+  recorded: boolean,
+  acceptDataLoss: boolean,
+): void => {
   const headline = recorded
     ? "✅ Migration generated"
     : `✅ Refreshed ${STUB_FILE_NAME} (no new migration recorded)`;
   console.log(`\n${headline}\n`);
+  if (acceptDataLoss)
+    console.log(
+      "⚠️ This migration deletes sheets and columns that are not in the schema.\n",
+    );
   console.log("Next steps:");
   console.log(`  1. Run "clasp push" (or "npm run push") to upload ${STUB_FILE_NAME}
   2. In the Apps Script editor, run the "gassmaMigrate" function once`);
@@ -117,10 +128,12 @@ function migrate(options?: MigrateOptions, deps: MigrateDeps = defaultDeps) {
   const schemaLocation = path.resolve(
     files.length === 1 ? files[0].filePath : baseDir,
   );
+  const acceptDataLoss = options?.acceptDataLoss === true;
   const definition = buildDefinition(
     schemaText,
     loaded?.config.datasource?.url,
     schemaLocation,
+    acceptDataLoss,
   );
 
   const outputDir = resolveOutputDir(options?.output, process.cwd());
@@ -132,7 +145,7 @@ function migrate(options?: MigrateOptions, deps: MigrateDeps = defaultDeps) {
 
   const stubPath = writeMigrationStub(outputDir, content);
   const recorded = recordMigration(baseDir, content, options?.name, deps);
-  printNextSteps(stubPath, recorded);
+  printNextSteps(stubPath, recorded, acceptDataLoss);
 }
 
 export { migrate };

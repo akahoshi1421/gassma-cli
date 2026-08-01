@@ -73,6 +73,40 @@ describe("migrate", () => {
 `);
   });
 
+  it("should include acceptDataLoss between spreadsheetId and models when requested", () => {
+    writeSchema(schemaWithDatasource);
+
+    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+
+    const content = fs.readFileSync(
+      path.join("out", "gassma-migration.js"),
+      "utf-8",
+    );
+    expect(content).toBe(`function gassmaMigrate() {
+  Gassma.migrateSheets({
+    spreadsheetId: "abc123",
+    acceptDataLoss: true,
+    models: [
+      { name: "User", columns: ["id", "name"] }
+    ]
+  });
+}
+`);
+  });
+
+  it("should include acceptDataLoss when no spreadsheetId is available", () => {
+    writeSchema(schemaWithoutDatasource);
+
+    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+
+    const content = fs.readFileSync(
+      path.join("out", "gassma-migration.js"),
+      "utf-8",
+    );
+    expect(content).toContain("acceptDataLoss: true,");
+    expect(content).not.toContain("spreadsheetId");
+  });
+
   it("should resolve the output directory from rootDir in .clasp.json", () => {
     writeSchema(schemaWithDatasource);
     fs.writeFileSync(".clasp.json", JSON.stringify({ rootDir: "./dist" }));
@@ -258,6 +292,35 @@ model User {
     );
   });
 
+  it("should record acceptDataLoss in the migration trail", () => {
+    writeSchema(schemaWithDatasource);
+
+    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+
+    const trail = fs.readFileSync(
+      path.join("gassma", "migrations", "20260729040506", "migration.js"),
+      "utf-8",
+    );
+    expect(trail).toBe(
+      fs.readFileSync(path.join("out", "gassma-migration.js"), "utf-8"),
+    );
+    expect(trail).toContain("acceptDataLoss: true,");
+  });
+
+  it("should not record a second migration when run twice with acceptDataLoss", () => {
+    writeSchema(schemaWithDatasource);
+    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+
+    const laterDeps = {
+      now: () => new Date(Date.UTC(2026, 6, 30, 0, 0, 0)),
+    };
+    migrate({ output: "./out", acceptDataLoss: true }, laterDeps);
+
+    expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
+      "20260729040506",
+    ]);
+  });
+
   it("should name the migration directory with the timestamp only when --name is omitted", () => {
     writeSchema(schemaWithDatasource);
 
@@ -402,5 +465,33 @@ model Post {
       .join("\n");
     expect(logged).toContain("clasp push");
     expect(logged).toContain("gassmaMigrate");
+  });
+
+  it("should warn about deletions when acceptDataLoss is requested", () => {
+    writeSchema(schemaWithDatasource);
+
+    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+
+    const logged = vi
+      .mocked(console.log)
+      .mock.calls.map((call) => call.join(" "))
+      .join("\n");
+    expect(logged).toContain(
+      "deletes sheets and columns that are not in the schema",
+    );
+  });
+
+  it("should not warn about deletions without acceptDataLoss", () => {
+    writeSchema(schemaWithDatasource);
+
+    migrate({ output: "./out" }, fixedDeps);
+
+    const logged = vi
+      .mocked(console.log)
+      .mock.calls.map((call) => call.join(" "))
+      .join("\n");
+    expect(logged).not.toContain(
+      "deletes sheets and columns that are not in the schema",
+    );
   });
 });
