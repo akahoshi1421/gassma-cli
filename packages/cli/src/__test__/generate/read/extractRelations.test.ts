@@ -1046,5 +1046,86 @@ model Post {
 `;
       expect(extractRelations(schema)).toEqual(expectedMixedRelations);
     });
+
+    const namedListFirstOneToOneSchema = `
+model User {
+  id     Int    @id
+  pinned Post[] @relation("Pinned")
+  post   Post?
+}
+
+model Post {
+  id       Int    @id
+  authorId Int    @unique
+  author   User   @relation(fields: [authorId], references: [id])
+  pinnedBy User[] @relation("Pinned")
+}
+`;
+    const unnamedFieldFirstOneToOneSchema = `
+model User {
+  id     Int    @id
+  post   Post?
+  pinned Post[] @relation("Pinned")
+}
+
+model Post {
+  id       Int    @id
+  authorId Int    @unique
+  author   User   @relation(fields: [authorId], references: [id])
+  pinnedBy User[] @relation("Pinned")
+}
+`;
+    const expectedMixedOneToOneRelations = {
+      User: {
+        pinned: {
+          type: "manyToMany",
+          to: "Post",
+          field: "id",
+          reference: "id",
+          through: {
+            sheet: "_Pinned",
+            field: "userId",
+            reference: "postId",
+          },
+        },
+        post: {
+          type: "oneToOne",
+          to: "Post",
+          field: "id",
+          reference: "authorId",
+        },
+      },
+      Post: {
+        author: {
+          type: "manyToOne",
+          to: "User",
+          field: "authorId",
+          reference: "id",
+        },
+        pinnedBy: {
+          type: "manyToMany",
+          to: "User",
+          field: "id",
+          reference: "id",
+          through: {
+            sheet: "_Pinned",
+            field: "postId",
+            reference: "userId",
+          },
+        },
+      },
+    };
+
+    it("should pair an unnamed 1:1 FK with the unnamed field even when a named list is declared first", () => {
+      expect(extractRelations(namedListFirstOneToOneSchema)).toEqual(
+        expectedMixedOneToOneRelations,
+      );
+    });
+
+    it("should extract the same relations for both 1:1 declaration orders", () => {
+      expect(extractRelations(namedListFirstOneToOneSchema)).toEqual(
+        extractRelations(unnamedFieldFirstOneToOneSchema),
+      );
+    });
   });
 });
