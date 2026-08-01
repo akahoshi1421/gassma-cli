@@ -158,6 +158,19 @@ function myFunction() {
 |`--config <path>`|GASsma config ファイルのカスタムパス|
 |`--accept-data-loss`|スキーマに無いシート・列を削除|
 
+### db push
+
+`migrate` と同様に、スキーマに合わせてスプレッドシートのシートを同期する GAS 関数を生成しますが、証跡は記録しません。同じ実行用スタブ `gassma-migration.js` を出力ディレクトリに生成し、`migrations/` ディレクトリには一切触れません。マイグレーション履歴が不要な場合に使ってください。`clasp push` は自動実行されません。スタブを push した後、Apps Script エディタで `gassmaMigrate` 関数を 1 回実行してください。
+
+#### オプション
+
+|名前|説明|
+|--|--|
+|`--output <dir>`|gassma-migration.js の出力先ディレクトリ（デフォルトは .clasp.json の rootDir）|
+|`--schema <path>`|同期対象の `.prisma` ファイルのパス|
+|`--config <path>`|GASsma config ファイルのカスタムパス|
+|`--accept-data-loss`|スキーマに無いシート・列を削除|
+
 ### bootstrap
 
 GAS のローカル開発環境（clasp + esbuild + TypeScript + GASsma）を対話形式でセットアップします。clasp で Apps Script プロジェクトを作成し、GASsma ライブラリを登録し、プロジェクトファイル（`package.json`・`esbuild.mjs`・`tsconfig.json`・`.gitignore`・サンプルの `src/index.ts`）を生成して `gassma init` を実行し、依存関係をインストールします。

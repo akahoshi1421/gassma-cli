@@ -158,6 +158,19 @@ Generate a GAS function that syncs spreadsheet sheets with your schema. It write
 |`--config <path>`|Custom path to your GASsma config file|
 |`--accept-data-loss`|Delete sheets and columns that are not in the schema|
 
+### db push
+
+Generate a GAS function that syncs spreadsheet sheets with your schema, like `migrate`, but without recording a migration trail. It writes the same runnable stub `gassma-migration.js` into the output directory and never touches the `migrations/` directory. Use it when you do not need a migration history. `clasp push` is not run automatically: push the stub yourself, then run the `gassmaMigrate` function once in the Apps Script editor.
+
+#### options
+
+|name|description|
+|--|--|
+|`--output <dir>`|Directory to write gassma-migration.js (defaults to rootDir in .clasp.json)|
+|`--schema <path>`|Path to a specific .prisma file to push from|
+|`--config <path>`|Custom path to your GASsma config file|
+|`--accept-data-loss`|Delete sheets and columns that are not in the schema|
+
 ### bootstrap
 
 Interactively set up a local GAS development environment (clasp + esbuild + TypeScript + GASsma). It creates an Apps Script project via clasp, registers the GASsma library, generates project files (`package.json`, `esbuild.mjs`, `tsconfig.json`, `.gitignore`, a sample `src/index.ts`), runs `gassma init`, and installs dependencies.
