@@ -276,6 +276,46 @@ model User {
     );
   });
 
+  it("should write only the named through sheet when a named list precedes an unnamed list", () => {
+    writeSchema(`
+datasource db {
+  provider = "gassma"
+  url      = "https://docs.google.com/spreadsheets/d/abc123/edit"
+}
+
+model User {
+  id     Int    @id
+  pinned Post[] @relation("Pinned")
+  posts  Post[]
+}
+
+model Post {
+  id       Int    @id
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id])
+  pinnedBy User[] @relation("Pinned")
+}
+`);
+
+    migrate({ output: "./out" }, fixedDeps);
+
+    const content = fs.readFileSync(
+      path.join("out", "gassma-migration.js"),
+      "utf-8",
+    );
+    expect(content).toBe(`function gassmaMigrate() {
+  Gassma.migrateSheets({
+    spreadsheetId: "abc123",
+    models: [
+      { name: "User", columns: ["id"] },
+      { name: "Post", columns: ["id", "authorId"] },
+      { name: "_Pinned", columns: ["postId", "userId"] }
+    ]
+  });
+}
+`);
+  });
+
   it("should record the migration next to the schema with the timestamped name", () => {
     writeSchema(schemaWithDatasource);
 

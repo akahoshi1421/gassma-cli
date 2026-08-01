@@ -852,4 +852,199 @@ model PostTag {
       reference: "id",
     });
   });
+
+  describe("inverse field pairing by relation name", () => {
+    const namedListFirstSchema = `
+model User {
+  id     Int    @id
+  pinned Post[] @relation("Pinned")
+  posts  Post[]
+}
+
+model Post {
+  id       Int    @id
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id])
+  pinnedBy User[] @relation("Pinned")
+}
+`;
+    const unnamedListFirstSchema = `
+model User {
+  id     Int    @id
+  posts  Post[]
+  pinned Post[] @relation("Pinned")
+}
+
+model Post {
+  id       Int    @id
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id])
+  pinnedBy User[] @relation("Pinned")
+}
+`;
+    const expectedMixedRelations = {
+      User: {
+        pinned: {
+          type: "manyToMany",
+          to: "Post",
+          field: "id",
+          reference: "id",
+          through: {
+            sheet: "_Pinned",
+            field: "userId",
+            reference: "postId",
+          },
+        },
+        posts: {
+          type: "oneToMany",
+          to: "Post",
+          field: "id",
+          reference: "authorId",
+        },
+      },
+      Post: {
+        author: {
+          type: "manyToOne",
+          to: "User",
+          field: "authorId",
+          reference: "id",
+        },
+        pinnedBy: {
+          type: "manyToMany",
+          to: "User",
+          field: "id",
+          reference: "id",
+          through: {
+            sheet: "_Pinned",
+            field: "postId",
+            reference: "userId",
+          },
+        },
+      },
+    };
+
+    it("should pair an unnamed FK with the unnamed list even when a named list is declared first", () => {
+      expect(extractRelations(namedListFirstSchema)).toEqual(
+        expectedMixedRelations,
+      );
+    });
+
+    it("should extract the same relations for both list declaration orders", () => {
+      expect(extractRelations(namedListFirstSchema)).toEqual(
+        extractRelations(unnamedListFirstSchema),
+      );
+    });
+
+    it("should not invent an unnamed through sheet when a named list is declared first", () => {
+      const result = extractRelations(namedListFirstSchema);
+
+      const throughSheets = Object.values(result)
+        .flatMap((relations) => Object.values(relations))
+        .map((definition) => definition.through?.sheet)
+        .filter((sheet) => sheet !== undefined);
+
+      expect([...new Set(throughSheets)]).toEqual(["_Pinned"]);
+    });
+
+    it("should keep unnamed oneToMany and unnamed implicit manyToMany pairs working", () => {
+      const schema = `
+model User {
+  id    Int    @id
+  posts Post[]
+}
+
+model Post {
+  id       Int    @id
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id])
+  tags     Tag[]
+}
+
+model Tag {
+  id    Int    @id
+  posts Post[]
+}
+`;
+      const result = extractRelations(schema);
+
+      expect(result).toEqual({
+        User: {
+          posts: {
+            type: "oneToMany",
+            to: "Post",
+            field: "id",
+            reference: "authorId",
+          },
+        },
+        Post: {
+          author: {
+            type: "manyToOne",
+            to: "User",
+            field: "authorId",
+            reference: "id",
+          },
+          tags: {
+            type: "manyToMany",
+            to: "Tag",
+            field: "id",
+            reference: "id",
+            through: {
+              sheet: "_PostToTag",
+              field: "postId",
+              reference: "tagId",
+            },
+          },
+        },
+        Tag: {
+          posts: {
+            type: "manyToMany",
+            to: "Post",
+            field: "id",
+            reference: "id",
+            through: {
+              sheet: "_PostToTag",
+              field: "tagId",
+              reference: "postId",
+            },
+          },
+        },
+      });
+    });
+
+    it("should keep named oneToMany and named manyToMany pairs working", () => {
+      const schema = `
+model User {
+  id     Int    @id
+  pinned Post[] @relation("Pinned")
+  posts  Post[] @relation("Written")
+}
+
+model Post {
+  id       Int    @id
+  authorId Int
+  author   User   @relation("Written", fields: [authorId], references: [id])
+  pinnedBy User[] @relation("Pinned")
+}
+`;
+      expect(extractRelations(schema)).toEqual(expectedMixedRelations);
+    });
+
+    it("should pair the name argument form the same as the shorthand", () => {
+      const schema = `
+model User {
+  id     Int    @id
+  pinned Post[] @relation(name: "Pinned")
+  posts  Post[]
+}
+
+model Post {
+  id       Int    @id
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id])
+  pinnedBy User[] @relation(name: "Pinned")
+}
+`;
+      expect(extractRelations(schema)).toEqual(expectedMixedRelations);
+    });
+  });
 });
