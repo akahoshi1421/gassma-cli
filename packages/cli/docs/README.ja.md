@@ -156,6 +156,7 @@ function myFunction() {
 |`--output <dir>`|gassma-migration.js の出力先ディレクトリ（デフォルトは .clasp.json の rootDir）|
 |`--schema <path>`|マイグレーション対象の `.prisma` ファイルのパス|
 |`--config <path>`|GASsma config ファイルのカスタムパス|
+|`--accept-data-loss`|スキーマに無いシート・列を削除|
 
 ### bootstrap
 
