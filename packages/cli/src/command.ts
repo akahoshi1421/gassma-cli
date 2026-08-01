@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { bootstrap } from "./bootstrap/bootstrapCommand";
+import { dbPush } from "./db/dbPushCommand";
 import { debugCommand } from "./debug/debugCommand";
 import { ArgumentError } from "./error/mainError";
 import { format } from "./format/formatCommand";
@@ -79,6 +80,33 @@ program
   .action((options) => {
     migrate({
       name: options.name,
+      output: options.output,
+      schema: options.schema,
+      config: options.config,
+      acceptDataLoss: options.acceptDataLoss,
+    });
+  });
+
+const db = program
+  .command("db")
+  .description("Manage your spreadsheet sheets during development");
+
+db.command("push")
+  .description(
+    "Generate a GAS function that syncs spreadsheet sheets with your schema, without recording a migration",
+  )
+  .option(
+    "--output <dir>",
+    "Directory to write gassma-migration.js (defaults to rootDir in .clasp.json)",
+  )
+  .option("--schema <path>", "Path to a specific .prisma file to push from")
+  .option("--config <path>", "Custom path to your GASsma config file")
+  .option(
+    "--accept-data-loss",
+    "Delete sheets and columns that are not in the schema",
+  )
+  .action((options) => {
+    dbPush({
       output: options.output,
       schema: options.schema,
       config: options.config,
