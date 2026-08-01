@@ -3,8 +3,10 @@ import {
   findFirstAttribute,
 } from "@loancrate/prisma-schema-parser";
 import type { ModelDeclaration } from "@loancrate/prisma-schema-parser";
+import { assertNoIgnoredRelationColumns } from "./assertNoIgnoredRelationColumns";
 import { assertUniqueThroughSheets } from "./assertUniqueThroughSheets";
 import { detectImplicitManyToMany } from "./detectImplicitManyToMany";
+import { extractIgnore } from "./extractIgnore";
 import {
   getRelationName,
   getFieldReferences,
@@ -126,6 +128,7 @@ const extractRelations = (schemaText: string): RelationsConfig => {
 
   detectImplicitManyToMany(models, result);
   assertUniqueThroughSheets(result);
+  assertNoIgnoredRelationColumns(result, extractIgnore(schemaText));
 
   return result;
 };

@@ -1,14 +1,37 @@
 import { parsePrismaSchema } from "@loancrate/prisma-schema-parser";
+import { IgnoredRelationColumnError } from "../error/mainError";
 import { countModelsInAst } from "../generate/read/countModels";
+import { extractRelations } from "../generate/read/extractRelations";
 
 type ValidationError = {
-  type: "syntax" | "missingGenerator" | "missingOutput" | "noModels";
+  type:
+    | "syntax"
+    | "missingGenerator"
+    | "missingOutput"
+    | "noModels"
+    | "ignoredRelationColumn";
   message: string;
 };
 
 type ValidationResult = {
   valid: boolean;
   errors: ValidationError[];
+};
+
+const collectIgnoredRelationColumnErrors = (
+  schemaText: string,
+): ValidationError[] => {
+  try {
+    extractRelations(schemaText);
+  } catch (e) {
+    if (e instanceof IgnoredRelationColumnError) {
+      return e.details.map((message) => ({
+        type: "ignoredRelationColumn",
+        message,
+      }));
+    }
+  }
+  return [];
 };
 
 const validateSchema = (schemaText: string): ValidationResult => {
@@ -50,6 +73,8 @@ const validateSchema = (schemaText: string): ValidationResult => {
           "You don't have any models defined in your schema, so nothing will be generated. At least one model is required.",
       });
     }
+
+    errors.push(...collectIgnoredRelationColumnErrors(schemaText));
   } catch (e) {
     errors.push({
       type: "syntax",

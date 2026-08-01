@@ -58,6 +58,18 @@ class MigrateOutputDirError extends Error {
   }
 }
 
+class IgnoredRelationColumnError extends Error {
+  readonly details: string[];
+
+  constructor(details: string[]) {
+    super(
+      "GASsmaIgnoredRelationColumnError: @relation uses a column marked @ignore.\n" +
+        details.map((detail) => `  - ${detail}`).join("\n"),
+    );
+    this.details = details;
+  }
+}
+
 class ThroughSheetConflictError extends Error {
   constructor(sheetName: string, firstPair: string, secondPair: string) {
     super(
@@ -76,5 +88,6 @@ export {
   GassmaConfigEnvError,
   GassmaConfigLoadError,
   MigrateOutputDirError,
+  IgnoredRelationColumnError,
   ThroughSheetConflictError,
 };
