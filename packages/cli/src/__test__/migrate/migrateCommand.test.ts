@@ -517,7 +517,7 @@ model Post {
       .mock.calls.map((call) => call.join(" "))
       .join("\n");
     expect(logged).toContain(
-      "deletes sheets and columns that are not in the schema",
+      'Running the "gassmaMigrate" function will delete sheets and columns that are not in the schema.',
     );
   });
 
@@ -531,7 +531,7 @@ model Post {
       .mock.calls.map((call) => call.join(" "))
       .join("\n");
     expect(logged).not.toContain(
-      "deletes sheets and columns that are not in the schema",
+      "will delete sheets and columns that are not in the schema",
     );
   });
 });

@@ -121,7 +121,7 @@ describe("dbPush", () => {
     dbPush({ output: "./out", acceptDataLoss: true });
 
     expect(getLoggedOutput()).toContain(
-      "deletes sheets and columns that are not in the schema",
+      'Running the "gassmaMigrate" function will delete sheets and columns that are not in the schema.',
     );
   });
 
@@ -131,7 +131,7 @@ describe("dbPush", () => {
     dbPush({ output: "./out" });
 
     expect(getLoggedOutput()).not.toContain(
-      "deletes sheets and columns that are not in the schema",
+      "will delete sheets and columns that are not in the schema",
     );
   });
 
