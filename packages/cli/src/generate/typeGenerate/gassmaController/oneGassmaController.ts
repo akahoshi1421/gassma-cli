@@ -3,6 +3,7 @@ const getOneGassmaController = (schemaName: string, sheetName: string) => {
   const fr = `${self}FindResult`;
   const c = `Gassma.At<CMap, "${sheetName}">`;
   const res = `${fr}<T["select"], T["include"], T["omit"], GO, O, CMap>`;
+  const resNoArg = `${fr}<unknown, unknown, unknown, GO, O, CMap>`;
   const arg = (dataSuffix: string) =>
     `T extends ${self}${dataSuffix} & Gassma.ComputedArgs<${c}>`;
 
@@ -20,16 +21,21 @@ export declare class ${self}Controller<GO extends ${self}Omit = {}, O = {}, CMap
   createManyAndReturn<${arg("CreateManyAndReturnData")}>(createdData: T): ${res}[];
   create<${arg("CreateData")}>(createdData: T): ${res};
   findFirst<${arg("FindFirstData")}>(findData: T): ${res} | null;
+  findFirst(): ${resNoArg} | null;
   findFirstOrThrow<${arg("FindFirstData")}>(findData: T): ${res};
+  findFirstOrThrow(): ${resNoArg};
   findMany<${arg("FindManyData")}>(findData: T): ${res}[];
+  findMany(): ${resNoArg}[];
   update<${arg("UpdateSingleData")}>(updateData: T): ${res} | null;
   updateMany(updateData: ${self}UpdateData): UpdateManyReturn;
   updateManyAndReturn(updateData: ${self}UpdateData): ${fr}<undefined, undefined, undefined, GO, O, CMap>[];
   upsert<${arg("UpsertSingleData")}>(upsertData: T): ${res};
   delete<${arg("DeleteSingleData")}>(deleteData: T): ${res} | null;
   deleteMany(deleteData: ${self}DeleteData): DeleteManyReturn;
+  deleteMany(): DeleteManyReturn;
   aggregate<T extends ${self}AggregateData>(aggregateData: T): ${self}AggregateResult<T>;
   count(coutData: ${self}CountData): number;
+  count(): number;
   groupBy<T extends ${self}GroupByData>(groupByData: T): ${self}GroupByResult<T>[];
 }
 `;
