@@ -72,20 +72,11 @@ const findInverseField = (
     if (baseType.kind !== "typeId") return false;
     if (baseType.name.value !== targetModelName) return false;
 
-    if (relationName) {
-      if (getRelationName(m) !== relationName) return false;
-      const relAttr = findFirstAttribute(m.attributes, "relation");
-      if (relAttr) {
-        const relFields = getFieldReferences(relAttr.args, "fields");
-        if (relFields) return false;
-      }
-      return true;
-    }
+    if (getRelationName(m) !== relationName) return false;
 
     const attr = findFirstAttribute(m.attributes, "relation");
     if (!attr) return true;
-    const fields = getFieldReferences(attr.args, "fields");
-    return fields === null;
+    return getFieldReferences(attr.args, "fields") === null;
   });
 };
 
