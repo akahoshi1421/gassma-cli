@@ -8,7 +8,7 @@ const printNextSteps = (
   console.log(`\n${headline}\n`);
   if (acceptDataLoss)
     console.log(
-      "⚠️ This migration deletes sheets and columns that are not in the schema.\n",
+      '⚠️ Running the "gassmaMigrate" function will delete sheets and columns that are not in the schema.\n',
     );
   console.log("Next steps:");
   console.log(`  1. Run "clasp push" (or "npm run push") to upload ${STUB_FILE_NAME}
