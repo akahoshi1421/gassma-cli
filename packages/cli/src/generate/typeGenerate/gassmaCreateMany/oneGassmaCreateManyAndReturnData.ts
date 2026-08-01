@@ -1,3 +1,4 @@
+import { rawAllowedWrap } from "../util/rawAllowed";
 import { skipOptionalWrap, skipUnion } from "../util/skipUnion";
 
 const getOneGassmaCreateManyAndReturnData = (
@@ -7,7 +8,7 @@ const getOneGassmaCreateManyAndReturnData = (
 ) => {
   const sk = skipUnion(strict);
   const elementType = skipOptionalWrap(
-    `Gassma${schemaName}${sheetName}Use`,
+    rawAllowedWrap(`Gassma${schemaName}${sheetName}Use`),
     strict,
   );
   const selectType = `Gassma${schemaName}${sheetName}Select`;

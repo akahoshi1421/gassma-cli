@@ -5,12 +5,12 @@ describe("getOneGassmaCreateMany", () => {
   it("should emit CreateManyData with data array of Use", () => {
     const result = getOneGassmaCreateMany("", "User");
     expect(result).toContain("export type GassmaUserCreateManyData = {");
-    expect(result).toContain("data: GassmaUserUse[];");
+    expect(result).toContain("data: Gassma.RawAllowed<GassmaUserUse>[];");
   });
 
   it("should prepend schemaName", () => {
     const result = getOneGassmaCreateMany("Test", "User");
     expect(result).toContain("export type GassmaTestUserCreateManyData");
-    expect(result).toContain("GassmaTestUserUse[]");
+    expect(result).toContain("Gassma.RawAllowed<GassmaTestUserUse>[]");
   });
 });

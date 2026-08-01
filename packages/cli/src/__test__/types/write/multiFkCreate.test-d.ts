@@ -1,5 +1,6 @@
 import { expectTypeOf } from "vitest";
 import type {
+  Gassma,
   GassmaClient,
   GassmaCourseUse,
   GassmaCourseWhereUse,
@@ -15,29 +16,29 @@ declare const client: GassmaClient;
 // 複数FKモデルの create data は FK ごとの XOR の交差になる
 {
   expectTypeOf<GassmaEnrollmentCreateData["data"]>().toEqualTypeOf<
-    Omit<GassmaEnrollmentUse, "studentId" | "courseId"> &
+    Gassma.RawAllowed<Omit<GassmaEnrollmentUse, "studentId" | "courseId">> &
       (
-        | Pick<GassmaEnrollmentUse, "studentId">
+        | Gassma.RawAllowed<Pick<GassmaEnrollmentUse, "studentId">>
         | {
             student: {
-              create?: GassmaStudentUse;
+              create?: Gassma.RawAllowed<GassmaStudentUse>;
               connect?: GassmaStudentWhereUse;
               connectOrCreate?: {
                 where: GassmaStudentWhereUse;
-                create: GassmaStudentUse;
+                create: Gassma.RawAllowed<GassmaStudentUse>;
               };
             };
           }
       ) &
       (
-        | Pick<GassmaEnrollmentUse, "courseId">
+        | Gassma.RawAllowed<Pick<GassmaEnrollmentUse, "courseId">>
         | {
             course: {
-              create?: GassmaCourseUse;
+              create?: Gassma.RawAllowed<GassmaCourseUse>;
               connect?: GassmaCourseWhereUse;
               connectOrCreate?: {
                 where: GassmaCourseWhereUse;
-                create: GassmaCourseUse;
+                create: Gassma.RawAllowed<GassmaCourseUse>;
               };
             };
           }

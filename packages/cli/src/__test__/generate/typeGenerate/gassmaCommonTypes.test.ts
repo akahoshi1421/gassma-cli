@@ -62,9 +62,21 @@ describe("getGassmaCommonTypes", () => {
   });
 
   it("should not contain skip declarations by default", () => {
-    expect(result).not.toContain("skip");
+    expect(result).not.toContain("const skip");
     expect(result).not.toContain("SkipValue");
     expect(result).not.toContain("SkipOptional");
+  });
+
+  it("should generate RawValue type and the raw function", () => {
+    expect(result).toContain("type RawValue = {");
+    expect(result).toContain('readonly __gassmaRawValueBrand: "Gassma.raw";');
+    expect(result).toContain("function raw(value: string): RawValue;");
+  });
+
+  it("should generate RawAllowed helper", () => {
+    expect(result).toContain(
+      "type RawAllowed<T> = { [K in keyof T]: T[K] | RawValue };",
+    );
   });
 
   describe("strict mode", () => {
@@ -106,6 +118,13 @@ describe("getGassmaCommonTypes", () => {
 
     it("should not add SkipValue to array element types", () => {
       expect(strictResult).not.toContain("(T | SkipValue)[]");
+    });
+
+    it("should keep raw declarations in strict mode", () => {
+      expect(strictResult).toContain("function raw(value: string): RawValue;");
+      expect(strictResult).toContain(
+        "type RawAllowed<T> = { [K in keyof T]: T[K] | RawValue };",
+      );
     });
   });
 });

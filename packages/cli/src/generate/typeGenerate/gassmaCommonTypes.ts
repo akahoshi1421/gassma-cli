@@ -10,7 +10,28 @@ const getGassmaCommonTypes = (strict?: boolean) => {
   const skipDecls = strict ? getSkipDeclarations() : "";
   const sk = strict ? " | SkipValue" : "";
 
-  return `${skipDecls}  type RelationsConfig = Record<string, Record<string, unknown>>;
+  return `${skipDecls}  type RawValue = {
+    readonly __gassmaRawValueBrand: "Gassma.raw";
+  };
+
+  /**
+   * Writes the value to the cell as-is, skipping formula-injection escaping.
+   * A string starting with \`=\` therefore becomes a live spreadsheet formula.
+   *
+   * Susceptible to formula injection: never pass unsanitized user input.
+   *
+   * @example
+   * \`\`\`
+   * gassma.Report.create({
+   *   data: { title: userInput, total: Gassma.raw("=SUM(B2:B10)") },
+   * });
+   * \`\`\`
+   */
+  function raw(value: string): RawValue;
+
+  type RawAllowed<T> = { [K in keyof T]: T[K] | RawValue };
+
+  type RelationsConfig = Record<string, Record<string, unknown>>;
 
   type NumberOperation = {
     increment?: number;

@@ -26,14 +26,16 @@ describe("buildCreateDataType", () => {
   };
 
   it("should return the bare Use type without relations", () => {
-    expect(buildCreateDataType("", "User")).toBe("GassmaUserUse");
+    expect(buildCreateDataType("", "User")).toBe(
+      "Gassma.RawAllowed<GassmaUserUse>",
+    );
   });
 
   it("should build the FK XOR for manyToOne relations", () => {
     const result = buildCreateDataType("", "Post", postRelations);
 
     expect(result).toBe(
-      'Omit<GassmaPostUse, "authorId"> & (Pick<GassmaPostUse, "authorId"> | { "author": { create?: GassmaUserUse; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: GassmaUserUse } } })',
+      'Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> & (Gassma.RawAllowed<Pick<GassmaPostUse, "authorId">> | { "author": { create?: Gassma.RawAllowed<GassmaUserUse>; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: Gassma.RawAllowed<GassmaUserUse> } } })',
     );
   });
 
@@ -52,7 +54,7 @@ describe("buildCreateDataType", () => {
     const result = buildCreateDataType("", "Profile", relations);
 
     expect(result).toBe(
-      'Omit<GassmaProfileUse, "userId"> & (Pick<GassmaProfileUse, "userId"> | { "user": { create?: GassmaUserUse; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: GassmaUserUse } } })',
+      'Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">> & (Gassma.RawAllowed<Pick<GassmaProfileUse, "userId">> | { "user": { create?: Gassma.RawAllowed<GassmaUserUse>; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: Gassma.RawAllowed<GassmaUserUse> } } })',
     );
   });
 
@@ -70,17 +72,19 @@ describe("buildCreateDataType", () => {
 
     const result = buildCreateDataType("", "User", relations);
 
-    expect(result).toContain("GassmaUserUse & {");
+    expect(result).toContain("Gassma.RawAllowed<GassmaUserUse> & {");
     expect(result).not.toContain("Pick<");
-    expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">');
+    expect(result).toContain(
+      'create?: Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">>',
+    );
   });
 
   it("should append create-context nested fields for non-FK relations", () => {
     const result = buildCreateDataType("", "User", userRelations);
 
-    expect(result).toContain("GassmaUserUse & {");
+    expect(result).toContain("Gassma.RawAllowed<GassmaUserUse> & {");
     expect(result).toContain(
-      'createMany?: { data: Omit<GassmaPostUse, "authorId">[] }',
+      'createMany?: { data: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[] }',
     );
   });
 

@@ -7,7 +7,7 @@ describe("getOneGassmaCreate", () => {
     const result = getOneGassmaCreate("", "User");
 
     expect(result).toContain("export type GassmaUserCreateData");
-    expect(result).toContain("data: GassmaUserUse");
+    expect(result).toContain("data: Gassma.RawAllowed<GassmaUserUse>");
   });
 
   it("should add nested write operations with target model types for oneToMany", () => {
@@ -26,16 +26,16 @@ describe("getOneGassmaCreate", () => {
 
     expect(result).toContain('"posts"?:');
     expect(result).toContain(
-      'create?: Omit<GassmaPostUse, "authorId"> | Omit<GassmaPostUse, "authorId">[]',
+      'create?: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> | Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[]',
     );
     expect(result).toContain(
-      'createMany?: { data: Omit<GassmaPostUse, "authorId">[] }',
+      'createMany?: { data: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[] }',
     );
     expect(result).toContain(
       "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
     );
     expect(result).toContain(
-      'connectOrCreate?: { where: GassmaPostWhereUse; create: Omit<GassmaPostUse, "authorId"> }',
+      'connectOrCreate?: { where: GassmaPostWhereUse; create: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> }',
     );
   });
 
@@ -54,10 +54,12 @@ describe("getOneGassmaCreate", () => {
     const result = getOneGassmaCreate("", "User", relations);
 
     expect(result).toContain('"profile"?:');
-    expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">');
+    expect(result).toContain(
+      'create?: Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">>',
+    );
     expect(result).toContain("connect?: GassmaProfileWhereUse");
     expect(result).toContain(
-      'connectOrCreate?: { where: GassmaProfileWhereUse; create: Omit<GassmaProfileUse, "userId"> }',
+      'connectOrCreate?: { where: GassmaProfileWhereUse; create: Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">> }',
     );
   });
 
@@ -97,7 +99,7 @@ describe("getOneGassmaCreate", () => {
     const result = getOneGassmaCreate("", "Post", relations);
 
     expect(result).toContain(
-      'data: Omit<GassmaPostUse, "authorId"> & (Pick<GassmaPostUse, "authorId"> | { "author": { create?: GassmaUserUse; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: GassmaUserUse } } });',
+      'data: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> & (Gassma.RawAllowed<Pick<GassmaPostUse, "authorId">> | { "author": { create?: Gassma.RawAllowed<GassmaUserUse>; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: Gassma.RawAllowed<GassmaUserUse> } } });',
     );
   });
 
@@ -127,10 +129,10 @@ describe("getOneGassmaCreate", () => {
     const result = getOneGassmaCreate("", "Post", relations);
 
     expect(result).toContain(
-      'data: Omit<GassmaPostUse, "authorId"> & (Pick<GassmaPostUse, "authorId"> | { "author": {',
+      'data: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> & (Gassma.RawAllowed<Pick<GassmaPostUse, "authorId">> | { "author": {',
     );
     expect(result).toContain(
-      '"tags"?: { create?: GassmaTagUse | GassmaTagUse[]',
+      '"tags"?: { create?: Gassma.RawAllowed<GassmaTagUse> | Gassma.RawAllowed<GassmaTagUse>[]',
     );
     expect(result).not.toContain('"author"?:');
   });
@@ -155,9 +157,15 @@ describe("getOneGassmaCreate", () => {
 
     const result = getOneGassmaCreate("", "PostTag", relations);
 
-    expect(result).toContain('Omit<GassmaPostTagUse, "postId" | "tagId">');
-    expect(result).toContain('(Pick<GassmaPostTagUse, "postId"> | { "post": {');
-    expect(result).toContain('(Pick<GassmaPostTagUse, "tagId"> | { "tag": {');
+    expect(result).toContain(
+      'Gassma.RawAllowed<Omit<GassmaPostTagUse, "postId" | "tagId">>',
+    );
+    expect(result).toContain(
+      '(Gassma.RawAllowed<Pick<GassmaPostTagUse, "postId">> | { "post": {',
+    );
+    expect(result).toContain(
+      '(Gassma.RawAllowed<Pick<GassmaPostTagUse, "tagId">> | { "tag": {',
+    );
   });
 
   it("should include select property", () => {
@@ -199,7 +207,7 @@ describe("getOneGassmaCreate", () => {
 
     const result = getOneGassmaCreate("", "User", relations);
 
-    expect(result).toContain("data: GassmaUserUse;");
+    expect(result).toContain("data: Gassma.RawAllowed<GassmaUserUse>;");
     expect(result).not.toContain("NestedWriteOperation");
   });
 });

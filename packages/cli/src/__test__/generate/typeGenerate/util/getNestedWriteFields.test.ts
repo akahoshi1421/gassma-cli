@@ -46,10 +46,10 @@ describe("getNestedWriteFields", () => {
       );
 
       expect(result).toContain('"author"?:');
-      expect(result).toContain("create?: GassmaUserUse");
+      expect(result).toContain("create?: Gassma.RawAllowed<GassmaUserUse>");
       expect(result).toContain("connect?: GassmaUserWhereUse");
       expect(result).toContain(
-        "connectOrCreate?: { where: GassmaUserWhereUse; create: GassmaUserUse }",
+        "connectOrCreate?: { where: GassmaUserWhereUse; create: Gassma.RawAllowed<GassmaUserUse> }",
       );
     });
 
@@ -61,7 +61,9 @@ describe("getNestedWriteFields", () => {
         "update",
       );
 
-      expect(result).toContain("update?: Partial<GassmaUserUse>");
+      expect(result).toContain(
+        "update?: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue }>",
+      );
       expect(result).toContain("delete?: true");
       expect(result).toContain("disconnect?: true");
     });
@@ -75,10 +77,10 @@ describe("getNestedWriteFields", () => {
       );
 
       expect(result).toContain(
-        'create?: Omit<GassmaPostUse, "authorId"> | Omit<GassmaPostUse, "authorId">[]',
+        'create?: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> | Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[]',
       );
       expect(result).toContain(
-        'connectOrCreate?: { where: GassmaPostWhereUse; create: Omit<GassmaPostUse, "authorId"> }',
+        'connectOrCreate?: { where: GassmaPostWhereUse; create: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> }',
       );
     });
 
@@ -90,9 +92,11 @@ describe("getNestedWriteFields", () => {
         "update",
       );
 
-      expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">;');
       expect(result).toContain(
-        'connectOrCreate?: { where: GassmaProfileWhereUse; create: Omit<GassmaProfileUse, "userId"> }',
+        'create?: Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">>;',
+      );
+      expect(result).toContain(
+        'connectOrCreate?: { where: GassmaProfileWhereUse; create: Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">> }',
       );
     });
 
@@ -105,7 +109,9 @@ describe("getNestedWriteFields", () => {
       );
 
       expect(result).toContain("connect?: GassmaProfileWhereUse;");
-      expect(result).toContain("update?: Partial<GassmaProfileUse>");
+      expect(result).toContain(
+        "update?: Partial<{ [K in keyof GassmaProfileUse]: GassmaProfileUse[K] | Gassma.RawValue }>",
+      );
       expect(result).toContain("delete?: true");
       expect(result).toContain("disconnect?: true");
     });
@@ -135,8 +141,10 @@ describe("getNestedWriteFields", () => {
 
       const result = getNestedWriteFields("", "Post", relations, "update");
 
-      expect(result).toContain("create?: GassmaUserUse;");
-      expect(result).toContain("create?: GassmaTagUse | GassmaTagUse[]");
+      expect(result).toContain("create?: Gassma.RawAllowed<GassmaUserUse>;");
+      expect(result).toContain(
+        "create?: Gassma.RawAllowed<GassmaTagUse> | Gassma.RawAllowed<GassmaTagUse>[]",
+      );
       expect(result).not.toContain("Omit<");
     });
 
@@ -149,7 +157,7 @@ describe("getNestedWriteFields", () => {
       );
 
       expect(result).toContain(
-        'createMany?: { data: Omit<GassmaPostUse, "authorId">[] }',
+        'createMany?: { data: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[] }',
       );
     });
 
@@ -196,7 +204,7 @@ describe("getNestedWriteFields", () => {
       );
 
       expect(result).toContain(
-        'update?: { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) }> } | { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) }> }[]',
+        'update?: { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) | Gassma.RawValue }> } | { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) | Gassma.RawValue }> }[]',
       );
     });
 
@@ -215,7 +223,7 @@ describe("getNestedWriteFields", () => {
       );
 
       expect(result).toContain(
-        'update?: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) }>',
+        'update?: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) | Gassma.RawValue }>',
       );
     });
 
@@ -233,7 +241,9 @@ describe("getNestedWriteFields", () => {
         dictYaml,
       );
 
-      expect(result).toContain("update?: Partial<GassmaUserUse>");
+      expect(result).toContain(
+        "update?: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue }>",
+      );
       expect(result).not.toContain("NumberOperation");
     });
 
@@ -251,7 +261,9 @@ describe("getNestedWriteFields", () => {
         dictYaml,
       );
 
-      expect(result).toContain("update?: Partial<GassmaUserUse>");
+      expect(result).toContain(
+        "update?: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue }>",
+      );
     });
 
     it("should emit only ops the core processes for manyToMany", () => {
@@ -306,16 +318,16 @@ describe("getNestedWriteFields", () => {
       );
 
       expect(result).toContain(
-        'create?: Omit<GassmaPostUse, "authorId"> | Omit<GassmaPostUse, "authorId">[]',
+        'create?: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> | Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[]',
       );
       expect(result).toContain(
-        'createMany?: { data: Omit<GassmaPostUse, "authorId">[] }',
+        'createMany?: { data: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[] }',
       );
       expect(result).toContain(
         "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
       );
       expect(result).toContain(
-        'connectOrCreate?: { where: GassmaPostWhereUse; create: Omit<GassmaPostUse, "authorId"> }',
+        'connectOrCreate?: { where: GassmaPostWhereUse; create: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> }',
       );
       expect(result).not.toContain("update?:");
       expect(result).not.toContain("delete?:");
@@ -343,12 +355,14 @@ describe("getNestedWriteFields", () => {
 
       const result = getNestedWriteFields("", "Post", relations, "create");
 
-      expect(result).toContain("create?: GassmaTagUse | GassmaTagUse[]");
+      expect(result).toContain(
+        "create?: Gassma.RawAllowed<GassmaTagUse> | Gassma.RawAllowed<GassmaTagUse>[]",
+      );
       expect(result).toContain(
         "connect?: GassmaTagWhereUse | GassmaTagWhereUse[]",
       );
       expect(result).toContain(
-        "connectOrCreate?: { where: GassmaTagWhereUse; create: GassmaTagUse }",
+        "connectOrCreate?: { where: GassmaTagWhereUse; create: Gassma.RawAllowed<GassmaTagUse> }",
       );
       expect(result).not.toContain("createMany?:");
       expect(result).not.toContain("disconnect?:");
@@ -363,10 +377,12 @@ describe("getNestedWriteFields", () => {
         "create",
       );
 
-      expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">');
+      expect(result).toContain(
+        'create?: Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">>',
+      );
       expect(result).toContain("connect?: GassmaProfileWhereUse");
       expect(result).toContain(
-        'connectOrCreate?: { where: GassmaProfileWhereUse; create: Omit<GassmaProfileUse, "userId"> }',
+        'connectOrCreate?: { where: GassmaProfileWhereUse; create: Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">> }',
       );
       expect(result).not.toContain("createMany?:");
       expect(result).not.toContain("update?:");

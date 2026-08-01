@@ -3,6 +3,7 @@ import type {
   RelationsConfig,
 } from "../../read/extractRelations";
 import { getNestedWriteFields } from "./getNestedWriteFields";
+import { rawAllowedWrap } from "./rawAllowed";
 import { skipOptionalWrap, skipUnion } from "./skipUnion";
 
 const buildFkXorPart = (
@@ -14,10 +15,10 @@ const buildFkXorPart = (
 ): string => {
   const sk = skipUnion(strict);
   const target = `Gassma${schemaName}${rel.to}`;
-  const targetCreate = skipOptionalWrap(`${target}Use`, strict);
+  const targetCreate = skipOptionalWrap(rawAllowedWrap(`${target}Use`), strict);
   const ops = `create?: ${targetCreate}${sk}; connect?: ${target}WhereUse${sk}; connectOrCreate?: { where: ${target}WhereUse; create: ${targetCreate} }${sk}`;
 
-  return `(Pick<${use}, "${rel.field}"> | { "${relationName}": { ${ops} } })`;
+  return `(${rawAllowedWrap(`Pick<${use}, "${rel.field}">`)} | { "${relationName}": { ${ops} } })`;
 };
 
 const buildCreateDataType = (
@@ -44,8 +45,11 @@ const buildCreateDataType = (
     .join(" | ");
   const baseType =
     fkRelationNames.length > 0
-      ? skipOptionalWrap(`Omit<${use}, ${fkFieldsUnion}>`, strict)
-      : skipOptionalWrap(use, strict);
+      ? skipOptionalWrap(
+          rawAllowedWrap(`Omit<${use}, ${fkFieldsUnion}>`),
+          strict,
+        )
+      : skipOptionalWrap(rawAllowedWrap(use), strict);
   const xorParts = fkRelationNames.map((name) =>
     buildFkXorPart(schemaName, use, name, modelRelations[name], strict),
   );

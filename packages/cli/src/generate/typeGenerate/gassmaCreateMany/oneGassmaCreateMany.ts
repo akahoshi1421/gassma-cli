@@ -1,3 +1,4 @@
+import { rawAllowedWrap } from "../util/rawAllowed";
 import { skipOptionalWrap } from "../util/skipUnion";
 
 const getOneGassmaCreateMany = (
@@ -6,7 +7,7 @@ const getOneGassmaCreateMany = (
   strict?: boolean,
 ) => {
   const elementType = skipOptionalWrap(
-    `Gassma${schemaName}${sheetName}Use`,
+    rawAllowedWrap(`Gassma${schemaName}${sheetName}Use`),
     strict,
   );
 

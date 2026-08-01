@@ -28,14 +28,14 @@ describe("getOneGassmaUpsertSingleData", () => {
   it("should include create property", () => {
     const result = getOneGassmaUpsertSingleData("", "User", userContent);
 
-    expect(result).toContain("create: GassmaUserUse");
+    expect(result).toContain("create: Gassma.RawAllowed<GassmaUserUse>");
   });
 
   it("should include update with NumberOperation only on number columns", () => {
     const result = getOneGassmaUpsertSingleData("", "User", userContent);
 
     expect(result).toContain(
-      'update: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) }>',
+      'update: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) | Gassma.RawValue }>',
     );
   });
 
@@ -44,7 +44,9 @@ describe("getOneGassmaUpsertSingleData", () => {
       name: ["string"],
     });
 
-    expect(result).toContain("update: Partial<GassmaUserUse>");
+    expect(result).toContain(
+      "update: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue }>",
+    );
     expect(result).not.toContain("NumberOperation");
   });
 
@@ -94,7 +96,7 @@ describe("getOneGassmaUpsertSingleData", () => {
 
     expect(result).toContain('"posts"?:');
     expect(result).toContain(
-      'create?: Omit<GassmaPostUse, "authorId"> | Omit<GassmaPostUse, "authorId">[]',
+      'create?: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> | Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[]',
     );
     expect(result).toContain(
       "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
@@ -127,7 +129,7 @@ describe("getOneGassmaUpsertSingleData", () => {
     );
 
     expect(result).toContain(
-      'update?: { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) }> }',
+      'update?: { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) | Gassma.RawValue }> }',
     );
   });
 
@@ -151,7 +153,7 @@ describe("getOneGassmaUpsertSingleData", () => {
     );
 
     expect(result).toContain(
-      'create: Omit<GassmaPostUse, "authorId"> & (Pick<GassmaPostUse, "authorId"> | { "author": { create?: GassmaUserUse; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: GassmaUserUse } } });',
+      'create: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> & (Gassma.RawAllowed<Pick<GassmaPostUse, "authorId">> | { "author": { create?: Gassma.RawAllowed<GassmaUserUse>; connect?: GassmaUserWhereUse; connectOrCreate?: { where: GassmaUserWhereUse; create: Gassma.RawAllowed<GassmaUserUse> } } });',
     );
   });
 
@@ -179,7 +181,7 @@ describe("getOneGassmaUpsertSingleData", () => {
     );
 
     expect(createPart).toContain(
-      'createMany?: { data: Omit<GassmaPostUse, "authorId">[] }',
+      'createMany?: { data: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[] }',
     );
     expect(createPart).not.toContain("update?:");
     expect(createPart).not.toContain("delete?:");
@@ -209,7 +211,7 @@ describe("getOneGassmaUpsertSingleData", () => {
     const updatePart = result.slice(result.indexOf("update:"));
 
     expect(updatePart).toContain(
-      'createMany?: { data: Omit<GassmaPostUse, "authorId">[] }',
+      'createMany?: { data: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[] }',
     );
     expect(updatePart).toContain(
       "deleteMany?: GassmaPostWhereUse | GassmaPostWhereUse[]",

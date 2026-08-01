@@ -3,6 +3,7 @@ import type {
   RelationsConfig,
 } from "../../read/extractRelations";
 import { buildUpdateDataType } from "./buildUpdateDataType";
+import { rawAllowedWrap } from "./rawAllowed";
 import { skipOptionalWrap, skipUnion } from "./skipUnion";
 
 type NestedWriteContext = "create" | "update";
@@ -22,11 +23,11 @@ const buildBaseOpTypes = (
   target: string,
   strict?: boolean,
 ): BaseOpTypes => {
-  const rawChildCreate =
+  const baseChildCreate =
     rel.type === "oneToMany" || rel.type === "oneToOne"
       ? `Omit<${target}Use, "${rel.reference}">`
       : `${target}Use`;
-  const childCreate = skipOptionalWrap(rawChildCreate, strict);
+  const childCreate = skipOptionalWrap(rawAllowedWrap(baseChildCreate), strict);
   const isList = isListRelation(rel.type);
   const createType = isList ? `${childCreate} | ${childCreate}[]` : childCreate;
   const connectType = isList

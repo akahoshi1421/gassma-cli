@@ -24,7 +24,7 @@ describe("getOneGassmaUpdateSingleData", () => {
     const result = getOneGassmaUpdateSingleData("", "User", userContent);
 
     expect(result).toContain(
-      'data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) }>',
+      'data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) | Gassma.RawValue }>',
     );
   });
 
@@ -33,7 +33,9 @@ describe("getOneGassmaUpdateSingleData", () => {
       name: ["string"],
     });
 
-    expect(result).toContain("data: Partial<GassmaUserUse>");
+    expect(result).toContain(
+      "data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue }>",
+    );
     expect(result).not.toContain("NumberOperation");
   });
 
@@ -83,7 +85,7 @@ describe("getOneGassmaUpdateSingleData", () => {
 
     expect(result).toContain('"posts"?:');
     expect(result).toContain(
-      'create?: Omit<GassmaPostUse, "authorId"> | Omit<GassmaPostUse, "authorId">[]',
+      'create?: Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">> | Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>[]',
     );
     expect(result).toContain(
       "connect?: GassmaPostWhereUse | GassmaPostWhereUse[]",
@@ -116,7 +118,7 @@ describe("getOneGassmaUpdateSingleData", () => {
     );
 
     expect(result).toContain(
-      'update?: { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) }> }',
+      'update?: { where: GassmaPostWhereUse; data: Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | (K extends "id" | "authorId" ? Gassma.NumberOperation : never) | Gassma.RawValue }> }',
     );
   });
 
@@ -146,12 +148,14 @@ describe("getOneGassmaUpdateSingleData", () => {
     );
 
     expect(result).toContain('"profile"?:');
-    expect(result).toContain('create?: Omit<GassmaProfileUse, "userId">;');
     expect(result).toContain(
-      'connectOrCreate?: { where: GassmaProfileWhereUse; create: Omit<GassmaProfileUse, "userId"> }',
+      'create?: Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">>;',
     );
     expect(result).toContain(
-      'update?: Partial<{ [K in keyof GassmaProfileUse]: GassmaProfileUse[K] | (K extends "id" | "userId" ? Gassma.NumberOperation : never) }>',
+      'connectOrCreate?: { where: GassmaProfileWhereUse; create: Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">> }',
+    );
+    expect(result).toContain(
+      'update?: Partial<{ [K in keyof GassmaProfileUse]: GassmaProfileUse[K] | (K extends "id" | "userId" ? Gassma.NumberOperation : never) | Gassma.RawValue }>',
     );
     expect(result).toContain("delete?: true");
     expect(result).toContain("disconnect?: true");

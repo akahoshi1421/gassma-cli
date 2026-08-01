@@ -26,8 +26,7 @@ const buildUpdateDataType = (
   const numOp = numberOperationPart(sheetContent);
   const sk = skipUnion(strict);
 
-  if (numOp === "" && sk === "") return `Partial<${use}>`;
-  return `Partial<{ [K in keyof ${use}]: ${use}[K]${numOp}${sk} }>`;
+  return `Partial<{ [K in keyof ${use}]: ${use}[K]${numOp} | Gassma.RawValue${sk} }>`;
 };
 
 export { buildUpdateDataType };

@@ -2,14 +2,14 @@ import { describe, it, expect } from "vitest";
 import { buildUpdateDataType } from "../../../../generate/typeGenerate/util/buildUpdateDataType";
 
 describe("buildUpdateDataType", () => {
-  it("should add NumberOperation only to number columns", () => {
+  it("should add NumberOperation only to number columns and RawValue to all columns", () => {
     const result = buildUpdateDataType("GassmaUserUse", {
       id: ["number"],
       name: ["string"],
     });
 
     expect(result).toBe(
-      'Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) }>',
+      'Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) | Gassma.RawValue }>',
     );
   });
 
@@ -38,16 +38,21 @@ describe("buildUpdateDataType", () => {
       name: ["string"],
     });
 
-    expect(result).toBe("Partial<GassmaUserUse>");
+    expect(result).toBe(
+      "Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue }>",
+    );
   });
 
-  it("should collapse to plain Partial when there is no number column", () => {
+  it("should add only RawValue when there is no number column", () => {
     const result = buildUpdateDataType("GassmaUserUse", {
       name: ["string"],
       "flag?": ["boolean"],
     });
 
-    expect(result).toBe("Partial<GassmaUserUse>");
+    expect(result).toBe(
+      "Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue }>",
+    );
+    expect(result).not.toContain("NumberOperation");
   });
 
   it("should append SkipValue inside the mapped type when strict", () => {
@@ -58,11 +63,11 @@ describe("buildUpdateDataType", () => {
     );
 
     expect(result).toBe(
-      'Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) | Gassma.SkipValue }>',
+      'Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) | Gassma.RawValue | Gassma.SkipValue }>',
     );
   });
 
-  it("should keep the mapped form for SkipValue even without number columns when strict", () => {
+  it("should keep RawValue and SkipValue even without number columns when strict", () => {
     const result = buildUpdateDataType(
       "GassmaUserUse",
       { name: ["string"] },
@@ -70,7 +75,7 @@ describe("buildUpdateDataType", () => {
     );
 
     expect(result).toBe(
-      "Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.SkipValue }>",
+      "Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue | Gassma.SkipValue }>",
     );
   });
 });

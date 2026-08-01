@@ -54,26 +54,28 @@ declare const client: GassmaClient;
 {
   type CreateOps = NonNullable<GassmaUserCreateData["data"]["profile"]>;
   expectTypeOf<NonNullable<CreateOps["create"]>>().toEqualTypeOf<
-    Omit<GassmaProfileUse, "userId">
+    Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">>
   >();
   expectTypeOf<
     NonNullable<CreateOps["connectOrCreate"]>["create"]
-  >().toEqualTypeOf<Omit<GassmaProfileUse, "userId">>();
+  >().toEqualTypeOf<Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">>>();
 
   type UpdateOps = NonNullable<GassmaUserUpdateSingleData["data"]["profile"]>;
   expectTypeOf<NonNullable<UpdateOps["create"]>>().toEqualTypeOf<
-    Omit<GassmaProfileUse, "userId">
+    Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">>
   >();
   expectTypeOf<
     NonNullable<UpdateOps["connectOrCreate"]>["create"]
-  >().toEqualTypeOf<Omit<GassmaProfileUse, "userId">>();
+  >().toEqualTypeOf<Gassma.RawAllowed<Omit<GassmaProfileUse, "userId">>>();
 
-  // update データは数値カラムのみ NumberOperation を受理する
+  // update データは数値カラムのみ NumberOperation を受理する（raw は全カラム）
   type ProfileUpdateData = NonNullable<UpdateOps["update"]>;
   expectTypeOf<ProfileUpdateData["userId"]>().toEqualTypeOf<
-    number | Gassma.NumberOperation | undefined
+    number | Gassma.NumberOperation | Gassma.RawValue | undefined
   >();
-  expectTypeOf<ProfileUpdateData["bio"]>().toEqualTypeOf<string | undefined>();
+  expectTypeOf<ProfileUpdateData["bio"]>().toEqualTypeOf<
+    string | Gassma.RawValue | undefined
+  >();
 }
 
 // inverse oneToOne(User.profile) の update 文脈: to-one op（delete / disconnect は true のみ）

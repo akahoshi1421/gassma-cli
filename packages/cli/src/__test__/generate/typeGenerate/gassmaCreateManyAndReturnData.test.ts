@@ -11,7 +11,7 @@ describe("getOneGassmaCreateManyAndReturnData", () => {
   it("should include data property", () => {
     const result = getOneGassmaCreateManyAndReturnData("", "User");
 
-    expect(result).toContain("data: GassmaUserUse[]");
+    expect(result).toContain("data: Gassma.RawAllowed<GassmaUserUse>[]");
   });
 
   it("should include include property", () => {
