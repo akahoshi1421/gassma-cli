@@ -70,7 +70,7 @@ describe("generater", () => {
 
   it("should limit NumberOperation to number columns in update data", () => {
     expect(result).toContain(
-      'data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) }>;',
+      'data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" ? Gassma.NumberOperation : never) | Gassma.RawValue }>;',
     );
   });
 

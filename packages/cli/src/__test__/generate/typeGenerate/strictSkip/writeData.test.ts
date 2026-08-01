@@ -39,19 +39,21 @@ const dictYaml: Record<string, Record<string, unknown[]>> = {
 };
 
 const idNumOp = '(K extends "id" ? Gassma.NumberOperation : never)';
-const postUpdateData = `Gassma.SkipOptional<Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | ${idNumOp} }>>`;
-const userUpdateData = `Gassma.SkipOptional<Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | ${idNumOp} }>>`;
+const postUpdateData = `Gassma.SkipOptional<Partial<{ [K in keyof GassmaPostUse]: GassmaPostUse[K] | ${idNumOp} | Gassma.RawValue }>>`;
+const userUpdateData = `Gassma.SkipOptional<Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | ${idNumOp} | Gassma.RawValue }>>`;
 
 describe("strict buildCreateDataType", () => {
   it("should wrap base type with SkipOptional", () => {
     const result = buildCreateDataType("", "User", relations, true);
-    expect(result).toContain("Gassma.SkipOptional<GassmaUserUse>");
+    expect(result).toContain(
+      "Gassma.SkipOptional<Gassma.RawAllowed<GassmaUserUse>>",
+    );
   });
 
   it("should wrap FK-omitted base type with SkipOptional", () => {
     const result = buildCreateDataType("", "Post", relations, true);
     expect(result).toContain(
-      'Gassma.SkipOptional<Omit<GassmaPostUse, "authorId">>',
+      'Gassma.SkipOptional<Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>>',
     );
   });
 
@@ -66,7 +68,7 @@ describe("strict buildCreateDataType", () => {
   it("should add SkipValue to FK relation operations", () => {
     const result = buildCreateDataType("", "Post", relations, true);
     expect(result).toContain(
-      '"author": { create?: Gassma.SkipOptional<GassmaUserUse> | Gassma.SkipValue; connect?: GassmaUserWhereUse | Gassma.SkipValue; connectOrCreate?: { where: GassmaUserWhereUse; create: Gassma.SkipOptional<GassmaUserUse> } | Gassma.SkipValue }',
+      '"author": { create?: Gassma.SkipOptional<Gassma.RawAllowed<GassmaUserUse>> | Gassma.SkipValue; connect?: GassmaUserWhereUse | Gassma.SkipValue; connectOrCreate?: { where: GassmaUserWhereUse; create: Gassma.SkipOptional<Gassma.RawAllowed<GassmaUserUse>> } | Gassma.SkipValue }',
     );
   });
 
@@ -98,16 +100,16 @@ describe("strict getNestedWriteFields", () => {
 
   it("should add SkipValue to create context operations", () => {
     expect(createFields).toContain(
-      'create?: Gassma.SkipOptional<Omit<GassmaPostUse, "authorId">> | Gassma.SkipOptional<Omit<GassmaPostUse, "authorId">>[] | Gassma.SkipValue',
+      'create?: Gassma.SkipOptional<Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>> | Gassma.SkipOptional<Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>>[] | Gassma.SkipValue',
     );
     expect(createFields).toContain(
-      'createMany?: { data: Gassma.SkipOptional<Omit<GassmaPostUse, "authorId">>[] } | Gassma.SkipValue',
+      'createMany?: { data: Gassma.SkipOptional<Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>>[] } | Gassma.SkipValue',
     );
     expect(createFields).toContain(
       "connect?: GassmaPostWhereUse | GassmaPostWhereUse[] | Gassma.SkipValue",
     );
     expect(createFields).toContain(
-      'connectOrCreate?: { where: GassmaPostWhereUse; create: Gassma.SkipOptional<Omit<GassmaPostUse, "authorId">> } | { where: GassmaPostWhereUse; create: Gassma.SkipOptional<Omit<GassmaPostUse, "authorId">> }[] | Gassma.SkipValue',
+      'connectOrCreate?: { where: GassmaPostWhereUse; create: Gassma.SkipOptional<Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>> } | { where: GassmaPostWhereUse; create: Gassma.SkipOptional<Gassma.RawAllowed<Omit<GassmaPostUse, "authorId">>> }[] | Gassma.SkipValue',
     );
   });
 
@@ -154,7 +156,7 @@ describe("strict getNestedWriteFields", () => {
       true,
     );
     expect(postUpdate).toContain(
-      "update?: Gassma.SkipOptional<Partial<GassmaUserUse>> | Gassma.SkipValue",
+      "update?: Gassma.SkipOptional<Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue }>> | Gassma.SkipValue",
     );
   });
 
@@ -169,7 +171,9 @@ describe("strict CreateData", () => {
   const result = getOneGassmaCreate("", "User", relations, true);
 
   it("should not add SkipValue to data itself", () => {
-    expect(result).toContain("data: Gassma.SkipOptional<GassmaUserUse>");
+    expect(result).toContain(
+      "data: Gassma.SkipOptional<Gassma.RawAllowed<GassmaUserUse>>",
+    );
   });
 
   it("should add SkipValue to include / select / omit", () => {
@@ -187,7 +191,9 @@ describe("strict CreateData", () => {
 describe("strict CreateManyData", () => {
   it("should wrap data elements with SkipOptional", () => {
     const result = getOneGassmaCreateMany("", "User", true);
-    expect(result).toContain("data: Gassma.SkipOptional<GassmaUserUse>[];");
+    expect(result).toContain(
+      "data: Gassma.SkipOptional<Gassma.RawAllowed<GassmaUserUse>>[];",
+    );
   });
 
   it("should keep non-strict output unchanged", () => {
@@ -199,7 +205,9 @@ describe("strict CreateManyAndReturnData", () => {
   const result = getOneGassmaCreateManyAndReturnData("", "User", true);
 
   it("should wrap data elements and add SkipValue to options", () => {
-    expect(result).toContain("data: Gassma.SkipOptional<GassmaUserUse>[];");
+    expect(result).toContain(
+      "data: Gassma.SkipOptional<Gassma.RawAllowed<GassmaUserUse>>[];",
+    );
     expect(result).toContain("include?: GassmaUserInclude | Gassma.SkipValue;");
     expect(result).toContain(
       "({ select?: GassmaUserSelect | Gassma.SkipValue; omit?: never } | { select?: never; omit?: GassmaUserOmit | Gassma.SkipValue })",
@@ -218,7 +226,7 @@ describe("strict UpdateData", () => {
 
   it("should add SkipValue to data values and optional arguments", () => {
     expect(result).toContain(
-      `data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | ${idNumOp} | Gassma.SkipValue }>;`,
+      `data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | ${idNumOp} | Gassma.RawValue | Gassma.SkipValue }>;`,
     );
     expect(result).toContain("where?: GassmaUserWhereUse | Gassma.SkipValue;");
     expect(result).toContain("limit?: number | Gassma.SkipValue;");
@@ -247,7 +255,7 @@ describe("strict UpdateSingleData", () => {
 
   it("should add SkipValue to data values", () => {
     expect(result).toContain(
-      `Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | ${idNumOp} | Gassma.SkipValue }>`,
+      `Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | ${idNumOp} | Gassma.RawValue | Gassma.SkipValue }>`,
     );
   });
 
@@ -277,9 +285,11 @@ describe("strict UpsertSingleData", () => {
 
   it("should not add SkipValue to required where / create / update themselves", () => {
     expect(result).toContain("where: GassmaUserWhereUse;");
-    expect(result).toContain("create: Gassma.SkipOptional<GassmaUserUse>");
     expect(result).toContain(
-      `update: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | ${idNumOp} | Gassma.SkipValue }>`,
+      "create: Gassma.SkipOptional<Gassma.RawAllowed<GassmaUserUse>>",
+    );
+    expect(result).toContain(
+      `update: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | ${idNumOp} | Gassma.RawValue | Gassma.SkipValue }>`,
     );
   });
 

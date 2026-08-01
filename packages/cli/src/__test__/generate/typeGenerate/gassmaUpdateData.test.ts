@@ -13,7 +13,7 @@ describe("getOneGassmaUpdateData", () => {
 
     expect(result).toContain("export type GassmaUserUpdateData");
     expect(result).toContain(
-      'data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" | "age" ? Gassma.NumberOperation : never) }>;',
+      'data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | (K extends "id" | "age" ? Gassma.NumberOperation : never) | Gassma.RawValue }>;',
     );
   });
 
@@ -34,7 +34,9 @@ describe("getOneGassmaUpdateData", () => {
       "flag?": ["boolean"],
     });
 
-    expect(result).toContain("data: Partial<GassmaUserUse>;");
+    expect(result).toContain(
+      "data: Partial<{ [K in keyof GassmaUserUse]: GassmaUserUse[K] | Gassma.RawValue }>;",
+    );
     expect(result).not.toContain("NumberOperation");
   });
 
