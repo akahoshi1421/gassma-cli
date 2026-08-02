@@ -10,17 +10,17 @@ const getOneGassmaFindResult = (
   const modelRelations = relations?.[sheetName] ?? {};
   const relNames = Object.keys(modelRelations);
 
+  const relUnion = relNames.map((r) => `"${r}"`).join(" | ");
   const relKeyUnion =
-    relNames.length > 0
-      ? `${relNames.map((r) => `"${r}"`).join(" | ")} | "_count"`
-      : `"_count"`;
+    relNames.length > 0 ? `${relUnion} | "_count"` : `"_count"`;
 
   const relationBranch = (
     source: string,
     childName: string,
     childArgs: string,
-  ) =>
-    relNames
+  ) => {
+    if (relNames.length === 0) return "";
+    const entries = relNames
       .map((relationName) => {
         const def = modelRelations[relationName];
         const targetFR = `${prefix}${def.to}${childName}`;
@@ -28,9 +28,13 @@ const getOneGassmaFindResult = (
         const inner = `${targetFR}<Gassma.SelectOf<${source}[K]>, Gassma.IncludeOf<${source}[K]>, Gassma.OmitOf<${source}[K]>, ${targetGO}, O${childArgs}>`;
         const isList = def.type === "oneToMany" || def.type === "manyToMany";
         const result = isList ? `${inner}[]` : `${inner} | null`;
-        return `          K extends "${relationName}" ? ${result} :`;
+        return `            "${relationName}": ${result};`;
       })
       .join("\n");
+    return `          K extends ${relUnion} ? {
+${entries}
+          }[K] :`;
+  };
 
   const structural = (childName: string, childArgs: string) => {
     const selectResult = `{
