@@ -30,6 +30,35 @@ describe("getGassmaErrorClasses", () => {
     expect(result).toContain("constructor(value: number)");
   });
 
+  it("should include GassmaFindFirstTakeError", () => {
+    expect(result).toContain("class GassmaFindFirstTakeError extends Error");
+  });
+
+  it("should include GassmaUndefinedValueError", () => {
+    expect(result).toContain("class GassmaUndefinedValueError extends Error");
+    expect(result).toContain("constructor(path: string)");
+  });
+
+  it("should include GassmaSkipInArrayError", () => {
+    expect(result).toContain("class GassmaSkipInArrayError extends Error");
+  });
+
+  it("should include GassmaMissingArgumentError", () => {
+    expect(result).toContain("class GassmaMissingArgumentError extends Error");
+    expect(result).toContain("constructor(argumentName: string)");
+  });
+
+  it("should include RelationIgnoredColumnError", () => {
+    expect(result).toContain("class RelationIgnoredColumnError extends Error");
+    expect(result).toContain(
+      "constructor(sheetName: string, relationName: string, columnName: string, ignoredSheetName: string)",
+    );
+  });
+
+  it("should not include GassmaTargetSheetNotFoundError removed from gassma", () => {
+    expect(result).not.toContain("GassmaTargetSheetNotFoundError");
+  });
+
   it("should include GassmaLimitNegativeError", () => {
     expect(result).toContain("class GassmaLimitNegativeError extends Error");
   });
@@ -157,9 +186,6 @@ describe("getGassmaErrorClasses", () => {
 
   it("should include relation errors from relationError.ts", () => {
     expect(result).toContain("class GassmaRelationNotFoundError extends Error");
-    expect(result).toContain(
-      "class GassmaTargetSheetNotFoundError extends Error",
-    );
     expect(result).toContain("class GassmaThroughRequiredError extends Error");
     expect(result).toContain(
       "class GassmaIncludeSelectConflictError extends Error",
