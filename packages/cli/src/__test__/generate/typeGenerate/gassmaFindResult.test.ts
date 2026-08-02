@@ -41,7 +41,7 @@ describe("getOneGassmaFindResult", () => {
     };
     const result = getOneGassmaFindResult("", "User", relations);
     expect(result).toContain(
-      'K extends "posts" ? GassmaPostFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "Post": infer TO } ? TO extends GassmaPostOmit ? TO : {} : {}, O, CMap>[]',
+      '"posts": GassmaPostFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "Post": infer TO } ? TO extends GassmaPostOmit ? TO : {} : {}, O, CMap>[];',
     );
   });
 
@@ -58,7 +58,7 @@ describe("getOneGassmaFindResult", () => {
     };
     const result = getOneGassmaFindResult("", "User", relations);
     expect(result).toContain(
-      'K extends "profile" ? GassmaProfileFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "Profile": infer TO } ? TO extends GassmaProfileOmit ? TO : {} : {}, O, CMap> | null',
+      '"profile": GassmaProfileFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "Profile": infer TO } ? TO extends GassmaProfileOmit ? TO : {} : {}, O, CMap> | null;',
     );
   });
 
@@ -75,11 +75,11 @@ describe("getOneGassmaFindResult", () => {
     };
     const result = getOneGassmaFindResult("", "Post", relations);
     expect(result).toContain(
-      'K extends "author" ? GassmaUserFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "User": infer TO } ? TO extends GassmaUserOmit ? TO : {} : {}, O, CMap> | null',
+      '"author": GassmaUserFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "User": infer TO } ? TO extends GassmaUserOmit ? TO : {} : {}, O, CMap> | null;',
     );
   });
 
-  it("should keep FindResultBase relation branches structural (no CMap)", () => {
+  it("should keep FindResultBase relation map entries structural (no CMap)", () => {
     const relations: RelationsConfig = {
       User: {
         posts: {
@@ -92,11 +92,11 @@ describe("getOneGassmaFindResult", () => {
     };
     const result = getOneGassmaFindResult("", "User", relations);
     expect(result).toContain(
-      'K extends "posts" ? GassmaPostFindResultBase<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "Post": infer TO } ? TO extends GassmaPostOmit ? TO : {} : {}, O>[]',
+      '"posts": GassmaPostFindResultBase<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "Post": infer TO } ? TO extends GassmaPostOmit ? TO : {} : {}, O>[];',
     );
   });
 
-  it("should pass target model globalOmit and full config to select-relation branches", () => {
+  it("should pass target model globalOmit and full config to select-relation map entries", () => {
     const relations: RelationsConfig = {
       User: {
         posts: {
@@ -109,7 +109,7 @@ describe("getOneGassmaFindResult", () => {
     };
     const result = getOneGassmaFindResult("", "User", relations);
     expect(result).toContain(
-      'K extends "posts" ? GassmaPostFindResult<Gassma.SelectOf<S[K]>, Gassma.IncludeOf<S[K]>, Gassma.OmitOf<S[K]>, O extends { "Post": infer TO } ? TO extends GassmaPostOmit ? TO : {} : {}, O, CMap>[]',
+      '"posts": GassmaPostFindResult<Gassma.SelectOf<S[K]>, Gassma.IncludeOf<S[K]>, Gassma.OmitOf<S[K]>, O extends { "Post": infer TO } ? TO extends GassmaPostOmit ? TO : {} : {}, O, CMap>[];',
     );
   });
 
