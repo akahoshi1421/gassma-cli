@@ -2,6 +2,7 @@ import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import type { RelationsConfig } from "../read/extractRelations";
 import { getOneGassmaSelect } from "./gassmaSelect/oneGassmaSelect";
 import { getOneGassmaNumberSelect } from "./gassmaSelect/oneGassmaNumberSelect";
+import { getOneGassmaCountSelect } from "./gassmaSelect/oneGassmaCountSelect";
 import { getOneGassmaFindSelect } from "./gassmaSelect/oneGassmaFindSelect";
 
 const getGassmaSelect = (
@@ -26,6 +27,11 @@ const getGassmaSelect = (
         ) +
         getOneGassmaNumberSelect(
           sheetContent,
+          schemaName,
+          removedSpaceCurrentSheetName,
+          strict,
+        ) +
+        getOneGassmaCountSelect(
           schemaName,
           removedSpaceCurrentSheetName,
           strict,
