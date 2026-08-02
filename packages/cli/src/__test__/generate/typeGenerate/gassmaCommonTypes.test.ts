@@ -79,6 +79,12 @@ describe("getGassmaCommonTypes", () => {
     );
   });
 
+  it("should generate Subset helper rejecting excess keys", () => {
+    expect(result).toContain(
+      "type Subset<T, U> = { [K in keyof T]: K extends keyof U ? T[K] : never };",
+    );
+  });
+
   describe("strict mode", () => {
     const strictResult = getGassmaCommonTypes(true);
 

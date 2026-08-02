@@ -4,6 +4,9 @@ import { getOneGassmaController } from "../../../generate/typeGenerate/gassmaCon
 describe("getOneGassmaController", () => {
   const result = getOneGassmaController("", "User");
   const res = `GassmaUserFindResult<T["select"], T["include"], T["omit"], GO, O, CMap>`;
+  const sub = (dataType: string) => `T & Gassma.Subset<T, ${dataType}>`;
+  const withComputed = (dataType: string) =>
+    `${dataType} & Gassma.ComputedArgs<Gassma.At<CMap, "User">>`;
 
   it("should generate controller class declaration with GO, O and computed map CMap", () => {
     expect(result).toContain(
@@ -49,19 +52,19 @@ describe("getOneGassmaController", () => {
 
   it("should have generic delete method with model-specific type", () => {
     expect(result).toContain(
-      `delete<T extends GassmaUserDeleteSingleData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(deleteData: T): ${res} | null`,
+      `delete<T extends ${withComputed("GassmaUserDeleteSingleData")}>(deleteData: ${sub(withComputed("GassmaUserDeleteSingleData"))}): ${res} | null`,
     );
   });
 
   it("should have generic upsert method with model-specific type", () => {
     expect(result).toContain(
-      `upsert<T extends GassmaUserUpsertSingleData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(upsertData: T): ${res}`,
+      `upsert<T extends ${withComputed("GassmaUserUpsertSingleData")}>(upsertData: ${sub(withComputed("GassmaUserUpsertSingleData"))}): ${res}`,
     );
   });
 
   it("should include createManyAndReturn method with generic type", () => {
     expect(result).toContain(
-      `createManyAndReturn<T extends GassmaUserCreateManyAndReturnData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(createdData: T): ${res}[]`,
+      `createManyAndReturn<T extends ${withComputed("GassmaUserCreateManyAndReturnData")}>(createdData: ${sub(withComputed("GassmaUserCreateManyAndReturnData"))}): ${res}[]`,
     );
   });
 
@@ -73,35 +76,35 @@ describe("getOneGassmaController", () => {
 
   it("should use FindFirstData for findFirst", () => {
     expect(result).toContain(
-      `findFirst<T extends GassmaUserFindFirstData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(findData: T): ${res} | null`,
+      `findFirst<T extends ${withComputed("GassmaUserFindFirstData")}>(findData: ${sub(withComputed("GassmaUserFindFirstData"))}): ${res} | null`,
     );
   });
 
   it("should use FindFirstData for findFirstOrThrow", () => {
     expect(result).toContain(
-      `findFirstOrThrow<T extends GassmaUserFindFirstData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(findData: T): ${res}`,
+      `findFirstOrThrow<T extends ${withComputed("GassmaUserFindFirstData")}>(findData: ${sub(withComputed("GassmaUserFindFirstData"))}): ${res}`,
     );
   });
 
   it("should have generic create method with FindResult return", () => {
     expect(result).toContain(
-      `create<T extends GassmaUserCreateData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(createdData: T): ${res}`,
+      `create<T extends ${withComputed("GassmaUserCreateData")}>(createdData: ${sub(withComputed("GassmaUserCreateData"))}): ${res}`,
     );
   });
 
   it("should have generic update method with model-specific type", () => {
     expect(result).toContain(
-      `update<T extends GassmaUserUpdateSingleData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(updateData: T): ${res} | null`,
+      `update<T extends ${withComputed("GassmaUserUpdateSingleData")}>(updateData: ${sub(withComputed("GassmaUserUpdateSingleData"))}): ${res} | null`,
     );
   });
 
   it("should not wrap aggregate-family returns with computed fields", () => {
     expect(result).toContain(
-      "aggregate<T extends GassmaUserAggregateData>(aggregateData: T): GassmaUserAggregateResult<T>",
+      `aggregate<T extends GassmaUserAggregateData>(aggregateData: ${sub("GassmaUserAggregateData")}): GassmaUserAggregateResult<T>`,
     );
     expect(result).toContain("count(coutData: GassmaUserCountData): number");
     expect(result).toContain(
-      "groupBy<T extends GassmaUserGroupByData>(groupByData: T): GassmaUserGroupByResult<T>[]",
+      `groupBy<T extends GassmaUserGroupByData>(groupByData: ${sub("GassmaUserGroupByData")}): GassmaUserGroupByResult<T>[]`,
     );
     expect(result).toContain(
       "createMany(createdData: GassmaUserCreateManyData): CreateManyReturn",

@@ -91,6 +91,7 @@ const getGassmaCommonTypes = (strict?: boolean) => {
       ? Omit<Base, keyof SelectedComputed<C, S>> & SelectedComputed<C, S>
       : Omit<Base, keyof ActiveComputed<C, QO>> & ActiveComputed<C, QO>;
 
+  type Subset<T, U> = { [K in keyof T]: K extends keyof U ? T[K] : never };
   type ExactKeys<T, Shape> = Shape & { [K in Exclude<keyof T, keyof Shape>]?: never };
   type StrictGlobalOmit<O, Config> = Config & {
     [K in keyof O]?: K extends keyof Config
