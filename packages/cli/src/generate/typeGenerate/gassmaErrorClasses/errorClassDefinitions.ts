@@ -45,6 +45,11 @@ const errorClassDefinitions: ErrorClassDef[] = [
     params: "",
   },
   {
+    name: "GassmaAggregateSelectionRequiredError",
+    extends: "Error",
+    params: "",
+  },
+  {
     name: "RelationSheetNotFoundError",
     extends: "Error",
     params: "sheetName: string",
@@ -159,6 +164,11 @@ const errorClassDefinitions: ErrorClassDef[] = [
     name: "GassmaMissingArgumentError",
     extends: "Error",
     params: "argumentName: string",
+  },
+  {
+    name: "GassmaUnknownArgumentError",
+    extends: "Error",
+    params: "argumentName: string, availableArguments: string[]",
   },
   {
     name: "GassmaRelationNotFoundError",
