@@ -23,11 +23,20 @@ describe("getOneGassmaAggregateData", () => {
     expect(result).toContain("_sum?: GassmaUserNumberSelect;");
   });
 
-  it("should keep _count, _max and _min as full Select", () => {
+  it("should keep _max and _min as full Select", () => {
     const result = getOneGassmaAggregateData("", "User");
 
-    expect(result).toContain("_count?: GassmaUserSelect;");
     expect(result).toContain("_max?: GassmaUserSelect;");
     expect(result).toContain("_min?: GassmaUserSelect;");
+  });
+
+  it("should allow CountSelect and the true shorthand only for _count", () => {
+    const result = getOneGassmaAggregateData("", "User");
+
+    expect(result).toContain("_count?: GassmaUserCountSelect | true;");
+    expect(result).not.toContain("_max?: GassmaUserSelect | true;");
+    expect(result).not.toContain("_min?: GassmaUserSelect | true;");
+    expect(result).not.toContain("_avg?: GassmaUserNumberSelect | true;");
+    expect(result).not.toContain("_sum?: GassmaUserNumberSelect | true;");
   });
 });

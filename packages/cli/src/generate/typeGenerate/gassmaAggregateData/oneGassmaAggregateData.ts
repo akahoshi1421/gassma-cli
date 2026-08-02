@@ -19,7 +19,7 @@ export type Gassma${schemaName}${sheetName}AggregateData = {
   skip?: number${sk};
   cursor?: ${cursorType}${sk};
   _avg?: Gassma${schemaName}${sheetName}NumberSelect${sk};
-  _count?: Gassma${schemaName}${sheetName}Select${sk};
+  _count?: Gassma${schemaName}${sheetName}CountSelect | true${sk};
   _max?: Gassma${schemaName}${sheetName}Select${sk};
   _min?: Gassma${schemaName}${sheetName}Select${sk};
   _sum?: Gassma${schemaName}${sheetName}NumberSelect${sk};
