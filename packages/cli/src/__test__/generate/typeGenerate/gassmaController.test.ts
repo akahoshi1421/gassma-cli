@@ -4,7 +4,7 @@ import { getOneGassmaController } from "../../../generate/typeGenerate/gassmaCon
 describe("getOneGassmaController", () => {
   const result = getOneGassmaController("", "User");
   const res = `GassmaUserFindResult<T["select"], T["include"], T["omit"], GO, O, CMap>`;
-  const sub = (dataType: string) => `Gassma.Subset<T, ${dataType}>`;
+  const sub = (dataType: string) => `T & Gassma.Subset<T, ${dataType}>`;
   const withComputed = (dataType: string) =>
     `${dataType} & Gassma.ComputedArgs<Gassma.At<CMap, "User">>`;
 
