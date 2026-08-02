@@ -48,6 +48,13 @@ describe("getGassmaErrorClasses", () => {
     expect(result).toContain("constructor(argumentName: string)");
   });
 
+  it("should include GassmaUnknownArgumentError", () => {
+    expect(result).toContain("class GassmaUnknownArgumentError extends Error");
+    expect(result).toContain(
+      "constructor(argumentName: string, availableArguments: string[])",
+    );
+  });
+
   it("should include RelationIgnoredColumnError", () => {
     expect(result).toContain("class RelationIgnoredColumnError extends Error");
     expect(result).toContain(
@@ -100,6 +107,12 @@ describe("getGassmaErrorClasses", () => {
     expect(result).toContain("class GassmaAggregateSumTypeError extends Error");
     expect(result).toContain(
       "class GassmaAggregateAvgTypeError extends GassmaAggregateSumTypeError",
+    );
+  });
+
+  it("should include GassmaAggregateSelectionRequiredError", () => {
+    expect(result).toContain(
+      "class GassmaAggregateSelectionRequiredError extends Error",
     );
   });
 
