@@ -68,9 +68,9 @@ describe("getOneGassmaController", () => {
     );
   });
 
-  it("should include updateManyAndReturn method with globalOmit and computed applied", () => {
+  it("should include updateManyAndReturn method with generic type", () => {
     expect(result).toContain(
-      "updateManyAndReturn(updateData: GassmaUserUpdateData): GassmaUserFindResult<undefined, undefined, undefined, GO, O, CMap>[]",
+      `updateManyAndReturn<T extends ${withComputed("GassmaUserUpdateManyAndReturnData")}>(updateData: ${sub(withComputed("GassmaUserUpdateManyAndReturnData"))}): ${res}[]`,
     );
   });
 
@@ -102,7 +102,9 @@ describe("getOneGassmaController", () => {
     expect(result).toContain(
       `aggregate<T extends GassmaUserAggregateData>(aggregateData: ${sub("GassmaUserAggregateData")}): GassmaUserAggregateResult<T>`,
     );
-    expect(result).toContain("count(coutData: GassmaUserCountData): number");
+    expect(result).toContain(
+      `count<T extends GassmaUserCountData>(coutData: ${sub("GassmaUserCountData")}): GassmaUserCountResult<T>`,
+    );
     expect(result).toContain(
       `groupBy<T extends GassmaUserGroupByData>(groupByData: ${sub("GassmaUserGroupByData")}): GassmaUserGroupByResult<T>[]`,
     );

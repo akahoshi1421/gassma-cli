@@ -183,7 +183,7 @@ describe("getGassmaExtension", () => {
     expect(result).toContain("  }) => GassmaHogeUserGroupByResult<T>[];");
   });
 
-  it("should generate non-generic hooks with fixed args and results", () => {
+  it("should keep createMany / updateMany / deleteMany hooks fixed and make updateManyAndReturn / count generic", () => {
     expect(result).toContain("  createMany?: (params: {");
     expect(result).toContain("    args: GassmaHogeUserCreateManyData;");
     expect(result).toContain(
@@ -194,17 +194,21 @@ describe("getGassmaExtension", () => {
     expect(result).toContain(
       "    query: (args: GassmaHogeUserUpdateData) => UpdateManyReturn;",
     );
-    expect(result).toContain("  updateManyAndReturn?: (params: {");
     expect(result).toContain(
-      "    query: (args: GassmaHogeUserUpdateData) => GassmaHogeUserFindResultBase<undefined, undefined, undefined, GO, O>[];",
+      "  updateManyAndReturn?: <T extends GassmaHogeUserUpdateManyAndReturnData>(params: {",
+    );
+    expect(result).toContain(
+      '    query: (args: T) => GassmaHogeUserFindResultBase<T["select"], T["include"], T["omit"], GO, O>[];',
     );
     expect(result).toContain("  deleteMany?: (params: {");
     expect(result).toContain(
       "    query: (args: GassmaHogeUserDeleteData) => DeleteManyReturn;",
     );
-    expect(result).toContain("  count?: (params: {");
     expect(result).toContain(
-      "    query: (args: GassmaHogeUserCountData) => number;",
+      "  count?: <T extends GassmaHogeUserCountData>(params: {",
+    );
+    expect(result).toContain(
+      "    query: (args: T) => GassmaHogeUserCountResult<T>;",
     );
   });
 
