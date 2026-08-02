@@ -29,7 +29,9 @@ describe("getOneGassmaController no-arg overloads", () => {
     expect(result).toContain(
       `findMany<T extends GassmaUserFindManyData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(findData: T & Gassma.Subset<T, GassmaUserFindManyData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>)`,
     );
-    expect(result).toContain("count(coutData: GassmaUserCountData): number;");
+    expect(result).toContain(
+      "count<T extends GassmaUserCountData>(coutData: T & Gassma.Subset<T, GassmaUserCountData>): GassmaUserCountResult<T>;",
+    );
     expect(result).toContain(
       "deleteMany(deleteData: GassmaUserDeleteData): DeleteManyReturn;",
     );

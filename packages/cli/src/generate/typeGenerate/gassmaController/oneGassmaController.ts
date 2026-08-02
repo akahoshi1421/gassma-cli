@@ -31,13 +31,13 @@ export declare class ${self}Controller<GO extends ${self}Omit = {}, O = {}, CMap
   findMany(): ${resNoArg}[];
   update<${arg("UpdateSingleData")}>(updateData: ${sub("UpdateSingleData")}): ${res} | null;
   updateMany(updateData: ${self}UpdateData): UpdateManyReturn;
-  updateManyAndReturn(updateData: ${self}UpdateData): ${fr}<undefined, undefined, undefined, GO, O, CMap>[];
+  updateManyAndReturn<${arg("UpdateManyAndReturnData")}>(updateData: ${sub("UpdateManyAndReturnData")}): ${res}[];
   upsert<${arg("UpsertSingleData")}>(upsertData: ${sub("UpsertSingleData")}): ${res};
   delete<${arg("DeleteSingleData")}>(deleteData: ${sub("DeleteSingleData")}): ${res} | null;
   deleteMany(deleteData: ${self}DeleteData): DeleteManyReturn;
   deleteMany(): DeleteManyReturn;
   aggregate<T extends ${self}AggregateData>(aggregateData: T & Gassma.Subset<T, ${self}AggregateData>): ${self}AggregateResult<T>;
-  count(coutData: ${self}CountData): number;
+  count<T extends ${self}CountData>(coutData: T & Gassma.Subset<T, ${self}CountData>): ${self}CountResult<T>;
   count(): number;
   groupBy<T extends ${self}GroupByData>(groupByData: T & Gassma.Subset<T, ${self}GroupByData>): ${self}GroupByResult<T>[];
 }

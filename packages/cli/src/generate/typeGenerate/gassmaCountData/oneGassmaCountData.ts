@@ -18,6 +18,7 @@ export type Gassma${schemaName}${sheetName}CountData = {
   take?: number${sk};
   skip?: number${sk};
   cursor?: ${cursorType}${sk};
+  select?: Gassma${schemaName}${sheetName}CountSelect | true${sk};
 };
 `;
 };

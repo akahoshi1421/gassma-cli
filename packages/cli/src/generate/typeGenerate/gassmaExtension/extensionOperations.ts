@@ -59,10 +59,9 @@ const EXTENSION_OPERATIONS: ExtensionOperation[] = [
   },
   {
     name: "updateManyAndReturn",
-    dataSuffix: "UpdateData",
-    generic: false,
-    result: (self) =>
-      `${self}FindResultBase<undefined, undefined, undefined, GO, O>[]`,
+    dataSuffix: "UpdateManyAndReturnData",
+    generic: true,
+    result: (self) => `${genericFindResult(self)}[]`,
   },
   {
     name: "upsert",
@@ -85,8 +84,8 @@ const EXTENSION_OPERATIONS: ExtensionOperation[] = [
   {
     name: "count",
     dataSuffix: "CountData",
-    generic: false,
-    result: () => "number",
+    generic: true,
+    result: (self) => `${self}CountResult<T>`,
   },
   {
     name: "aggregate",
