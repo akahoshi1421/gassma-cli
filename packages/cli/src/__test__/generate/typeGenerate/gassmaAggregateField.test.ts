@@ -17,6 +17,12 @@ describe("getOneGassmaAggregateField", () => {
     );
   });
 
+  it("should resolve the _count true shorthand to number", () => {
+    const result = getOneGassmaAggregateField("", "User");
+    expect(result).toContain("? T extends true");
+    expect(result).toContain("? number");
+  });
+
   it("should map _avg and _sum keys to number | null", () => {
     const result = getOneGassmaAggregateField("", "User");
     expect(result).toContain('K extends "_avg" | "_sum"');

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { getOneGassmaSelect } from "../../../../generate/typeGenerate/gassmaSelect/oneGassmaSelect";
 import { getOneGassmaFindSelect } from "../../../../generate/typeGenerate/gassmaSelect/oneGassmaFindSelect";
 import { getOneGassmaNumberSelect } from "../../../../generate/typeGenerate/gassmaSelect/oneGassmaNumberSelect";
+import { getOneGassmaCountSelect } from "../../../../generate/typeGenerate/gassmaSelect/oneGassmaCountSelect";
 import { getOneGassmaOmit } from "../../../../generate/typeGenerate/gassmaOmit/oneGassmaOmit";
 import { getOneGassmaInclude } from "../../../../generate/typeGenerate/gassmaInclude/oneGassmaInclude";
 import { getOneGassmaOrderBy } from "../../../../generate/typeGenerate/gassmaOrderBy/oneGassmaOrderBy";
@@ -47,6 +48,17 @@ describe("strict NumberSelect", () => {
     expect(
       getOneGassmaNumberSelect({ id: ["number"] }, "", "User"),
     ).not.toContain("Skip");
+  });
+});
+
+describe("strict CountSelect", () => {
+  it("should add SkipValue to _all", () => {
+    const result = getOneGassmaCountSelect("", "User", true);
+    expect(result).toContain('"_all"?: true | Gassma.SkipValue;');
+  });
+
+  it("should keep non-strict output unchanged", () => {
+    expect(getOneGassmaCountSelect("", "User")).not.toContain("Skip");
   });
 });
 

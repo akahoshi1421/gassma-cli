@@ -90,7 +90,9 @@ describe("strict AggregateData", () => {
     expect(result).toContain(
       "_avg?: GassmaUserNumberSelect | Gassma.SkipValue;",
     );
-    expect(result).toContain("_count?: GassmaUserSelect | Gassma.SkipValue;");
+    expect(result).toContain(
+      "_count?: GassmaUserCountSelect | true | Gassma.SkipValue;",
+    );
     expect(result).toContain("_max?: GassmaUserSelect | Gassma.SkipValue;");
     expect(result).toContain("_min?: GassmaUserSelect | Gassma.SkipValue;");
     expect(result).toContain(
