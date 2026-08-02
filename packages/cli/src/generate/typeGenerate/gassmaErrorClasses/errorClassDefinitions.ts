@@ -11,6 +11,7 @@ const errorClassDefinitions: ErrorClassDef[] = [
     extends: "Error",
     params: "value: number",
   },
+  { name: "GassmaFindFirstTakeError", extends: "Error", params: "" },
   {
     name: "GassmaLimitNegativeError",
     extends: "Error",
@@ -112,6 +113,12 @@ const errorClassDefinitions: ErrorClassDef[] = [
     params: "sheetName: string, relationName: string, value: string",
   },
   {
+    name: "RelationIgnoredColumnError",
+    extends: "Error",
+    params:
+      "sheetName: string, relationName: string, columnName: string, ignoredSheetName: string",
+  },
+  {
     name: "NestedWriteConnectNotFoundError",
     extends: "Error",
     params: "sheetName: string",
@@ -143,14 +150,20 @@ const errorClassDefinitions: ErrorClassDef[] = [
     params: "relationName: string, relationType: string",
   },
   {
+    name: "GassmaUndefinedValueError",
+    extends: "Error",
+    params: "path: string",
+  },
+  { name: "GassmaSkipInArrayError", extends: "Error", params: "path: string" },
+  {
+    name: "GassmaMissingArgumentError",
+    extends: "Error",
+    params: "argumentName: string",
+  },
+  {
     name: "GassmaRelationNotFoundError",
     extends: "Error",
     params: "relationName: string, sheetName: string",
-  },
-  {
-    name: "GassmaTargetSheetNotFoundError",
-    extends: "Error",
-    params: "targetSheetName: string",
   },
   {
     name: "GassmaThroughRequiredError",
