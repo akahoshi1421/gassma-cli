@@ -55,6 +55,13 @@ describe("getGassmaErrorClasses", () => {
     );
   });
 
+  it("should include GassmaInvalidValueError", () => {
+    expect(result).toContain("class GassmaInvalidValueError extends Error");
+    expect(result).toContain(
+      "constructor(argumentName: string, expected: string)",
+    );
+  });
+
   it("should include RelationIgnoredColumnError", () => {
     expect(result).toContain("class RelationIgnoredColumnError extends Error");
     expect(result).toContain(

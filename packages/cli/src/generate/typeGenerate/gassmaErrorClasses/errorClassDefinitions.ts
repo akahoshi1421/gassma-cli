@@ -171,6 +171,11 @@ const errorClassDefinitions: ErrorClassDef[] = [
     params: "argumentName: string, availableArguments: string[]",
   },
   {
+    name: "GassmaInvalidValueError",
+    extends: "Error",
+    params: "argumentName: string, expected: string",
+  },
+  {
     name: "GassmaRelationNotFoundError",
     extends: "Error",
     params: "relationName: string, sheetName: string",
