@@ -121,7 +121,7 @@ function generateFromSchema(
     optionalFields,
     strict,
   );
-  const clientDts = generateClientDts(schemaName, enums);
+  const clientDts = generateClientDts(schemaName, enums, Object.keys(parsed));
   const mergedDts = resultString + "\n" + clientDts;
   writer(mergedDts, `${baseName}Client`, outputPath);
 

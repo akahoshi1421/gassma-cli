@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getOneGassmaController } from "../../../generate/typeGenerate/gassmaController/oneGassmaController";
 
 describe("getOneGassmaController no-arg overloads", () => {
-  const result = getOneGassmaController("", "User");
+  const result = getOneGassmaController("", "User", ["id"]);
   const resNoArg = `GassmaUserFindResult<unknown, unknown, unknown, GO, O, CMap>`;
 
   it("should allow findMany without arguments", () => {
@@ -30,7 +30,7 @@ describe("getOneGassmaController no-arg overloads", () => {
       `findMany<T extends GassmaUserFindManyData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(findData: T & Gassma.Subset<T, GassmaUserFindManyData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>)`,
     );
     expect(result).toContain(
-      "count<T extends GassmaUserCountData>(coutData: T & Gassma.Subset<T, GassmaUserCountData>): GassmaUserCountResult<T>;",
+      "count<T extends GassmaUserCountData>(countData: T & Gassma.Subset<T, GassmaUserCountData>): GassmaUserCountResult<T>;",
     );
     expect(result).toContain(
       "deleteMany(deleteData: GassmaUserDeleteData): DeleteManyReturn;",
@@ -38,7 +38,7 @@ describe("getOneGassmaController no-arg overloads", () => {
   });
 
   it("should prefix schema name in no-arg return types", () => {
-    const prefixed = getOneGassmaController("Hoge", "User");
+    const prefixed = getOneGassmaController("Hoge", "User", ["id"]);
     expect(prefixed).toContain(
       "findMany(): GassmaHogeUserFindResult<unknown, unknown, unknown, GO, O, CMap>[];",
     );

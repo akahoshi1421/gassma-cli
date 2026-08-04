@@ -41,7 +41,7 @@ const generateFixture = (text: string, fileName: string) => {
     optionalFields,
     strict,
   );
-  const clientDts = generateClientDts("");
+  const clientDts = generateClientDts("", undefined, Object.keys(parsed));
 
   fs.writeFileSync(path.join(outDir, fileName), `${generated}\n${clientDts}`);
   console.log(`generated fixture types -> ${path.join(outDir, fileName)}`);

@@ -1,10 +1,15 @@
 import { getColumnType } from "../../util/getColumnType";
+import { getRemovedCantUseVarChar } from "../../util/getRemovedCantUseVarChar";
+import { getRowTypeDoc } from "../tsdoc/docContext";
 
 const getOneGassmaCreateReturn = (
   sheetContent: Record<string, unknown[]>,
   schemaName: string,
   sheetName: string,
 ) => {
+  const clean = getRemovedCantUseVarChar(sheetName);
+  const doc = getRowTypeDoc(schemaName, sheetName);
+
   const oneCreateReturn = Object.keys(sheetContent).reduce(
     (pre, columnName) => {
       const columnTypes = sheetContent[columnName];
@@ -18,7 +23,7 @@ const getOneGassmaCreateReturn = (
 
       return `${pre} "${removedQuestionMark}": ${now}${isQuestionMark ? " | null" : ""};\n`;
     },
-    `\nexport type Gassma${schemaName}${sheetName}CreateReturn = {\n`,
+    `\n${doc}export type Gassma${schemaName}${clean}CreateReturn = {\n`,
   );
 
   return `${oneCreateReturn}};\n`;

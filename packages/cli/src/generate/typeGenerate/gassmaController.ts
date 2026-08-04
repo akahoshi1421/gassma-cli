@@ -1,15 +1,19 @@
-import { getRemovedCantUseVarChar } from "../util/getRemovedCantUseVarChar";
 import { getOneGassmaController } from "./gassmaController/oneGassmaController";
 
-const getGassmaController = (sheetNames: string[], schemaName: string) => {
-  const controllerTypeDeclare = sheetNames.reduce((pre, currentSheetName) => {
-    const removedSpaceCurrentSheetName =
-      getRemovedCantUseVarChar(currentSheetName);
-
-    return (
-      pre + getOneGassmaController(schemaName, removedSpaceCurrentSheetName)
-    );
-  }, "");
+const getGassmaController = (
+  dictYaml: Record<string, Record<string, unknown[]>>,
+  schemaName: string,
+) => {
+  const controllerTypeDeclare = Object.keys(dictYaml).reduce(
+    (pre, currentSheetName) =>
+      pre +
+      getOneGassmaController(
+        schemaName,
+        currentSheetName,
+        Object.keys(dictYaml[currentSheetName]),
+      ),
+    "",
+  );
 
   return controllerTypeDeclare;
 };

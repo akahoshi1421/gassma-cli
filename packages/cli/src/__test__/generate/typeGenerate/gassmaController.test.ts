@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getOneGassmaController } from "../../../generate/typeGenerate/gassmaController/oneGassmaController";
 
 describe("getOneGassmaController", () => {
-  const result = getOneGassmaController("", "User");
+  const result = getOneGassmaController("", "User", ["id"]);
   const res = `GassmaUserFindResult<T["select"], T["include"], T["omit"], GO, O, CMap>`;
   const sub = (dataType: string) => `T & Gassma.Subset<T, ${dataType}>`;
   const withComputed = (dataType: string) =>
@@ -103,7 +103,7 @@ describe("getOneGassmaController", () => {
       `aggregate<T extends GassmaUserAggregateData>(aggregateData: ${sub("GassmaUserAggregateData")}): GassmaUserAggregateResult<T>`,
     );
     expect(result).toContain(
-      `count<T extends GassmaUserCountData>(coutData: ${sub("GassmaUserCountData")}): GassmaUserCountResult<T>`,
+      `count<T extends GassmaUserCountData>(countData: ${sub("GassmaUserCountData")}): GassmaUserCountResult<T>`,
     );
     expect(result).toContain(
       `groupBy<T extends GassmaUserGroupByData>(groupByData: ${sub("GassmaUserGroupByData")}): GassmaUserGroupByResult<T>[]`,
