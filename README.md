@@ -21,7 +21,7 @@ npm test -w packages/gas-esbuild-plugin
 
 ## Detail reference
 
-https://akahoshi1421.github.io/gassma-reference/
+https://gassma.io/
 
 ## License
 

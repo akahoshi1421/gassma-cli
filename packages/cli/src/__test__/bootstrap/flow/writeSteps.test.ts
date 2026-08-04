@@ -53,9 +53,7 @@ describe("projectFilesStep", () => {
     expect(content).toContain("src/generated/");
     expect(content).toContain(".clasp.json");
     expect(content).toContain("dist/appsscript.json");
-    expect(content).toContain(
-      "https://akahoshi1421.github.io/gassma-reference/llms.txt",
-    );
+    expect(content).toContain("https://gassma.io/llms.txt");
   });
 
   it("should not overwrite an existing AGENTS.md", async () => {

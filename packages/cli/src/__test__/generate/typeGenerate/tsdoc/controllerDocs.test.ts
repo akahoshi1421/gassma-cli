@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getOneGassmaController } from "../../../../generate/typeGenerate/gassmaController/oneGassmaController";
 
-const BASE = "https://akahoshi1421.github.io/gassma-reference/en/docs";
+const BASE = "https://gassma.io/en/docs";
 
 describe("getOneGassmaController tsdoc", () => {
   const result = getOneGassmaController("", "Post", ["id", "title"]);

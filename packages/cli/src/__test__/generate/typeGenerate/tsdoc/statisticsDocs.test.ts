@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getModelNaming } from "../../../../generate/typeGenerate/tsdoc/modelNaming";
 import { getStatisticsDocLines } from "../../../../generate/typeGenerate/tsdoc/operations/statisticsDocs";
 
-const BASE = "https://akahoshi1421.github.io/gassma-reference/en/docs";
+const BASE = "https://gassma.io/en/docs";
 const naming = getModelNaming("", "Post", ["title", "body"]);
 const lines = getStatisticsDocLines(naming);
 

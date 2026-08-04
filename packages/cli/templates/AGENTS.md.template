@@ -24,4 +24,4 @@ A local development environment for Google Apps Script, powered by Clasp and GAS
 ## About GASsma
 
 GASsma is a GAS library + CLI that lets you work with spreadsheets the way Prisma works with databases. CRUD, aggregation, relations, and transactions are handled with almost the same syntax as Prisma.
-**Before touching anything related to the API, consult https://akahoshi1421.github.io/gassma-reference/llms.txt** (it is a link index — follow the links and read the pages you need).
+**Before touching anything related to the API, consult https://gassma.io/llms.txt** (it is a link index — follow the links and read the pages you need).

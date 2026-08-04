@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { generateClientDts } from "../../../../generate/jsGenerate/generateClientDts";
 
-const BASE = "https://akahoshi1421.github.io/gassma-reference/en/docs";
+const BASE = "https://gassma.io/en/docs";
 const BLANK = " * ";
 const result = generateClientDts("Hoge", undefined, ["Post", "User"]);
 
