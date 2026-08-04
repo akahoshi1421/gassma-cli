@@ -29,6 +29,8 @@
     "test:watch": "vitest",
     "pretest:types": "tsx scripts/genFixtureTypes.ts",
     "test:types": "vitest --typecheck --run",
+    "pretest:types:all": "tsx scripts/genFixtureTypes.ts",
+    "test:types:all": "tsx scripts/checkTypeMatrix.ts",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write src",
     "format:check": "biome format src",

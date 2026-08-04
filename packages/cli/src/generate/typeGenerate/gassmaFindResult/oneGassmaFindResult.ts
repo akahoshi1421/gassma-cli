@@ -58,9 +58,15 @@ ${relationBranch("I", childName, childArgs)}
           K extends "_count" ? Gassma.CountResult<I[K]> :
           never;
       })`;
-    return `(S extends ${self}FindSelect
-  ? ${selectResult}
-  : ${omitResult}) &
+    // strictNullChecks が off だと undefined/unknown が任意プロパティのみの型にも
+    // 代入可能になり、select 省略時にも select 側へ落ちる。SelectGiven は
+    // 代入可能性でなく型の同一性で判定するため strict の有無に依存しない。
+    // 外側の `S extends unknown` は union の S に対する分配を保つためのもの。
+    return `(S extends unknown
+  ? Gassma.SelectGiven<S> extends true
+    ? ${selectResult}
+    : ${omitResult}
+  : never) &
   ${includePart}`;
   };
 

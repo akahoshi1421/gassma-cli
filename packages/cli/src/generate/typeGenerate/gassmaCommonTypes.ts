@@ -97,12 +97,15 @@ const getGassmaCommonTypes = (strict?: boolean) => {
     [K in keyof C as K extends keyof S ? (S[K] extends true ? K : never) : never]: C[K];
   };
   type ActiveComputed<C, QO> = { [K in keyof C as K extends TrueKeys<QO> ? never : K]: C[K] };
+  type SelectGiven<S> = (<T>() => T extends S ? 1 : 2) extends <T>() => T extends unknown ? 1 : 2
+    ? false
+    : [S] extends [undefined] ? false : true;
   type StripComputed<S, C> = [keyof C] extends [never]
     ? S
-    : S extends object ? { [K in Exclude<keyof S, keyof C>]: S[K] } : S;
+    : SelectGiven<S> extends true ? { [K in Exclude<keyof S, keyof C>]: S[K] } : S;
   type WithComputed<Base, C, S, QO> = [keyof C] extends [never]
     ? Base
-    : S extends object
+    : SelectGiven<S> extends true
       ? Omit<Base, keyof SelectedComputed<C, S>> & SelectedComputed<C, S>
       : Omit<Base, keyof ActiveComputed<C, QO>> & ActiveComputed<C, QO>;
 

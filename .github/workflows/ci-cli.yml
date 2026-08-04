@@ -100,6 +100,50 @@ jobs:
       - name: Typecheck (cli, tsc --noEmit, includes __test__)
         run: npm run typecheck -w packages/cli
 
+  type-matrix-cli:
+    needs: changes-cli
+    if: needs.changes-cli.outputs.cli == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # peerDependencies の下限(5.2)から最新(7.0)まで。strict の on/off 両方を
+        # scripts/checkTypeMatrix.ts 側で回す。
+        typescript: ['5.2.2', '5.6.3', '5.9.3', '6.0.3', '7.0.2']
+
+    name: Type tests (cli, TypeScript ${{ matrix.typescript }})
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.11.0'
+          cache: 'npm'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-24.11.0-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-24.11.0-
+            ${{ runner.os }}-node-
+
+      - name: Cache TypeScript ${{ matrix.typescript }}
+        uses: actions/cache@v4
+        with:
+          path: packages/cli/.tsmatrix/${{ matrix.typescript }}
+          key: ${{ runner.os }}-tsmatrix-${{ matrix.typescript }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type tests on TypeScript ${{ matrix.typescript }}
+        run: npm run test:types:all -w packages/cli -- ${{ matrix.typescript }}
+
   build-cli:
     needs: changes-cli
     if: needs.changes-cli.outputs.cli == 'true'

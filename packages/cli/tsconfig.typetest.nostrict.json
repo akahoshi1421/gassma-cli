@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.typetest.json",
+  "include": ["src/__test__/types/nostrict"],
+  "compilerOptions": {
+    "strict": false
+  }
+}
