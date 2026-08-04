@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getModelNaming } from "../../../../generate/typeGenerate/tsdoc/modelNaming";
 import { getStatisticsDocLines } from "../../../../generate/typeGenerate/tsdoc/operations/statisticsDocs";
 
-const BASE = "https://akahoshi1421.github.io/gassma-reference/docs";
+const BASE = "https://akahoshi1421.github.io/gassma-reference/en/docs";
 const naming = getModelNaming("", "Post", ["title", "body"]);
 const lines = getStatisticsDocLines(naming);
 
@@ -30,7 +30,7 @@ describe("getStatisticsDocLines", () => {
       "Count the number of Posts.",
       "Note, that providing `undefined` is treated as the value not being there.",
       `Read more here: ${BASE}/reference/statistics/count`,
-      "@param {GassmaPostCountData} coutData - Arguments to filter Posts to count.",
+      "@param {GassmaPostCountData} countData - Arguments to filter Posts to count.",
       "@example",
       "// Count the number of Posts",
       "const count = gassma.Post.count({",

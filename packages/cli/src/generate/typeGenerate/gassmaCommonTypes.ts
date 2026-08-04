@@ -1,5 +1,20 @@
+import { REFERENCE_BASE_URL } from "./tsdoc/docBlock";
+
 const getSkipDeclarations = () => {
-  return `  const skip: unique symbol;
+  return `  /**
+   * Omits the field it is passed to, as if it had not been written at all.
+   * Unlike \`undefined\`, it is accepted while \`strictUndefinedChecks\` is on.
+   *
+   * Read more here: ${REFERENCE_BASE_URL}/reference/config/strict-undefined-checks
+   *
+   * @example
+   * \`\`\`
+   * gassma.User.findMany({
+   *   where: { name: search ?? Gassma.skip },
+   * });
+   * \`\`\`
+   */
+  const skip: unique symbol;
   type SkipValue = typeof skip;
   type SkipOptional<T> = { [K in keyof T]: {} extends Pick<T, K> ? T[K] | SkipValue : T[K] };
 

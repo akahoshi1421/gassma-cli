@@ -39,6 +39,7 @@ const constructorDocLines = (schemaName: string) => [
 
 const transactionDocLines = (model: string) => [
   "Allows the running of a sequence of read/write operations that are guaranteed to either succeed or fail as a whole.",
+  `Read more here: ${REFERENCE_BASE_URL}/reference/transaction`,
   "@example",
   FENCE,
   "const [alice, bob] = gassma.$transaction((tx) => {",
@@ -51,6 +52,7 @@ const transactionDocLines = (model: string) => [
 
 const EXTENDS_DOC_LINES = [
   "Creates an extended client with additional behaviour.",
+  `Read more here: ${REFERENCE_BASE_URL}/reference/client-extensions/result`,
   "@example",
   FENCE,
   "const extended = gassma.$extends({",

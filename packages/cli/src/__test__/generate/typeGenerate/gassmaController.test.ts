@@ -103,7 +103,7 @@ describe("getOneGassmaController", () => {
       `aggregate<T extends GassmaUserAggregateData>(aggregateData: ${sub("GassmaUserAggregateData")}): GassmaUserAggregateResult<T>`,
     );
     expect(result).toContain(
-      `count<T extends GassmaUserCountData>(coutData: ${sub("GassmaUserCountData")}): GassmaUserCountResult<T>`,
+      `count<T extends GassmaUserCountData>(countData: ${sub("GassmaUserCountData")}): GassmaUserCountResult<T>`,
     );
     expect(result).toContain(
       `groupBy<T extends GassmaUserGroupByData>(groupByData: ${sub("GassmaUserGroupByData")}): GassmaUserGroupByResult<T>[]`,

@@ -27,7 +27,7 @@ const getStatisticsDocLines = (naming: ModelNaming) => {
       `Count the number of ${plural}.`,
       UNDEFINED_NOTE,
       `Read more here: ${STATISTICS_BASE}/count`,
-      `@param {${prefix}CountData} coutData - Arguments to filter ${plural} to count.`,
+      `@param {${prefix}CountData} countData - Arguments to filter ${plural} to count.`,
       "@example",
       `// Count the number of ${plural}`,
       `const count = ${accessor}.count({`,

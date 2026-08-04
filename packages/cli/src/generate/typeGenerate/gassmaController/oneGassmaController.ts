@@ -46,7 +46,7 @@ ${docs.deleteSingle}  delete<${arg("DeleteSingleData")}>(deleteData: ${sub("Dele
 ${docs.deleteMany}  deleteMany(deleteData: ${self}DeleteData): DeleteManyReturn;
 ${docs.deleteManyNoArgs}  deleteMany(): DeleteManyReturn;
 ${docs.aggregate}  aggregate<T extends ${self}AggregateData>(aggregateData: T & Gassma.Subset<T, ${self}AggregateData>): ${self}AggregateResult<T>;
-${docs.count}  count<T extends ${self}CountData>(coutData: T & Gassma.Subset<T, ${self}CountData>): ${self}CountResult<T>;
+${docs.count}  count<T extends ${self}CountData>(countData: T & Gassma.Subset<T, ${self}CountData>): ${self}CountResult<T>;
 ${docs.countNoArgs}  count(): number;
 ${docs.groupBy}  groupBy<T extends ${self}GroupByData>(groupByData: T & Gassma.Subset<T, ${self}GroupByData>): ${self}GroupByResult<T>[];
 }

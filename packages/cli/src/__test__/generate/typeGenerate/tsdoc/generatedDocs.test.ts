@@ -35,12 +35,36 @@ describe("generated tsdoc", () => {
     expect(generated).not.toContain("prisma.");
   });
 
-  it("should only link to published reference pages", () => {
-    expect(generated).not.toContain("/reference/transaction");
-    expect(generated).not.toContain("/reference/client-extensions");
-    expect(generated).not.toContain(
+  it("should link the client-level features to their reference pages", () => {
+    expect(generated).toContain("/reference/transaction");
+    expect(generated).toContain("/reference/client-extensions/result");
+  });
+
+  it("should link Gassma.skip to strictUndefinedChecks when it is declared", () => {
+    const strictGenerated = generater(
+      dictYaml,
+      undefined,
+      "",
+      true,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      true,
+    );
+
+    expect(strictGenerated).toContain(
       "/reference/config/strict-undefined-checks",
     );
+  });
+
+  it("should link to the english reference, matching the language of the docs", () => {
+    const links = generated.match(/https:\/\/[^\s)]+gassma-reference[^\s)]*/g);
+
+    expect(links).not.toBeNull();
+    links?.forEach((link) => {
+      expect(link).toContain("/gassma-reference/en/docs/");
+    });
   });
 
   it("should not document findUnique operations that gassma does not have", () => {

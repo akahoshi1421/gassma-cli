@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { generateClientDts } from "../../../../generate/jsGenerate/generateClientDts";
 
-const BASE = "https://akahoshi1421.github.io/gassma-reference/docs";
+const BASE = "https://akahoshi1421.github.io/gassma-reference/en/docs";
 const BLANK = " * ";
 const result = generateClientDts("Hoge", undefined, ["Post", "User"]);
 
@@ -69,6 +69,7 @@ describe("generateClientDts tsdoc", () => {
       [
         "  /**",
         "   * Allows the running of a sequence of read/write operations that are guaranteed to either succeed or fail as a whole.",
+        `   * Read more here: ${BASE}/reference/transaction`,
         "   * @example",
         "   * ```",
         "   * const [alice, bob] = gassma.$transaction((tx) => {",
@@ -87,6 +88,7 @@ describe("generateClientDts tsdoc", () => {
     const extendsDoc = [
       "  /**",
       "   * Creates an extended client with additional behaviour.",
+      `   * Read more here: ${BASE}/reference/client-extensions/result`,
       "   * @example",
       "   * ```",
       "   * const extended = gassma.$extends({",
@@ -102,8 +104,8 @@ describe("generateClientDts tsdoc", () => {
     expect(result.split(extendsDoc)).toHaveLength(3);
   });
 
-  it("should not link to pages that are not published", () => {
-    expect(result).not.toContain("/reference/transaction");
-    expect(result).not.toContain("/reference/client-extensions");
+  it("should link $transaction and $extends to their reference pages", () => {
+    expect(result).toContain(`${BASE}/reference/transaction`);
+    expect(result).toContain(`${BASE}/reference/client-extensions/result`);
   });
 });

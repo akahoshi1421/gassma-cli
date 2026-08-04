@@ -27,7 +27,7 @@ describe("renderDocBlock", () => {
 
   it("should expose the reference site base url", () => {
     expect(REFERENCE_BASE_URL).toBe(
-      "https://akahoshi1421.github.io/gassma-reference/docs",
+      "https://akahoshi1421.github.io/gassma-reference/en/docs",
     );
   });
 });
