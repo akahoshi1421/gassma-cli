@@ -1,4 +1,5 @@
 import type { DefaultsConfig } from "./read/extractDefaults";
+import type { OptionalRelationsConfig } from "./read/extractOptionalRelations";
 import type { RelationsConfig } from "./read/extractRelations";
 import { getGassmaAggregateBaseReturn } from "./typeGenerate/gassmaAggregateBaseReturn";
 import { getGassmaAggregateData } from "./typeGenerate/gassmaAggregateData";
@@ -52,6 +53,7 @@ const generater = (
   autoincrementModels?: string[],
   optionalFields?: Record<string, string[]>,
   strict?: boolean,
+  optionalRelations?: OptionalRelationsConfig,
 ) => {
   const schema = schemaName ?? "";
   const sheetNames = Object.keys(dictYaml);
@@ -101,7 +103,12 @@ const generater = (
   result += getGassmaCountResult(sheetNames, schema);
   result += getGassmaCreateReturn(dictYaml, schema);
   result += getGassmaDefaultFindResult(sheetNames, schema);
-  result += getGassmaFindResult(sheetNames, schema, relations);
+  result += getGassmaFindResult(
+    sheetNames,
+    schema,
+    relations,
+    optionalRelations,
+  );
   result += getGassmaAggregateBaseReturn(dictYaml, schema);
   result += getGassmaAggregateField(sheetNames, schema);
   result += getGassmaAggregateResult(sheetNames, schema);

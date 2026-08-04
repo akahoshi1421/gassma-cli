@@ -41,15 +41,15 @@ declare const client: GassmaClient;
   expectTypeOf<NonNullable<R["profile"]>["bio"]>().toEqualTypeOf<string>();
 }
 
-// select で manyToOne relation: 単一 | null
+// select で manyToOne relation: FK 必須なので単一（null なし）
 {
   const r = client.Post.findFirstOrThrow({
     where: {},
     select: { id: true, author: true },
   });
   type R = typeof r;
-  expectTypeOf<R["author"]>().toBeNullable();
-  expectTypeOf<NonNullable<R["author"]>["email"]>().toEqualTypeOf<string>();
+  expectTypeOf<R["author"]>().not.toBeNullable();
+  expectTypeOf<R["author"]["email"]>().toEqualTypeOf<string>();
 }
 
 // select 内の relation に select（ネスト）: relation 先も絞られる
@@ -104,7 +104,7 @@ declare const client: GassmaClient;
   expectTypeOf<P["tags"][number]>().not.toHaveProperty("id");
 }
 
-// ネスト select 内の relation true: 対象の全スカラー（manyToOne は | null）
+// ネスト select 内の relation true: 対象の全スカラー（FK 必須なので null なし）
 {
   const r = client.User.findFirstOrThrow({
     where: {},
@@ -112,8 +112,8 @@ declare const client: GassmaClient;
   });
   type P = (typeof r)["posts"][number];
   expectTypeOf<P>().not.toHaveProperty("title");
-  expectTypeOf<P["author"]>().toBeNullable();
-  type A = NonNullable<P["author"]>;
+  expectTypeOf<P["author"]>().not.toBeNullable();
+  type A = P["author"];
   expectTypeOf<keyof A>().toEqualTypeOf<
     | "id"
     | "email"
