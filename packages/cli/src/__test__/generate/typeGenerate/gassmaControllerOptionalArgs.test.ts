@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getOneGassmaController } from "../../../generate/typeGenerate/gassmaController/oneGassmaController";
 
 describe("getOneGassmaController no-arg overloads", () => {
-  const result = getOneGassmaController("", "User");
+  const result = getOneGassmaController("", "User", ["id"]);
   const resNoArg = `GassmaUserFindResult<unknown, unknown, unknown, GO, O, CMap>`;
 
   it("should allow findMany without arguments", () => {
@@ -38,7 +38,7 @@ describe("getOneGassmaController no-arg overloads", () => {
   });
 
   it("should prefix schema name in no-arg return types", () => {
-    const prefixed = getOneGassmaController("Hoge", "User");
+    const prefixed = getOneGassmaController("Hoge", "User", ["id"]);
     expect(prefixed).toContain(
       "findMany(): GassmaHogeUserFindResult<unknown, unknown, unknown, GO, O, CMap>[];",
     );

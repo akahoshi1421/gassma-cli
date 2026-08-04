@@ -48,10 +48,18 @@ describe("generateClientDts", () => {
   it("should export a TransactionClient type without $transaction", () => {
     const result = generateClientDts("Hoge");
 
-    expect(result).toContain(
-      `export type GassmaHogeTransactionClient<O extends Gassma.StrictGlobalOmit<O, GassmaHogeGlobalOmitConfig> = {}> = GassmaHogeSheet<O> & {
-  $extends: GassmaHogeExtendsFn<O, {}>;
-};`,
+    const declaration = result.slice(
+      result.indexOf("export type GassmaHogeTransactionClient"),
+    );
+
+    expect(declaration).toContain(
+      "export type GassmaHogeTransactionClient<O extends Gassma.StrictGlobalOmit<O, GassmaHogeGlobalOmitConfig> = {}> = GassmaHogeSheet<O> & {\n",
+    );
+    expect(declaration.slice(0, declaration.indexOf("};"))).toContain(
+      "  $extends: GassmaHogeExtendsFn<O, {}>;\n",
+    );
+    expect(declaration.slice(0, declaration.indexOf("};"))).not.toContain(
+      "$transaction",
     );
   });
 

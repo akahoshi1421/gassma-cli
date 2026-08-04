@@ -69,7 +69,7 @@ const generater = (
   );
 
   result += getGassmaSheet(sheetNames, schema);
-  result += getGassmaController(sheetNames, schema);
+  result += getGassmaController(dictYaml, schema);
   if (includeCommon !== false) {
     result += getGassmaManyCount();
   }
