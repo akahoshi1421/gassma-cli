@@ -33,7 +33,7 @@
     "url": "https://github.com/akahoshi1421/gassma-cli.git",
     "directory": "packages/gas-esbuild-plugin"
   },
-  "homepage": "https://akahoshi1421.github.io/gassma-reference/",
+  "homepage": "https://gassma.io/",
   "bugs": {
     "url": "https://github.com/akahoshi1421/gassma-cli/issues"
   },

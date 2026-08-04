@@ -181,7 +181,7 @@ npx gassma bootstrap          # ask for a directory first
 npx gassma bootstrap .        # set up in the current directory
 ```
 
-Requires [clasp](https://github.com/google/clasp): `npm install -g @google/clasp`, then `clasp login`. See the [bootstrap reference](https://akahoshi1421.github.io/gassma-reference/en/docs/reference/bootstrap) for details.
+Requires [clasp](https://github.com/google/clasp): `npm install -g @google/clasp`, then `clasp login`. See the [bootstrap reference](https://gassma.io/en/docs/reference/bootstrap) for details.
 
 #### arguments
 
@@ -232,11 +232,11 @@ Display the current version of GASsma CLI.
 
 The config file is searched in the current directory in the order `gassma.config.{js,ts,mjs,cjs,mts,cts}`, then `.config/gassma.{js,ts,mjs,cjs,mts,cts}`. `--config <path>` overrides the search. The `env("NAME")` helper from `gassma/config` reads environment variables in the config file.
 
-The schema also supports `previewFeatures = ["strictUndefinedChecks"]` in the generator block. See the [strictUndefinedChecks reference](https://akahoshi1421.github.io/gassma-reference/en/docs/reference/config/strict-undefined-checks) for details.
+The schema also supports `previewFeatures = ["strictUndefinedChecks"]` in the generator block. See the [strictUndefinedChecks reference](https://gassma.io/en/docs/reference/config/strict-undefined-checks) for details.
 
 ## Detail reference
 
-https://akahoshi1421.github.io/gassma-reference/en/docs/reference/type-generation/
+https://gassma.io/en/docs/reference/type-generation/
 
 ## License
 

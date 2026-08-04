@@ -59,11 +59,11 @@ describe("generated tsdoc", () => {
   });
 
   it("should link to the english reference, matching the language of the docs", () => {
-    const links = generated.match(/https:\/\/[^\s)]+gassma-reference[^\s)]*/g);
+    const links = generated.match(/https:\/\/gassma\.io[^\s)]*/g);
 
     expect(links).not.toBeNull();
     links?.forEach((link) => {
-      expect(link).toContain("/gassma-reference/en/docs/");
+      expect(link).toContain("https://gassma.io/en/docs/");
     });
   });
 

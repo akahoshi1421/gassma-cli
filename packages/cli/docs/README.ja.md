@@ -181,7 +181,7 @@ npx gassma bootstrap          # 最初にディレクトリを質問
 npx gassma bootstrap .        # カレントディレクトリにセットアップ
 ```
 
-[clasp](https://github.com/google/clasp) が必要です: `npm install -g @google/clasp` の後、`clasp login` してください。詳細は [bootstrap リファレンス](https://akahoshi1421.github.io/gassma-reference/docs/reference/bootstrap)を参照してください。
+[clasp](https://github.com/google/clasp) が必要です: `npm install -g @google/clasp` の後、`clasp login` してください。詳細は [bootstrap リファレンス](https://gassma.io/docs/reference/bootstrap)を参照してください。
 
 #### 引数
 
@@ -232,11 +232,11 @@ GASsma CLI の現在のバージョンを表示します。
 
 config ファイルはカレントディレクトリから `gassma.config.{js,ts,mjs,cjs,mts,cts}`、次に `.config/gassma.{js,ts,mjs,cjs,mts,cts}` の順で探索されます。`--config <path>` で探索を上書きできます。`gassma/config` の `env("NAME")` ヘルパーで config ファイル内から環境変数を読み取れます。
 
-スキーマの generator ブロックでは `previewFeatures = ["strictUndefinedChecks"]` もサポートしています。詳細は [strictUndefinedChecks リファレンス](https://akahoshi1421.github.io/gassma-reference/docs/reference/config/strict-undefined-checks)を参照してください。
+スキーマの generator ブロックでは `previewFeatures = ["strictUndefinedChecks"]` もサポートしています。詳細は [strictUndefinedChecks リファレンス](https://gassma.io/docs/reference/config/strict-undefined-checks)を参照してください。
 
 ## 詳細リファレンス
 
-https://akahoshi1421.github.io/gassma-reference/docs/reference/type-generation/
+https://gassma.io/docs/reference/type-generation/
 
 ## ライセンス
 
