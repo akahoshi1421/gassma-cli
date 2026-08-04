@@ -1,0 +1,15 @@
+{
+  "include": ["src/__test__/types"],
+  "compilerOptions": {
+    "target": "es2016",
+    "lib": ["ES2021"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  }
+}

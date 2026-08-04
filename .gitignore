@@ -25,5 +25,8 @@ gassma/
 # 型テスト用の生成物
 packages/cli/src/__test__/types/__generated__/
 
+# 型テストマトリクス用にバージョンごとに入れた TypeScript
+packages/cli/.tsmatrix/
+
 # npm
 .npmrc
