@@ -34,6 +34,15 @@ describe("getGassmaCommonTypes", () => {
     expect(result).toContain("gte?: T | FieldRef");
   });
 
+  it("should generate a structural Lock type instead of depending on GoogleAppsScript", () => {
+    expect(result).toContain("type Lock = {");
+    expect(result).toContain("waitLock(timeoutInMillis: number): void;");
+    expect(result).toContain("releaseLock(): void;");
+    expect(result).toContain("hasLock(): boolean;");
+    expect(result).not.toContain("tryLock");
+    expect(result).not.toContain("GoogleAppsScript");
+  });
+
   it("should generate GassmaTransactionOptions type", () => {
     expect(result).toContain("type GassmaTransactionOptions = {");
     expect(result).toContain("maxWait?: number");

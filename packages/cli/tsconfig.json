@@ -5,7 +5,6 @@
     "lib": ["ES2021"],
     "module": "preserve",
     "moduleResolution": "bundler",
-    "types": ["google-apps-script"],
     "rootDir": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

@@ -5,7 +5,7 @@
     "lib": ["ES2021"],
     "module": "esnext",
     "moduleResolution": "bundler",
-    "types": ["node", "google-apps-script"],
+    "types": ["node"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

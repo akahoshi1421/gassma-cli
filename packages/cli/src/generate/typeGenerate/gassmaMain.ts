@@ -28,7 +28,7 @@ const getGassmaClientOptions = (schemaName: string) => {
 
   return `export type Gassma${schemaName}ClientOptions<O extends Gassma.StrictGlobalOmit<O, Gassma${schemaName}GlobalOmitConfig> = {}> = {
   id?: string;
-${docs.lock}  lock?: GoogleAppsScript.Lock.Lock;
+${docs.lock}  lock?: Gassma.Lock;
   relations?: Gassma.RelationsConfig;
   omit?: O;
   defaults?: Gassma${schemaName}DefaultsConfig;

@@ -124,6 +124,12 @@ const getGassmaCommonTypes = (strict?: boolean) => {
     ? { [P in keyof S]: number }
     : { [key: string]: number };
 
+  type Lock = {
+    waitLock(timeoutInMillis: number): void;
+    releaseLock(): void;
+    hasLock(): boolean;
+  };
+
   type GassmaTransactionOptions = {
     maxWait?: number;
     timeout?: number;
