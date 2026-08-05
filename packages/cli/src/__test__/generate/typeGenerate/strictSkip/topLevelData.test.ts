@@ -135,6 +135,12 @@ describe("strict GroupByData", () => {
     expect(result).toContain('by: "id" | ("id")[];');
   });
 
+  it("should add SkipValue to orderBy", () => {
+    expect(result).toContain(
+      "orderBy?: GassmaUserOrderByWithAggregation | GassmaUserOrderByWithAggregation[] | Gassma.SkipValue;",
+    );
+  });
+
   it("should keep non-strict output unchanged", () => {
     expect(
       getOneGassmaGroupByData({ id: ["number"] }, "", "User"),

@@ -193,6 +193,9 @@ declare const client: GassmaClient;
   client.User.count({ where: Gassma.skip, take: Gassma.skip });
   client.User.groupBy({ by: "id", having: Gassma.skip });
   client.User.groupBy({ by: "id", having: { score: Gassma.skip } });
+  client.User.groupBy({ by: "id", orderBy: Gassma.skip });
+  client.User.groupBy({ by: "id", orderBy: { _count: Gassma.skip } });
+  client.User.groupBy({ by: "id", orderBy: { _count: { id: Gassma.skip } } });
   // @ts-expect-error by は必須引数なので skip 不可
   client.User.groupBy({ by: Gassma.skip });
 }
