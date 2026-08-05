@@ -97,6 +97,8 @@ describe("generater", () => {
   it("should include GroupBy types", () => {
     expect(result).toContain("GassmaUserGroupByData");
     expect(result).toContain("GassmaUserGroupByResult");
+    expect(result).toContain("export type GassmaUserOrderByWithAggregation");
+    expect(result).toContain("export type GassmaPostOrderByWithAggregation");
   });
 
   it("should include Extension types", () => {

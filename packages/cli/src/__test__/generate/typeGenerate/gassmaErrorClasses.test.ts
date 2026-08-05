@@ -99,6 +99,24 @@ describe("getGassmaErrorClasses", () => {
     );
   });
 
+  it("should include GassmaGroupByOrderByRequiredError with rest parameters", () => {
+    expect(result).toContain(
+      "class GassmaGroupByOrderByRequiredError extends Error",
+    );
+    expect(result).toContain("constructor(...paginationArguments: string[]);");
+  });
+
+  it("should declare GroupBy errors in the same order as gassma", () => {
+    const having = result.indexOf("class GassmaGroupByHavingDontWriteByError");
+    const orderByRequired = result.indexOf(
+      "class GassmaGroupByOrderByRequiredError",
+    );
+    const aggregateMax = result.indexOf("class GassmaAggregateMaxError");
+
+    expect(having).toBeLessThan(orderByRequired);
+    expect(orderByRequired).toBeLessThan(aggregateMax);
+  });
+
   it("should include aggregate error classes with inheritance", () => {
     expect(result).toContain("class GassmaAggregateMaxError extends Error");
     expect(result).toContain(

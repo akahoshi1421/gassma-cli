@@ -21,6 +21,11 @@ const errorClassDefinitions: ErrorClassDef[] = [
   { name: "GassmaFindSelectOmitConflictError", extends: "Error", params: "" },
   { name: "GassmaInValidColumnValueError", extends: "Error", params: "" },
   { name: "GassmaGroupByHavingDontWriteByError", extends: "Error", params: "" },
+  {
+    name: "GassmaGroupByOrderByRequiredError",
+    extends: "Error",
+    params: "...paginationArguments: string[]",
+  },
   { name: "GassmaAggregateMaxError", extends: "Error", params: "" },
   {
     name: "GassmaAggregateMinError",

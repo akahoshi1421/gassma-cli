@@ -30,8 +30,11 @@ const getOneGassmaGroupByData = (
 
   const sk = skipUnion(strict);
 
-  return `\nexport type Gassma${schemaName}${sheetName}GroupByData = Omit<Gassma${schemaName}${sheetName}AggregateData, "cursor"> & {
+  const orderBy = `Gassma${schemaName}${sheetName}OrderByWithAggregation`;
+
+  return `\nexport type Gassma${schemaName}${sheetName}GroupByData = Omit<Gassma${schemaName}${sheetName}AggregateData, "cursor" | "orderBy"> & {
   by: ${byData}(${byArrayData})[];
+  orderBy?: ${orderBy} | ${orderBy}[]${sk};
   having?: Gassma${schemaName}${sheetName}HavingUse${sk};
 };
 `;

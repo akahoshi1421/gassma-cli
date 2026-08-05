@@ -171,3 +171,115 @@ declare const client: GassmaClient;
     "ADMIN" | "USER" | "MODERATOR" | null
   >();
 }
+
+// groupBy: 集計値でソートできる（本体 #226）
+{
+  client.User.groupBy({
+    by: ["isActive"],
+    _count: { id: true },
+    orderBy: { _count: { id: "desc" } },
+  });
+  client.User.groupBy({
+    by: ["isActive"],
+    _sum: { age: true },
+    orderBy: { _sum: { age: "desc" } },
+  });
+  client.User.groupBy({ by: ["isActive"], orderBy: { _avg: { age: "asc" } } });
+  client.User.groupBy({
+    by: ["isActive"],
+    orderBy: { _max: { email: "asc" } },
+  });
+  client.User.groupBy({
+    by: ["isActive"],
+    orderBy: { _min: { createdAt: "desc" } },
+  });
+}
+
+// groupBy: 集計の中の列は by に含まれていなくてよい（Prisma パリティ）
+{
+  client.User.groupBy({ by: ["isActive"], orderBy: { _sum: { age: "desc" } } });
+}
+
+// groupBy: 集計を結果に選択していなくてもソートできる（Prisma パリティ）
+{
+  const r = client.User.groupBy({
+    by: ["isActive"],
+    orderBy: { _count: { id: "desc" } },
+  });
+  expectTypeOf<(typeof r)[number]>().not.toHaveProperty("_count");
+}
+
+// groupBy: 集計とスカラーの複合ソート
+{
+  client.User.groupBy({
+    by: ["isActive"],
+    orderBy: [{ _count: { id: "desc" } }, { isActive: "asc" }],
+  });
+}
+
+// groupBy: _count の _all はソートに使えない（Prisma パリティ）
+{
+  client.User.groupBy({
+    by: ["isActive"],
+    // @ts-expect-error orderBy の _count に _all は指定できない
+    orderBy: { _count: { _all: "desc" } },
+  });
+}
+
+// groupBy: orderBy の _avg / _sum は数値フィールド限定
+{
+  client.User.groupBy({
+    by: ["isActive"],
+    // @ts-expect-error _avg は数値フィールド限定（email は string）
+    orderBy: { _avg: { email: "asc" } },
+  });
+  client.User.groupBy({
+    by: ["isActive"],
+    // @ts-expect-error _sum は数値フィールド限定（name は string）
+    orderBy: { _sum: { name: "asc" } },
+  });
+}
+
+// groupBy: 存在しない列ではソートできない
+{
+  client.User.groupBy({
+    by: ["isActive"],
+    // @ts-expect-error "nonexistent" は User のフィールドでない
+    orderBy: { nonexistent: "asc" },
+  });
+}
+
+// groupBy: リレーションではソートできない（本体が拒否する）
+{
+  client.User.groupBy({
+    by: ["isActive"],
+    // @ts-expect-error groupBy の orderBy にリレーションは指定できない
+    orderBy: { posts: { _count: "asc" } },
+  });
+}
+
+// groupBy: by に含まれないスカラー列は型では通る（実行時に本体が弾く）
+{
+  client.User.groupBy({ by: ["isActive"], orderBy: { age: "asc" } });
+}
+
+// findMany の orderBy は従来どおり（リレーション件数ソートを含む・回帰ガード）
+{
+  client.User.findMany({ orderBy: { posts: { _count: "asc" } } });
+  client.User.findMany({ orderBy: { name: { sort: "asc", nulls: "last" } } });
+  client.User.findMany({ orderBy: [{ isActive: "desc" }, { age: "asc" }] });
+}
+
+// aggregate の orderBy は従来どおり行に適用（回帰ガード）
+{
+  client.User.aggregate({ _count: { id: true }, orderBy: { name: "asc" } });
+  client.User.aggregate({
+    _count: { id: true },
+    orderBy: { posts: { _count: "asc" } },
+  });
+  const aggregateOrderBy: GassmaUserAggregateData = {
+    orderBy: { createdAt: "desc" },
+    take: 3,
+  };
+  void aggregateOrderBy;
+}
