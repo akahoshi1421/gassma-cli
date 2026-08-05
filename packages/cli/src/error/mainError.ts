@@ -18,8 +18,18 @@ class NoDatasourceUrlError extends Error {
   constructor() {
     super(
       "GASsmaNoDatasourceUrlError: datasource url is not set.\n" +
+        'Looked at the datasource block in your schema, datasource.url in gassma.config.ts, and "parentId" in .clasp.json, but none of them had one.\n' +
         "Please set datasource.url in gassma.config.ts or add a url to the datasource block in your schema.\n" +
         'Example:\n  datasource db {\n    provider = "gassma"\n    url      = "https://docs.google.com/spreadsheets/d/XXXX/edit"\n  }',
+    );
+  }
+}
+
+class InvalidClaspJsonError extends Error {
+  constructor(claspJsonPath: string) {
+    super(
+      `GASsmaInvalidClaspJsonError: .clasp.json at ${claspJsonPath} is not a valid JSON object.\n` +
+        "Please fix its contents, or remove the file if you are not using clasp.",
     );
   }
 }
@@ -84,6 +94,7 @@ export {
   ArgumentError,
   NoModelsError,
   NoDatasourceUrlError,
+  InvalidClaspJsonError,
   ConfigFileNotFoundError,
   GassmaConfigEnvError,
   GassmaConfigLoadError,

@@ -4,6 +4,7 @@ import { NoDatasourceUrlError } from "../error/mainError";
 import { mergeSchemaFiles } from "../generate/mergeSchemaFiles";
 import { extractDatasourceUrl } from "../generate/read/extractDatasourceUrl";
 import { buildSpreadsheetUrl } from "./buildSpreadsheetUrl";
+import { readClaspParentId } from "./readClaspParentId";
 
 type StudioUrlOptions = {
   config?: string;
@@ -14,7 +15,9 @@ const resolveStudioUrl = (options?: StudioUrlOptions): string => {
   const schemaText = mergeSchemaFiles(files.map((f) => f.filePath));
   const loaded = loadConfig(options?.config);
   const urlOrId =
-    extractDatasourceUrl(schemaText) ?? loaded?.config.datasource?.url;
+    extractDatasourceUrl(schemaText) ??
+    loaded?.config.datasource?.url ??
+    readClaspParentId(process.cwd());
 
   if (urlOrId === undefined || urlOrId === null) {
     throw new NoDatasourceUrlError();
