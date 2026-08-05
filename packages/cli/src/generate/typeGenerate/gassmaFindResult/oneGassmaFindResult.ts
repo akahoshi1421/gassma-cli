@@ -1,14 +1,28 @@
-import type { RelationsConfig } from "../../read/extractRelations";
+import type { OptionalRelationsConfig } from "../../read/extractOptionalRelations";
+import type {
+  RelationDefinition,
+  RelationsConfig,
+} from "../../read/extractRelations";
 
 const getOneGassmaFindResult = (
   schemaName: string,
   sheetName: string,
   relations?: RelationsConfig,
+  optionalRelations?: OptionalRelationsConfig,
 ) => {
   const prefix = `Gassma${schemaName}`;
   const self = `${prefix}${sheetName}`;
   const modelRelations = relations?.[sheetName] ?? {};
   const relNames = Object.keys(modelRelations);
+  const optionalRelNames = optionalRelations?.[sheetName] ?? [];
+
+  // to-many は配列。to-one は Prisma と同じくリレーションフィールドの `?` に従い、
+  // FK を持たない oneToOne は相手が存在する保証がないため常に null 許容。
+  const relationSuffix = (def: RelationDefinition, relationName: string) => {
+    if (def.type === "oneToMany" || def.type === "manyToMany") return "[]";
+    if (def.type === "oneToOne") return " | null";
+    return optionalRelNames.includes(relationName) ? " | null" : "";
+  };
 
   const relUnion = relNames.map((r) => `"${r}"`).join(" | ");
   const relKeyUnion =
@@ -26,9 +40,7 @@ const getOneGassmaFindResult = (
         const targetFR = `${prefix}${def.to}${childName}`;
         const targetGO = `O extends { "${def.to}": infer TO } ? TO extends ${prefix}${def.to}Omit ? TO : {} : {}`;
         const inner = `${targetFR}<Gassma.SelectOf<${source}[K]>, Gassma.IncludeOf<${source}[K]>, Gassma.OmitOf<${source}[K]>, ${targetGO}, O${childArgs}>`;
-        const isList = def.type === "oneToMany" || def.type === "manyToMany";
-        const result = isList ? `${inner}[]` : `${inner} | null`;
-        return `            "${relationName}": ${result};`;
+        return `            "${relationName}": ${inner}${relationSuffix(def, relationName)};`;
       })
       .join("\n");
     return `          K extends ${relUnion} ? {

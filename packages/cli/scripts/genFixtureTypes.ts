@@ -8,6 +8,7 @@ import { extractAutoincrement } from "../src/generate/read/extractAutoincrement"
 import { extractDefaults } from "../src/generate/read/extractDefaults";
 import { extractUpdatedAt } from "../src/generate/read/extractUpdatedAt";
 import { extractOptionalFields } from "../src/generate/read/extractOptionalFields";
+import { extractOptionalRelations } from "../src/generate/read/extractOptionalRelations";
 import { extractPreviewFeatures } from "../src/generate/read/extractPreviewFeatures";
 
 const fixturePath = path.join(
@@ -26,6 +27,7 @@ const generateFixture = (text: string, fileName: string) => {
   const defaults = extractDefaults(text);
   const updatedAt = extractUpdatedAt(text);
   const optionalFields = extractOptionalFields(text);
+  const optionalRelations = extractOptionalRelations(text);
   const strict = extractPreviewFeatures(text).includes(
     "strictUndefinedChecks",
   );
@@ -40,6 +42,7 @@ const generateFixture = (text: string, fileName: string) => {
     Object.keys(autoincrement),
     optionalFields,
     strict,
+    optionalRelations,
   );
   const clientDts = generateClientDts("", undefined, Object.keys(parsed));
 

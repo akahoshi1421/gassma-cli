@@ -62,7 +62,7 @@ describe("getOneGassmaFindResult", () => {
     );
   });
 
-  it("should map manyToOne to computed TargetFindResult | null threading CMap", () => {
+  it("should map optional manyToOne to computed TargetFindResult | null threading CMap", () => {
     const relations: RelationsConfig = {
       Post: {
         author: {
@@ -73,7 +73,9 @@ describe("getOneGassmaFindResult", () => {
         },
       },
     };
-    const result = getOneGassmaFindResult("", "Post", relations);
+    const result = getOneGassmaFindResult("", "Post", relations, {
+      Post: ["author"],
+    });
     expect(result).toContain(
       '"author": GassmaUserFindResult<Gassma.SelectOf<I[K]>, Gassma.IncludeOf<I[K]>, Gassma.OmitOf<I[K]>, O extends { "User": infer TO } ? TO extends GassmaUserOmit ? TO : {} : {}, O, CMap> | null;',
     );

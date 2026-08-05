@@ -26,15 +26,15 @@ declare const clientOmit: GassmaClient<{ Post: { published: true } }>;
   expectTypeOf<T["posts"][number]["title"]>().toEqualTypeOf<string>();
 }
 
-// oneToOne 逆側(FK 保有側): Profile.user → User | null
+// 1:1 の FK 保有側: Profile.user は必須なので User（null を含まない）
 {
   const pr = client.Profile.findFirst({
     where: { id: 1 },
     include: { user: true },
   });
   type Pr = NonNullable<typeof pr>;
-  expectTypeOf<Pr["user"]>().toBeNullable();
-  expectTypeOf<NonNullable<Pr["user"]>["email"]>().toEqualTypeOf<string>();
+  expectTypeOf<Pr["user"]>().not.toBeNullable();
+  expectTypeOf<Pr["user"]["email"]>().toEqualTypeOf<string>();
 }
 
 // 3段以上の深いネスト include: User -> posts -> tags -> posts
@@ -84,7 +84,7 @@ declare const clientOmit: GassmaClient<{ Post: { published: true } }>;
   });
   type P = NonNullable<typeof p>;
   expectTypeOf<P>().not.toHaveProperty("published");
-  expectTypeOf<P["author"]>().toBeNullable();
+  expectTypeOf<P["author"]>().not.toBeNullable();
   expectTypeOf<P["tags"]>().toBeArray();
   expectTypeOf<P["title"]>().toEqualTypeOf<string>();
 }
@@ -97,7 +97,7 @@ declare const clientOmit: GassmaClient<{ Post: { published: true } }>;
   });
   type P = NonNullable<typeof p>;
   expectTypeOf<P>().not.toHaveProperty("published");
-  expectTypeOf<P["author"]>().toBeNullable();
+  expectTypeOf<P["author"]>().not.toBeNullable();
 }
 
 // select と include の役割分担: select 内リレーション + _count

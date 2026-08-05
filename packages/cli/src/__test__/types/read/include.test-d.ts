@@ -25,15 +25,15 @@ declare const client: GassmaClient;
   expectTypeOf<NonNullable<U["profile"]>["bio"]>().toEqualTypeOf<string>();
 }
 
-// Post.author（manyToOne）→ User | null（スプレッドシートは FK 制約を持たないため常に null 許容）
+// Post.author（manyToOne・FK 必須）→ User（Prisma と同じく null を含まない）
 {
   const p = client.Post.findFirst({
     where: { id: 1 },
     include: { author: true },
   });
   type P = NonNullable<typeof p>;
-  expectTypeOf<P["author"]>().toBeNullable();
-  expectTypeOf<NonNullable<P["author"]>["email"]>().toEqualTypeOf<string>();
+  expectTypeOf<P["author"]>().not.toBeNullable();
+  expectTypeOf<P["author"]["email"]>().toEqualTypeOf<string>();
 }
 
 // findMany でも posts は配列で返る
@@ -143,4 +143,50 @@ declare const client: GassmaClient;
     where: { id: 1 },
     include: { posts: { orderBy: [{ published: "desc" }, { title: "asc" }] } },
   });
+}
+
+// to-one の null 許容はリレーションフィールドの `?` に従う（include）
+{
+  const p = client.Post.findFirstOrThrow({ include: { author: true } });
+  // Post.author は必須なのでガードなしでアクセスできる
+  expectTypeOf<(typeof p)["author"]["email"]>().toEqualTypeOf<string>();
+
+  const c = client.Category.findFirstOrThrow({ include: { parent: true } });
+  // Category.parent は `Category?` なので null 許容のまま
+  expectTypeOf<(typeof c)["parent"]>().toBeNullable();
+
+  const u = client.User.findFirstOrThrow({ include: { profile: true } });
+  // FK を持たない側は相手が存在する保証がないので常に null 許容
+  expectTypeOf<(typeof u)["profile"]>().toBeNullable();
+}
+
+// to-one の null 許容はリレーションフィールドの `?` に従う（select）
+{
+  const p = client.Post.findFirstOrThrow({ select: { author: true } });
+  expectTypeOf<(typeof p)["author"]["email"]>().toEqualTypeOf<string>();
+
+  const c = client.Category.findFirstOrThrow({ select: { parent: true } });
+  expectTypeOf<(typeof c)["parent"]>().toBeNullable();
+
+  const u = client.User.findFirstOrThrow({ select: { profile: true } });
+  expectTypeOf<(typeof u)["profile"]>().toBeNullable();
+}
+
+// ネストした include の奥でも必須 to-one は null にならない
+{
+  const u = client.User.findFirstOrThrow({
+    include: { posts: { include: { author: true } } },
+  });
+  expectTypeOf<
+    (typeof u)["posts"][number]["author"]["email"]
+  >().toEqualTypeOf<string>();
+}
+
+// 複合FKの両方が必須: Enrollment.student / Enrollment.course
+{
+  const e = client.Enrollment.findFirstOrThrow({
+    include: { student: true, course: true },
+  });
+  expectTypeOf<(typeof e)["student"]["name"]>().toEqualTypeOf<string>();
+  expectTypeOf<(typeof e)["course"]["title"]>().toEqualTypeOf<string>();
 }
