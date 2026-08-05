@@ -2,7 +2,10 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { NoDatasourceUrlError } from "../../error/mainError";
+import {
+  InvalidClaspJsonError,
+  NoDatasourceUrlError,
+} from "../../error/mainError";
 import { resolveStudioUrl } from "../../studio/resolveStudioUrl";
 
 const SCHEMA_WITHOUT_URL = `generator client {
@@ -41,6 +44,10 @@ describe("resolveStudioUrl", () => {
 
   const writeSchema = (content: string) => {
     fs.writeFileSync(path.join(tmpDir, "gassma", "schema.prisma"), content);
+  };
+
+  const writeClaspJson = (content: string) => {
+    fs.writeFileSync(path.join(tmpDir, ".clasp.json"), content);
   };
 
   it("should resolve a full URL from the schema datasource block", () => {
@@ -82,11 +89,66 @@ describe("resolveStudioUrl", () => {
     );
   });
 
+  it("should fall back to a string parentId in .clasp.json", () => {
+    writeSchema(SCHEMA_WITHOUT_URL);
+    writeClaspJson(JSON.stringify({ parentId: "claspId123" }));
+
+    expect(resolveStudioUrl()).toBe(
+      "https://docs.google.com/spreadsheets/d/claspId123/edit",
+    );
+  });
+
+  it("should fall back to the first element of an array parentId in .clasp.json", () => {
+    writeSchema(SCHEMA_WITHOUT_URL);
+    writeClaspJson(JSON.stringify({ parentId: ["claspId456", "ignored"] }));
+
+    expect(resolveStudioUrl()).toBe(
+      "https://docs.google.com/spreadsheets/d/claspId456/edit",
+    );
+  });
+
+  it("should prefer the config datasource url over the clasp parentId", () => {
+    writeSchema(SCHEMA_WITHOUT_URL);
+    fs.writeFileSync(
+      path.join(tmpDir, "gassma.config.ts"),
+      `export default { datasource: { url: "configId456" } };`,
+    );
+    writeClaspJson(JSON.stringify({ parentId: "claspId123" }));
+
+    expect(resolveStudioUrl()).toBe(
+      "https://docs.google.com/spreadsheets/d/configId456/edit",
+    );
+  });
+
+  it("should prefer the schema datasource url over the clasp parentId", () => {
+    writeSchema(schemaWithUrl("schemaId123"));
+    writeClaspJson(JSON.stringify({ parentId: "claspId123" }));
+
+    expect(resolveStudioUrl()).toBe(
+      "https://docs.google.com/spreadsheets/d/schemaId123/edit",
+    );
+  });
+
+  it("should throw NoDatasourceUrlError when .clasp.json has no usable parentId", () => {
+    writeSchema(SCHEMA_WITHOUT_URL);
+    writeClaspJson(JSON.stringify({ scriptId: "abc", parentId: [] }));
+
+    expect(() => resolveStudioUrl()).toThrow(NoDatasourceUrlError);
+  });
+
+  it("should throw InvalidClaspJsonError when .clasp.json is broken", () => {
+    writeSchema(SCHEMA_WITHOUT_URL);
+    writeClaspJson("{ broken");
+
+    expect(() => resolveStudioUrl()).toThrow(InvalidClaspJsonError);
+  });
+
   it("should throw NoDatasourceUrlError when no url is configured", () => {
     writeSchema(SCHEMA_WITHOUT_URL);
 
     expect(() => resolveStudioUrl()).toThrow(NoDatasourceUrlError);
     expect(() => resolveStudioUrl()).toThrow(/GASsmaNoDatasourceUrlError/);
+    expect(() => resolveStudioUrl()).toThrow(/\.clasp\.json/);
   });
 
   it("should resolve from a config given by the config option", () => {
