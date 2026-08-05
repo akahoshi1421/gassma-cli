@@ -213,6 +213,18 @@ const errorClassDefinitions: ErrorClassDef[] = [
     params: "backupSheetNames: string[]",
     members: ["readonly backupSheetNames: string[]"],
   },
+  { name: "GassmaTransactionLockRequiredError", extends: "Error", params: "" },
+  { name: "GassmaInvalidLockError", extends: "Error", params: "" },
+  {
+    name: "GassmaAutoincrementNotConfiguredError",
+    extends: "Error",
+    params: "sheetName: string, field: string, configuredFields: string[]",
+  },
+  {
+    name: "GassmaAutoincrementInTransactionError",
+    extends: "Error",
+    params: "methodName: string",
+  },
 ];
 
 export { errorClassDefinitions };
