@@ -111,11 +111,11 @@ model User {
     expect(result.User.name).toEqual(["string"]);
   });
 
-  it("should ignore @id, @default, @unique, @map attributes", () => {
+  it("should ignore @id, @default, @map attributes", () => {
     const schema = `
 model User {
   id    Int    @id @default(autoincrement())
-  email String @unique
+  email String
   name  String @map("user_name")
 }
 `;

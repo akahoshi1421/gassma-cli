@@ -1,6 +1,7 @@
 import { parsePrismaSchema } from "@loancrate/prisma-schema-parser";
 import { IgnoredRelationColumnError } from "../error/mainError";
 import { countModelsInAst } from "../generate/read/countModels";
+import { collectUniqueFields } from "../generate/read/assertNoUniqueAttributes";
 import { extractRelations } from "../generate/read/extractRelations";
 
 type ValidationError = {
@@ -9,7 +10,8 @@ type ValidationError = {
     | "missingGenerator"
     | "missingOutput"
     | "noModels"
-    | "ignoredRelationColumn";
+    | "ignoredRelationColumn"
+    | "unsupportedAttribute";
   message: string;
 };
 
@@ -33,6 +35,15 @@ const collectIgnoredRelationColumnErrors = (
   }
   return [];
 };
+
+const collectUniqueAttributeErrors = (schemaText: string): ValidationError[] =>
+  collectUniqueFields(schemaText).map((field) => ({
+    type: "unsupportedAttribute",
+    message:
+      `\`@unique\` on ${field} is not supported. ` +
+      "GASsma cannot enforce uniqueness on a spreadsheet. " +
+      "Remove it, or check uniqueness in your code.",
+  }));
 
 const validateSchema = (schemaText: string): ValidationResult => {
   const errors: ValidationError[] = [];
@@ -75,6 +86,7 @@ const validateSchema = (schemaText: string): ValidationResult => {
     }
 
     errors.push(...collectIgnoredRelationColumnErrors(schemaText));
+    errors.push(...collectUniqueAttributeErrors(schemaText));
   } catch (e) {
     errors.push({
       type: "syntax",

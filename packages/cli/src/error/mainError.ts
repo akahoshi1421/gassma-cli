@@ -90,6 +90,25 @@ class ThroughSheetConflictError extends Error {
   }
 }
 
+const describeUniqueFields = (fields: string[]): string =>
+  fields.length === 1
+    ? `\`@unique\` on ${fields[0]} is not supported.`
+    : "`@unique` is not supported.\n" +
+      fields.map((field) => `  - ${field}`).join("\n");
+
+class UnsupportedAttributeError extends Error {
+  readonly fields: string[];
+
+  constructor(fields: string[]) {
+    super(
+      `GASsmaUnsupportedAttributeError: ${describeUniqueFields(fields)}\n` +
+        "GASsma cannot enforce uniqueness on a spreadsheet.\n" +
+        "Remove it, or check uniqueness in your code.",
+    );
+    this.fields = fields;
+  }
+}
+
 export {
   ArgumentError,
   NoModelsError,
@@ -101,4 +120,5 @@ export {
   MigrateOutputDirError,
   IgnoredRelationColumnError,
   ThroughSheetConflictError,
+  UnsupportedAttributeError,
 };

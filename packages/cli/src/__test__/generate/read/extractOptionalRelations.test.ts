@@ -62,7 +62,7 @@ model User {
 
 model Profile {
   id     Int  @id
-  userId Int  @unique
+  userId Int
   user   User @relation(fields: [userId], references: [id])
 }
 `;

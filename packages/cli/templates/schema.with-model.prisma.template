@@ -5,6 +5,6 @@ generator client {
 
 model User {
   id    Int     @id @default(autoincrement())
-  email String  @unique
+  email String
   name  String
 }
