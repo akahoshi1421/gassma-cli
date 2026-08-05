@@ -19,7 +19,10 @@ const ARGUMENT_LESS_OPERATIONS = [
 const getDocumentedNoArgCalls = () => {
   const docLines = generated.split("\n").filter((line) => /^\s*\*/.test(line));
   const calls = docLines.flatMap(
-    (line) => line.match(/\.[A-Za-z_$][A-Za-z0-9_$]*\(\)/g) ?? [],
+    (line) =>
+      line
+        .replace(/LockService\.[A-Za-z_$][A-Za-z0-9_$]*\(\)/g, "")
+        .match(/\.[A-Za-z_$][A-Za-z0-9_$]*\(\)/g) ?? [],
   );
 
   return [...new Set(calls.map((call) => call.slice(1, -2)))].sort();

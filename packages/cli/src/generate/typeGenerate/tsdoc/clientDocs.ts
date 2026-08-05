@@ -67,6 +67,20 @@ const TRANSACTION_CLIENT_DOC_LINES = [
   "`GassmaClient` proxy available in interactive transactions.",
 ];
 
+const LOCK_DOC_LINES = [
+  "Lock used to serialize `$transaction` and `autoincrement`.",
+  "Defaults to `LockService.getScriptLock()` of the script using GASsma.",
+  `Read more here: ${REFERENCE_BASE_URL}/reference/transaction`,
+  "@example",
+  FENCE,
+  "const gassma = new GassmaClient({ lock: LockService.getDocumentLock() })",
+  FENCE,
+];
+
+const getClientOptionsDocs = () => ({
+  lock: renderDocBlock(MEMBER_INDENT, LOCK_DOC_LINES),
+});
+
 const getClientDocs = (schemaName: string, sheetNames: string[]) => {
   const naming = getModelNaming(
     schemaName,
@@ -87,4 +101,4 @@ const getClientDocs = (schemaName: string, sheetNames: string[]) => {
   };
 };
 
-export { getClientDocs };
+export { getClientDocs, getClientOptionsDocs };

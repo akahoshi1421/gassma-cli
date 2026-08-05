@@ -31,6 +31,25 @@ describe("getGassmaMain", () => {
     expect(result).toContain("omit?: O");
   });
 
+  it("should accept a lock in GassmaClientOptions", () => {
+    const result = getGassmaMain(["User", "Post"], "Test");
+
+    expect(result).toContain("lock?: Gassma.Lock;");
+  });
+
+  it("should never reference the GoogleAppsScript namespace", () => {
+    const result = getGassmaMain(["User", "Post"], "Test");
+
+    expect(result).not.toContain("GoogleAppsScript");
+  });
+
+  it("should document the lock option", () => {
+    const result = getGassmaMain(["User", "Post"], "Test");
+    const doc = result.slice(0, result.indexOf("lock?: Gassma.Lock;"));
+
+    expect(doc).toContain("https://gassma.io/en/docs/reference/transaction");
+  });
+
   it("should constrain GassmaClientOptions omit with StrictGlobalOmit to reject unknown keys", () => {
     const result = getGassmaMain(["User", "Post"], "Test");
 
