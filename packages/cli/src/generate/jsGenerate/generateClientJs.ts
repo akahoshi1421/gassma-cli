@@ -150,8 +150,10 @@ const generateClientJs = (
         .join("\n")
     : "";
 
+  const defaultProps = ["lock: LockService.getScriptLock()"];
+  if (datasourceUrl) defaultProps.push(`id: "${datasourceUrl}"`);
+
   const mergeProps: string[] = [];
-  if (datasourceUrl) mergeProps.push(`id: "${datasourceUrl}"`);
   mergeProps.push(`relations: ${lowerName}Relations`);
   if (hasDefaults) mergeProps.push(`defaults: ${lowerName}Defaults`);
   if (hasUpdatedAt) mergeProps.push(`updatedAt: ${lowerName}UpdatedAt`);
@@ -163,7 +165,7 @@ const generateClientJs = (
   if (hasAutoincrement)
     mergeProps.push(`autoincrement: ${lowerName}Autoincrement`);
   if (strictUndefinedChecks) mergeProps.push("strictUndefinedChecks: true");
-  const mergeExpr = `Object.assign({ lock: LockService.getScriptLock() }, options, { ${mergeProps.join(", ")} })`;
+  const mergeExpr = `Object.assign({ ${defaultProps.join(", ")} }, options, { ${mergeProps.join(", ")} })`;
 
   return `const ${lowerName}Relations = ${relationsJson};
 

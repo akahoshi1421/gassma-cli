@@ -675,6 +675,174 @@ describe("generateClientJs", () => {
     expect(result).not.toContain("id:");
   });
 
+  it("should place id in the defaults argument so user options can override it", () => {
+    const result = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "SCHEMA_SHEET_ID",
+    );
+
+    expect(result).toContain(
+      'Object.assign({ lock: LockService.getScriptLock(), id: "SCHEMA_SHEET_ID" }, options, { relations: testRelations })',
+    );
+  });
+
+  it("should keep the defaults argument free of id when datasource url is undefined", () => {
+    const result = generateClientJs({}, "Test");
+
+    expect(result).toContain(
+      "Object.assign({ lock: LockService.getScriptLock() }, options, { relations: testRelations })",
+    );
+  });
+
+  it("should let user supplied id win over the schema datasource url", () => {
+    const code = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "SCHEMA_SHEET_ID",
+    );
+    const seen: { id?: unknown }[] = [];
+    class FakeCoreClient {
+      constructor(options: { id?: unknown }) {
+        seen.push(options);
+      }
+    }
+    const exportsObject: { GassmaClient?: new (options?: unknown) => object } =
+      {};
+    const run = new Function("Gassma", "exports", "LockService", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject, {
+      getScriptLock: () => ({}),
+    });
+
+    const GeneratedClient = exportsObject.GassmaClient;
+    if (!GeneratedClient) throw new Error("GassmaClient not exported");
+    new GeneratedClient({ id: "USER_ID" });
+
+    expect(seen[0].id).toBe("USER_ID");
+  });
+
+  it("should fall back to the schema datasource url when no id is supplied", () => {
+    const code = generateClientJs(
+      {},
+      "Test",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "SCHEMA_SHEET_ID",
+    );
+    const seen: { id?: unknown }[] = [];
+    class FakeCoreClient {
+      constructor(options: { id?: unknown }) {
+        seen.push(options);
+      }
+    }
+    const exportsObject: { GassmaClient?: new (options?: unknown) => object } =
+      {};
+    const run = new Function("Gassma", "exports", "LockService", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject, {
+      getScriptLock: () => ({}),
+    });
+
+    const GeneratedClient = exportsObject.GassmaClient;
+    if (!GeneratedClient) throw new Error("GassmaClient not exported");
+    new GeneratedClient({});
+
+    expect(seen[0].id).toBe("SCHEMA_SHEET_ID");
+  });
+
+  it("should keep schema relations winning over user supplied relations", () => {
+    const relations = {
+      Post: {
+        author: {
+          type: "manyToOne" as const,
+          to: "User",
+          field: "authorId",
+          reference: "id",
+        },
+      },
+    };
+    const code = generateClientJs(relations, "Test");
+    const seen: { relations?: unknown }[] = [];
+    class FakeCoreClient {
+      constructor(options: { relations?: unknown }) {
+        seen.push(options);
+      }
+    }
+    const exportsObject: { GassmaClient?: new (options?: unknown) => object } =
+      {};
+    const run = new Function("Gassma", "exports", "LockService", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject, {
+      getScriptLock: () => ({}),
+    });
+
+    const GeneratedClient = exportsObject.GassmaClient;
+    if (!GeneratedClient) throw new Error("GassmaClient not exported");
+    new GeneratedClient({ relations: { Ignored: {} } });
+
+    expect(seen[0].relations).toEqual(relations);
+  });
+
+  it("should keep schema defaults and autoincrement winning over user supplied ones", () => {
+    const defaults: DefaultsConfig = {
+      User: { isActive: { kind: "static", value: true } },
+    };
+    const autoincrement: AutoincrementConfig = { User: ["id"] };
+    const code = generateClientJs(
+      {},
+      "Test",
+      defaults,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      autoincrement,
+    );
+    const seen: { defaults?: unknown; autoincrement?: unknown }[] = [];
+    class FakeCoreClient {
+      constructor(options: { defaults?: unknown; autoincrement?: unknown }) {
+        seen.push(options);
+      }
+    }
+    const exportsObject: { GassmaClient?: new (options?: unknown) => object } =
+      {};
+    const run = new Function("Gassma", "exports", "LockService", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject, {
+      getScriptLock: () => ({}),
+    });
+
+    const GeneratedClient = exportsObject.GassmaClient;
+    if (!GeneratedClient) throw new Error("GassmaClient not exported");
+    new GeneratedClient({
+      defaults: { User: { isActive: { kind: "static", value: false } } },
+      autoincrement: { User: ["ignored"] },
+    });
+
+    expect(seen[0].defaults).toEqual({ User: { isActive: true } });
+    expect(seen[0].autoincrement).toEqual({ User: "id" });
+  });
+
   it("should embed strictUndefinedChecks when enabled", () => {
     const result = generateClientJs(
       {},
