@@ -1,3 +1,4 @@
+import type { AutoincrementConfig } from "./read/extractAutoincrement";
 import type { DefaultsConfig } from "./read/extractDefaults";
 import type { OptionalRelationsConfig } from "./read/extractOptionalRelations";
 import type { RelationsConfig } from "./read/extractRelations";
@@ -51,13 +52,14 @@ const generater = (
   includeCommon?: boolean,
   defaults?: DefaultsConfig,
   updatedAtModels?: string[],
-  autoincrementModels?: string[],
+  autoincrement?: AutoincrementConfig,
   optionalFields?: Record<string, string[]>,
   strict?: boolean,
   optionalRelations?: OptionalRelationsConfig,
 ) => {
   const schema = schemaName ?? "";
   const sheetNames = Object.keys(dictYaml);
+  const autoincrementConfig = autoincrement ?? {};
   let result = getGassmaMain(
     sheetNames,
     schema,
@@ -66,13 +68,13 @@ const generater = (
       dictYaml,
       defaults: defaults ?? {},
       updatedAtModels: updatedAtModels ?? [],
-      autoincrementModels: autoincrementModels ?? [],
+      autoincrementModels: Object.keys(autoincrementConfig),
     },
     strict,
   );
 
   result += getGassmaSheet(sheetNames, schema);
-  result += getGassmaController(dictYaml, schema);
+  result += getGassmaController(dictYaml, schema, autoincrementConfig);
   if (includeCommon !== false) {
     result += getGassmaManyCount();
   }

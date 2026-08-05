@@ -39,7 +39,7 @@ const generateFixture = (text: string, fileName: string) => {
     true,
     defaults,
     Object.keys(updatedAt),
-    Object.keys(autoincrement),
+    autoincrement,
     optionalFields,
     strict,
     optionalRelations,

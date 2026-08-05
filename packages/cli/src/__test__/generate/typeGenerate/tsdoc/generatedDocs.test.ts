@@ -6,7 +6,8 @@ const dictYaml = {
   Post: { id: ["number"], title: ["string"] },
   Users: { id: ["number"], name: ["string"] },
 };
-const generated = `${generater(dictYaml, undefined, "", true)}\n${generateClientDts("", undefined, Object.keys(dictYaml))}`;
+// Post だけ autoincrement を持たせ、持つ側と持たない側の両方の doc を検査対象に入れる
+const generated = `${generater(dictYaml, undefined, "", true, undefined, undefined, { Post: ["id"] })}\n${generateClientDts("", undefined, Object.keys(dictYaml))}`;
 
 const ARGUMENT_LESS_OPERATIONS = [
   "count",
@@ -98,6 +99,16 @@ describe("generated tsdoc", () => {
   it("should warn that deleteMany without arguments deletes everything", () => {
     expect(generated).toContain(
       "   * Calling `deleteMany` without arguments deletes **all** rows in the sheet. This cannot be undone.",
+    );
+  });
+
+  it("should link the autoincrement counter methods to their reference page", () => {
+    expect(generated).toContain("/reference/config/autoincrement");
+  });
+
+  it("should tell a model without autoincrement that the counter cannot be called", () => {
+    expect(generated).toContain(
+      "   * Users has no autoincrement field, so this cannot be called.",
     );
   });
 

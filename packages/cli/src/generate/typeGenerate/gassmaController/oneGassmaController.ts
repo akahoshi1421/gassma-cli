@@ -5,8 +5,18 @@ const getOneGassmaController = (
   schemaName: string,
   sheetName: string,
   columnNames: string[],
+  autoincrementFields: string[] = [],
 ) => {
-  const docs = getControllerDocs(schemaName, sheetName, columnNames);
+  const docs = getControllerDocs(
+    schemaName,
+    sheetName,
+    columnNames,
+    autoincrementFields,
+  );
+  const counterField =
+    autoincrementFields.length === 0
+      ? "never"
+      : autoincrementFields.map((name) => `"${name}"`).join(" | ");
   const clean = getRemovedCantUseVarChar(sheetName);
   const self = `Gassma${schemaName}${clean}`;
   const fr = `${self}FindResult`;
@@ -49,6 +59,9 @@ ${docs.aggregate}  aggregate<T extends ${self}AggregateData>(aggregateData: T & 
 ${docs.count}  count<T extends ${self}CountData>(countData: T & Gassma.Subset<T, ${self}CountData>): ${self}CountResult<T>;
 ${docs.countNoArgs}  count(): number;
 ${docs.groupBy}  groupBy<T extends ${self}GroupByData>(groupByData: T & Gassma.Subset<T, ${self}GroupByData>): ${self}GroupByResult<T>[];
+${docs.getAutoincrement}  $getAutoincrement(field: ${counterField}): number;
+${docs.setAutoincrement}  $setAutoincrement(field: ${counterField}, next: number): void;
+${docs.syncAutoincrement}  $syncAutoincrement(field: ${counterField}): number;
 }
 `;
 };

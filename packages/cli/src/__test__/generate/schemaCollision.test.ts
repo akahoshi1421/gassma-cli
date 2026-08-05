@@ -54,7 +54,7 @@ const generateFromPrisma = (
     true,
     {},
     [],
-    [],
+    {},
     optionalFields,
   );
 };
