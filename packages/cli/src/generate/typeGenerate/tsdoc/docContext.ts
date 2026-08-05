@@ -1,5 +1,6 @@
 import { renderDocBlock } from "./docBlock";
 import { getModelNaming } from "./modelNaming";
+import { getAutoincrementDocLines } from "./operations/autoincrementDocs";
 import { getCreateDocLines } from "./operations/createDocs";
 import { getDeleteDocLines } from "./operations/deleteDocs";
 import {
@@ -19,6 +20,7 @@ const getControllerDocs = (
   schemaName: string,
   sheetName: string,
   columnNames: string[],
+  autoincrementFields: string[] = [],
 ) => {
   const naming = getModelNaming(schemaName, sheetName, columnNames);
   const member = (lines: string[]) => renderDocBlock(MEMBER_INDENT, lines);
@@ -27,6 +29,7 @@ const getControllerDocs = (
   const update = getUpdateDocLines(naming);
   const remove = getDeleteDocLines(naming);
   const statistics = getStatisticsDocLines(naming);
+  const autoincrement = getAutoincrementDocLines(naming, autoincrementFields);
 
   return {
     controllerClass: renderDocBlock("", controllerClassDocLines(naming)),
@@ -52,6 +55,9 @@ const getControllerDocs = (
     count: member(statistics.count),
     countNoArgs: member(statistics.countNoArgs),
     groupBy: member(statistics.groupBy),
+    getAutoincrement: member(autoincrement.getAutoincrement),
+    setAutoincrement: member(autoincrement.setAutoincrement),
+    syncAutoincrement: member(autoincrement.syncAutoincrement),
   };
 };
 

@@ -119,7 +119,7 @@ function generateFromSchema(
     true,
     defaults,
     Object.keys(updatedAt),
-    Object.keys(autoincrement),
+    autoincrement,
     optionalFields,
     strict,
     optionalRelations,
