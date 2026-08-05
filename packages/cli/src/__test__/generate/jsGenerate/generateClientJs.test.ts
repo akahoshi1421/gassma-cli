@@ -73,8 +73,10 @@ describe("generateClientJs", () => {
         options?: unknown,
       ) => { $extends?: (extension: unknown) => unknown };
     } = {};
-    const run = new Function("Gassma", "exports", code);
-    run({ GassmaClient: FakeCoreClient }, exportsObject);
+    const run = new Function("Gassma", "exports", "LockService", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject, {
+      getScriptLock: () => ({}),
+    });
 
     const GeneratedClient = exportsObject.GassmaClient;
     if (!GeneratedClient) throw new Error("GassmaClient not exported");
@@ -120,8 +122,10 @@ describe("generateClientJs", () => {
         ) => unknown;
       };
     } = {};
-    const run = new Function("Gassma", "exports", code);
-    run({ GassmaClient: FakeCoreClient }, exportsObject);
+    const run = new Function("Gassma", "exports", "LockService", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject, {
+      getScriptLock: () => ({}),
+    });
 
     const GeneratedClient = exportsObject.GassmaClient;
     if (!GeneratedClient) throw new Error("GassmaClient not exported");
@@ -192,8 +196,54 @@ describe("generateClientJs", () => {
 
     expect(result).toContain("fugaRelations =");
     expect(result).toContain(
-      "Object.assign({}, options, { relations: fugaRelations })",
+      "Object.assign({ lock: LockService.getScriptLock() }, options, { relations: fugaRelations })",
     );
+  });
+
+  it("should default lock to the user script lock", () => {
+    const code = generateClientJs({}, "Hoge");
+    const seen: { lock?: unknown }[] = [];
+    class FakeCoreClient {
+      constructor(options: { lock?: unknown }) {
+        seen.push(options);
+      }
+    }
+    const exportsObject: { GassmaClient?: new (options?: unknown) => object } =
+      {};
+    const scriptLock = { name: "script-lock" };
+    const run = new Function("Gassma", "exports", "LockService", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject, {
+      getScriptLock: () => scriptLock,
+    });
+
+    const GeneratedClient = exportsObject.GassmaClient;
+    if (!GeneratedClient) throw new Error("GassmaClient not exported");
+    new GeneratedClient({});
+
+    expect(seen[0].lock).toBe(scriptLock);
+  });
+
+  it("should let user supplied lock win over the default", () => {
+    const code = generateClientJs({}, "Hoge");
+    const seen: { lock?: unknown }[] = [];
+    class FakeCoreClient {
+      constructor(options: { lock?: unknown }) {
+        seen.push(options);
+      }
+    }
+    const exportsObject: { GassmaClient?: new (options?: unknown) => object } =
+      {};
+    const documentLock = { name: "document-lock" };
+    const run = new Function("Gassma", "exports", "LockService", code);
+    run({ GassmaClient: FakeCoreClient }, exportsObject, {
+      getScriptLock: () => ({ name: "script-lock" }),
+    });
+
+    const GeneratedClient = exportsObject.GassmaClient;
+    if (!GeneratedClient) throw new Error("GassmaClient not exported");
+    new GeneratedClient({ lock: documentLock });
+
+    expect(seen[0].lock).toBe(documentLock);
   });
 
   it("should embed defaults with static values", () => {
@@ -642,7 +692,7 @@ describe("generateClientJs", () => {
     );
 
     expect(result).toContain(
-      "Object.assign({}, options, { relations: testRelations, strictUndefinedChecks: true })",
+      "Object.assign({ lock: LockService.getScriptLock() }, options, { relations: testRelations, strictUndefinedChecks: true })",
     );
   });
 

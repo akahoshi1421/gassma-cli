@@ -163,7 +163,7 @@ const generateClientJs = (
   if (hasAutoincrement)
     mergeProps.push(`autoincrement: ${lowerName}Autoincrement`);
   if (strictUndefinedChecks) mergeProps.push("strictUndefinedChecks: true");
-  const mergeExpr = `Object.assign({}, options, { ${mergeProps.join(", ")} })`;
+  const mergeExpr = `Object.assign({ lock: LockService.getScriptLock() }, options, { ${mergeProps.join(", ")} })`;
 
   return `const ${lowerName}Relations = ${relationsJson};
 

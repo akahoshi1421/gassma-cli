@@ -10,7 +10,13 @@ import { prismaReader } from "../../generate/read/prismaReader";
 import { extractRelations } from "../../generate/read/extractRelations";
 import { extractOptionalFields } from "../../generate/read/extractOptionalFields";
 
-const tscPath = createRequire(import.meta.url).resolve("typescript/bin/tsc");
+const requireFromHere = createRequire(import.meta.url);
+const tscPath = requireFromHere.resolve("typescript/bin/tsc");
+const typeRoot = path.dirname(
+  path.dirname(
+    requireFromHere.resolve("@types/google-apps-script/package.json"),
+  ),
+);
 
 const runTsc = (tmpDir: string, tsconfigPath: string): string => {
   try {
@@ -33,6 +39,8 @@ const writeTsconfig = (tsconfigPath: string) => {
         noEmit: true,
         skipLibCheck: false,
         lib: ["ES2021"],
+        typeRoots: [typeRoot],
+        types: ["google-apps-script"],
       },
       include: ["*.d.ts"],
     }),

@@ -9,6 +9,7 @@ import { getGassmaMapType } from "./gassmaMapType";
 import { getGassmaMapSheetsType } from "./gassmaMapSheetsType";
 import { getGassmaAutoincrementType } from "./gassmaAutoincrementType";
 import { getGassmaUpdatedAtType } from "./gassmaUpdatedAtType";
+import { getClientOptionsDocs } from "./tsdoc/clientDocs";
 
 const getGassmaGlobalOmitConfig = (
   sheetNames: string[],
@@ -23,8 +24,11 @@ const getGassmaGlobalOmitConfig = (
 };
 
 const getGassmaClientOptions = (schemaName: string) => {
+  const docs = getClientOptionsDocs();
+
   return `export type Gassma${schemaName}ClientOptions<O extends Gassma.StrictGlobalOmit<O, Gassma${schemaName}GlobalOmitConfig> = {}> = {
   id?: string;
+${docs.lock}  lock?: GoogleAppsScript.Lock.Lock;
   relations?: Gassma.RelationsConfig;
   omit?: O;
   defaults?: Gassma${schemaName}DefaultsConfig;
