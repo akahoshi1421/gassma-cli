@@ -14,6 +14,7 @@ const findDrops = (
   return recorded.models.flatMap((model): Drop[] => {
     const columns = current.get(model.name);
     if (columns === undefined) return [{ kind: "sheet", sheet: model.name }];
+    if (columns.length === 0) return [];
 
     const kept = new Set(columns);
     return model.columns
