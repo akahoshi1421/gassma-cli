@@ -52,12 +52,15 @@ declare const anyField: string;
 
 // autoincrement を1つも持たないモデルでは呼べない
 {
-  // @ts-expect-error Enrollment に autoincrement フィールドは無い
-  client.Enrollment.$getAutoincrement("studentId");
-  // @ts-expect-error Enrollment に autoincrement フィールドは無い
-  client.Enrollment.$setAutoincrement("studentId", 1);
-  // @ts-expect-error Enrollment に autoincrement フィールドは無い
-  client.Enrollment.$syncAutoincrement("courseId");
+  expectTypeOf(client.Setting.$getAutoincrement).parameter(0).toBeNever();
+  expectTypeOf(client.Setting.$setAutoincrement).parameter(0).toBeNever();
+  expectTypeOf(client.Setting.$syncAutoincrement).parameter(0).toBeNever();
+  // @ts-expect-error Setting に autoincrement フィールドは無い
+  client.Setting.$getAutoincrement("key");
+  // @ts-expect-error Setting に autoincrement フィールドは無い
+  client.Setting.$setAutoincrement("key", 1);
+  // @ts-expect-error Setting に autoincrement フィールドは無い
+  client.Setting.$syncAutoincrement("value");
 }
 
 // トランザクション内でも読み取りは型として使える

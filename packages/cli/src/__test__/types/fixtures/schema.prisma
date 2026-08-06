@@ -64,12 +64,11 @@ model Course {
 }
 
 model Enrollment {
+  id        Int     @id @default(autoincrement())
   studentId Int
   courseId  Int
   student   Student @relation(fields: [studentId], references: [id])
   course    Course  @relation(fields: [courseId], references: [id])
-
-  @@id([studentId, courseId])
 }
 
 enum Role {
@@ -96,6 +95,12 @@ model Member {
   createdAt DateTime @default(now())
 
   @@map("メンバー一覧")
+}
+
+/// autoincrement を1つも持たないモデルの検証用
+model Setting {
+  key   String @id
+  value String
 }
 
 /// @@ignore の検証用（クライアントから除外される）

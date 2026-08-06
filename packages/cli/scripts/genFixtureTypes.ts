@@ -10,6 +10,7 @@ import { extractUpdatedAt } from "../src/generate/read/extractUpdatedAt";
 import { extractOptionalFields } from "../src/generate/read/extractOptionalFields";
 import { extractOptionalRelations } from "../src/generate/read/extractOptionalRelations";
 import { extractPreviewFeatures } from "../src/generate/read/extractPreviewFeatures";
+import { validateSchema } from "../src/validate/validate";
 
 const fixturePath = path.join(
   __dirname,
@@ -21,6 +22,14 @@ const outDir = path.join(__dirname, "../src/__test__/types/__generated__");
 fs.mkdirSync(outDir, { recursive: true });
 
 const generateFixture = (text: string, fileName: string) => {
+  const validated = validateSchema(text);
+  if (!validated.valid)
+    throw new Error(
+      `fixture schema is rejected by the CLI:\n${validated.errors
+        .map((error) => `  - ${error.message}`)
+        .join("\n")}`,
+    );
+
   const parsed = prismaReader(text);
   const relations = extractRelations(text);
   const autoincrement = extractAutoincrement(text);
