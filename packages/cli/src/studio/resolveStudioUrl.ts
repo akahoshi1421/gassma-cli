@@ -10,16 +10,20 @@ type StudioUrlOptions = {
   config?: string;
 };
 
+const configured = (value: string | null | undefined): string | undefined =>
+  typeof value === "string" && value.trim() !== "" ? value : undefined;
+
 const resolveStudioUrl = (options?: StudioUrlOptions): string => {
   const files = resolveSchemaFiles({ config: options?.config });
   const schemaText = mergeSchemaFiles(files.map((f) => f.filePath));
   const loaded = loadConfig(options?.config);
-  const urlOrId =
-    extractDatasourceUrl(schemaText) ??
-    loaded?.config.datasource?.url ??
-    readClaspParentId(process.cwd());
+  const candidate =
+    configured(extractDatasourceUrl(schemaText)) ??
+    configured(loaded?.config.datasource?.url) ??
+    configured(readClaspParentId(process.cwd()));
 
-  if (urlOrId === undefined || urlOrId === null) {
+  const urlOrId = configured(candidate);
+  if (urlOrId === undefined) {
     throw new NoDatasourceUrlError();
   }
 

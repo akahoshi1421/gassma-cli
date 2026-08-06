@@ -76,6 +76,55 @@ describe("generate with --config", () => {
     expect(clientJs).toContain(`id: "configSheetId123"`);
   });
 
+  it("should not emit a spreadsheet id when datasource.url in the config is empty", () => {
+    fs.writeFileSync(
+      path.join(confDir, "schemas", "main.prisma"),
+      schemaText(outDir),
+    );
+    fs.writeFileSync(
+      path.join(confDir, "custom.config.ts"),
+      `export default {
+  schema: "schemas/main.prisma",
+  datasource: { url: "" },
+};`,
+    );
+
+    generate({ config: "conf/custom.config.ts" });
+
+    const clientJs = fs.readFileSync(
+      path.join(outDir, "mainClient.js"),
+      "utf-8",
+    );
+    expect(clientJs).not.toContain("id:");
+  });
+
+  it("should not emit a spreadsheet id when the schema datasource url is empty", () => {
+    fs.writeFileSync(
+      path.join(confDir, "schemas", "main.prisma"),
+      `datasource db {
+  provider = "gassma"
+  url      = ""
+}
+
+${schemaText(outDir)}`,
+    );
+    fs.writeFileSync(
+      path.join(confDir, "custom.config.ts"),
+      `export default {
+  schema: "schemas/main.prisma",
+  datasource: { url: "configSheetId123" },
+};`,
+    );
+
+    generate({ config: "conf/custom.config.ts" });
+
+    const clientJs = fs.readFileSync(
+      path.join(outDir, "mainClient.js"),
+      "utf-8",
+    );
+    expect(clientJs).not.toContain("id:");
+  });
+
   it("should throw ConfigFileNotFoundError when --config does not exist", () => {
     expect(() => generate({ config: "conf/missing.config.ts" })).toThrow(
       ConfigFileNotFoundError,
