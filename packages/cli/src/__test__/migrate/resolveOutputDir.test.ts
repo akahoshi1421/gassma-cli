@@ -35,6 +35,12 @@ describe("resolveOutputDir", () => {
     expect(() => resolveOutputDir(undefined, tmpDir)).toThrow("--output");
   });
 
+  it("should show the example on a subcommand that exists", () => {
+    expect(() => resolveOutputDir(undefined, tmpDir)).toThrow(
+      "npx gassma migrate dev --output ./dist",
+    );
+  });
+
   it("should throw when .clasp.json has no rootDir", () => {
     fs.writeFileSync(
       path.join(tmpDir, ".clasp.json"),

@@ -62,7 +62,7 @@ class MigrateOutputDirError extends Error {
   constructor() {
     super(
       "GASsmaMigrateOutputDirError: could not determine where to write gassma-migration.js.\n" +
-        "Pass --output <dir> (e.g. npx gassma migrate --output ./dist), " +
+        "Pass --output <dir> (e.g. npx gassma migrate dev --output ./dist), " +
         'or run in a project whose .clasp.json has "rootDir".',
     );
   }
@@ -107,6 +107,27 @@ class ThroughSheetConflictError extends Error {
         "An implicit many-to-many relation needs a through sheet of its own, so the two pairs would overwrite each other.\n" +
         'Please give one of them a different relation name, e.g. @relation("OtherName") on both sides.',
     );
+  }
+}
+
+type CompositeRelationViolation = {
+  target: string;
+  columns: string;
+  reason: string;
+};
+
+class CompositeRelationError extends Error {
+  readonly violations: CompositeRelationViolation[];
+
+  constructor(violations: CompositeRelationViolation[]) {
+    super(
+      "GASsmaCompositeRelationError: `@relation` over more than one column is not supported yet.\n" +
+        violations
+          .map((violation) => `  - ${violation.target} (${violation.columns})`)
+          .join("\n") +
+        `\n${violations[0].reason}`,
+    );
+    this.violations = violations;
   }
 }
 
@@ -164,5 +185,6 @@ export {
   IgnoredRelationColumnError,
   ThroughSheetConflictError,
   UnsupportedAttributeError,
+  CompositeRelationError,
 };
-export type { UnsupportedAttributeViolation };
+export type { UnsupportedAttributeViolation, CompositeRelationViolation };

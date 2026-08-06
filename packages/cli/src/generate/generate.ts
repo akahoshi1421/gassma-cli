@@ -18,6 +18,7 @@ import { extractEnums } from "./read/extractEnums";
 import { extractDatasourceUrl } from "./read/extractDatasourceUrl";
 import { countModels } from "./read/countModels";
 import { assertNoUnsupportedAttributes } from "./read/assertNoUnsupportedAttributes";
+import { assertNoCompositeRelations } from "./read/assertNoCompositeRelations";
 import { prismaReader } from "./read/prismaReader";
 import { NoModelsError } from "../error/mainError";
 import { resolveSchemaFiles } from "../config/resolveSchemaFiles";
@@ -89,6 +90,7 @@ function generateFromSchema(
   datasourceUrl?: string,
 ) {
   assertNoUnsupportedAttributes(schemaText);
+  assertNoCompositeRelations(schemaText);
 
   const outputPath = extractOutputPath(schemaText);
   if (!outputPath) {
