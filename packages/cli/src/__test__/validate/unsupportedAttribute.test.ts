@@ -12,7 +12,7 @@ const messagesOf = (schema: string) =>
     .join("\n");
 
 describe("validateSchema with unsupported attributes", () => {
-  it("should report unsupportedAttribute for a field marked @unique", () => {
+  it("should stay valid for a field marked @unique", () => {
     const schema = `${generatorBlock}
 
 model Staff {
@@ -20,15 +20,38 @@ model Staff {
   email String @unique
 }
 `;
-    const result = validateSchema(schema);
+    expect(validateSchema(schema)).toEqual({ valid: true, errors: [] });
+  });
 
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContainEqual(
-      expect.objectContaining({ type: "unsupportedAttribute" }),
-    );
-    const messages = result.errors.map((error) => error.message).join("\n");
-    expect(messages).toContain("Staff.email");
-    expect(messages).toContain("@unique");
+  it("should stay valid for the one-to-one shape Prisma requires @unique for", () => {
+    const schema = `${generatorBlock}
+
+model Staff {
+  id      Int      @id
+  profile Profile?
+}
+
+model Profile {
+  id      Int   @id
+  staffId Int   @unique
+  staff   Staff @relation(fields: [staffId], references: [id])
+}
+`;
+    expect(validateSchema(schema)).toEqual({ valid: true, errors: [] });
+  });
+
+  it("should stay valid for a model that declares @@unique", () => {
+    const schema = `${generatorBlock}
+
+model Staff {
+  id        Int    @id
+  firstName String
+  lastName  String
+
+  @@unique([firstName, lastName])
+}
+`;
+    expect(validateSchema(schema)).toEqual({ valid: true, errors: [] });
   });
 
   it("should report one error per violating target", () => {
@@ -36,33 +59,16 @@ model Staff {
 
 model Staff {
   id    Int    @id
-  email String @unique
-  code  String @unique
+  email String @db.VarChar(255)
+  code  String @db.Text
 }
 `;
     const result = validateSchema(schema);
 
-    const uniqueErrors = result.errors.filter(
+    const nativeTypeErrors = result.errors.filter(
       (error) => error.type === "unsupportedAttribute",
     );
-    expect(uniqueErrors).toHaveLength(2);
-  });
-
-  it("should report @@unique with the model and its fields", () => {
-    const schema = `${generatorBlock}
-
-model Staff {
-  id    Int    @id
-  email String
-
-  @@unique([email])
-}
-`;
-    expect(messagesOf(schema)).toContain(
-      "`@@unique` on Staff (email) is not supported. " +
-        "GASsma cannot enforce uniqueness on a spreadsheet. " +
-        "Remove it, or check uniqueness in your code.",
-    );
+    expect(nativeTypeErrors).toHaveLength(2);
   });
 
   it("should report @@id", () => {

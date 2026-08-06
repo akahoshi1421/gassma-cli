@@ -3,82 +3,67 @@ import { UnsupportedAttributeError } from "../../../error/mainError";
 import { assertNoUnsupportedAttributes } from "../../../generate/read/assertNoUnsupportedAttributes";
 
 describe("assertNoUnsupportedAttributes with @unique", () => {
-  it("should reject a field marked @unique", () => {
+  it("should accept a field marked @unique", () => {
     const schema = `
 model Staff {
   id    Int    @id
   email String @unique
 }
 `;
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(
-      UnsupportedAttributeError,
-    );
+    expect(() => assertNoUnsupportedAttributes(schema)).not.toThrow();
   });
 
-  it("should name the model and the field", () => {
+  it("should accept the @unique a one-to-one relation needs on its foreign key", () => {
     const schema = `
 model Staff {
-  id    Int    @id
-  email String @unique
+  id      Int      @id
+  profile Profile?
+}
+
+model Profile {
+  id      Int    @id
+  staffId Int    @unique
+  staff   Staff  @relation(fields: [staffId], references: [id])
 }
 `;
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(
-      "GASsmaUnsupportedAttributeError: `@unique` on Staff.email is not supported.\n" +
-        "GASsma cannot enforce uniqueness on a spreadsheet.\n" +
-        "Remove it, or check uniqueness in your code.",
-    );
+    expect(() => assertNoUnsupportedAttributes(schema)).not.toThrow();
   });
 
-  it("should report every violating field at once", () => {
+  it("should accept the @unique a relation needs to reference a field other than the id", () => {
     const schema = `
 model Staff {
-  id    Int    @id
-  email String @unique
-  code  String @unique
+  id     Int     @id
+  email  String  @unique
+  shifts Shift[]
 }
 
 model Shift {
-  id   Int    @id
-  slug String @unique
+  id         Int    @id
+  staffEmail String
+  staff      Staff  @relation(fields: [staffEmail], references: [email])
 }
 `;
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/Staff\.email/);
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/Staff\.code/);
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/Shift\.slug/);
+    expect(() => assertNoUnsupportedAttributes(schema)).not.toThrow();
   });
 
-  it("should carry the violations on the error", () => {
-    const schema = `
-model Staff {
-  id    Int    @id
-  email String @unique
-  code  String @unique
-}
-`;
-    try {
-      assertNoUnsupportedAttributes(schema);
-      expect.unreachable("assertNoUnsupportedAttributes did not throw");
-    } catch (e) {
-      if (!(e instanceof UnsupportedAttributeError)) throw e;
-      expect(e.violations.map((violation) => violation.target)).toEqual([
-        "Staff.email",
-        "Staff.code",
-      ]);
-      expect(e.violations.map((violation) => violation.attribute)).toEqual([
-        "@unique",
-        "@unique",
-      ]);
-    }
-  });
-
-  it("should reject @unique combined with other attributes", () => {
+  it("should accept @unique combined with other attributes", () => {
     const schema = `
 model Staff {
   id    Int    @id
   email String @unique @map("Email Address")
 }
 `;
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/Staff\.email/);
+    expect(() => assertNoUnsupportedAttributes(schema)).not.toThrow();
+  });
+
+  it("should still reject a native type declared next to @unique", () => {
+    const schema = `
+model Staff {
+  id    Int    @id
+  email String @unique @db.VarChar(255)
+}
+`;
+    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/@db\.VarChar/);
   });
 
   it("should not be fooled by a field named unique", () => {
@@ -93,7 +78,7 @@ model Staff {
 });
 
 describe("assertNoUnsupportedAttributes with @@unique", () => {
-  it("should reject a model marked @@unique", () => {
+  it("should accept a model marked @@unique", () => {
     const schema = `
 model Staff {
   id    Int    @id
@@ -102,29 +87,54 @@ model Staff {
   @@unique([email])
 }
 `;
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(
-      "GASsmaUnsupportedAttributeError: `@@unique` on Staff (email) is not supported.\n" +
-        "GASsma cannot enforce uniqueness on a spreadsheet.\n" +
-        "Remove it, or check uniqueness in your code.",
-    );
+    expect(() => assertNoUnsupportedAttributes(schema)).not.toThrow();
   });
 
-  it("should list every field of the composite key", () => {
+  it("should accept the @@unique a composite one-to-many references", () => {
     const schema = `
 model Staff {
-  id    Int    @id
-  email String
-  code  String
+  id        Int     @id
+  firstName String
+  lastName  String
+  shifts    Shift[]
 
-  @@unique([email, code])
+  @@unique([firstName, lastName])
+}
+
+model Shift {
+  id             Int    @id
+  staffFirstName String
+  staffLastName  String
+  staff          Staff  @relation(fields: [staffFirstName, staffLastName], references: [firstName, lastName])
 }
 `;
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(
-      /Staff \(email, code\)/,
-    );
+    expect(() => assertNoUnsupportedAttributes(schema)).not.toThrow();
   });
 
-  it("should read the fields argument when it is named", () => {
+  it("should accept the @@unique a composite one-to-one needs on the defining side", () => {
+    const schema = `
+model Staff {
+  id        Int      @id
+  firstName String
+  lastName  String
+  profile   Profile?
+
+  @@unique([firstName, lastName])
+}
+
+model Profile {
+  id             Int    @id
+  staffFirstName String
+  staffLastName  String
+  staff          Staff  @relation(fields: [staffFirstName, staffLastName], references: [firstName, lastName])
+
+  @@unique([staffFirstName, staffLastName])
+}
+`;
+    expect(() => assertNoUnsupportedAttributes(schema)).not.toThrow();
+  });
+
+  it("should accept the named fields argument", () => {
     const schema = `
 model Staff {
   id    Int    @id
@@ -133,9 +143,7 @@ model Staff {
   @@unique(fields: [email], name: "staffEmail")
 }
 `;
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(
-      /Staff \(email\)/,
-    );
+    expect(() => assertNoUnsupportedAttributes(schema)).not.toThrow();
   });
 });
 
@@ -259,7 +267,7 @@ describe("assertNoUnsupportedAttributes with @ignore", () => {
     const schema = `
 model Staff {
   id    Int    @id
-  email String @unique @ignore
+  email String @db.VarChar(255) @ignore
 }
 `;
     expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/Staff\.email/);
@@ -271,7 +279,7 @@ model Staff {
   id    Int    @id
   email String
 
-  @@unique([email])
+  @@index([email])
   @@ignore
 }
 `;
@@ -286,11 +294,12 @@ describe("assertNoUnsupportedAttributes with supported schemas", () => {
     const schema = `
 model Staff {
   id        Int      @id @default(autoincrement())
-  email     String   @map("Email Address")
+  email     String   @unique @map("Email Address")
   memo      String   @ignore
   updatedAt DateTime @updatedAt
   shifts    Shift[]
 
+  @@unique([email, memo])
   @@map("staff sheet")
 }
 
@@ -326,26 +335,49 @@ describe("assertNoUnsupportedAttributes with several attributes", () => {
   it("should report all of them in one error", () => {
     const schema = `
 model Staff {
-  id    Int    @id
-  email String @unique
-  name  String @db.VarChar(255)
+  id   Int    @id
+  name String @db.VarChar(255)
+  bio  String
 
   @@index([name])
-  @@unique([email])
+  @@fulltext([bio])
 }
 `;
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/@unique/);
     expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/@db\.VarChar/);
     expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/@@index/);
-    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/@@unique/);
+    expect(() => assertNoUnsupportedAttributes(schema)).toThrow(/@@fulltext/);
+  });
+
+  it("should carry the violations on the error", () => {
+    const schema = `
+model Staff {
+  id    Int    @id
+  email String @db.VarChar(255)
+  code  String @db.Text
+}
+`;
+    try {
+      assertNoUnsupportedAttributes(schema);
+      expect.unreachable("assertNoUnsupportedAttributes did not throw");
+    } catch (e) {
+      if (!(e instanceof UnsupportedAttributeError)) throw e;
+      expect(e.violations.map((violation) => violation.target)).toEqual([
+        "Staff.email",
+        "Staff.code",
+      ]);
+      expect(e.violations.map((violation) => violation.attribute)).toEqual([
+        "@db.VarChar",
+        "@db.Text",
+      ]);
+    }
   });
 
   it("should group the targets that share an attribute", () => {
     const schema = `
 model Staff {
   id    Int    @id
-  email String @unique
-  code  String @unique
+  email String @db.VarChar(255)
+  code  String @db.VarChar(255)
 
   @@index([email])
 }
@@ -356,11 +388,11 @@ model Staff {
     } catch (e) {
       if (!(e instanceof UnsupportedAttributeError)) throw e;
       expect(e.message).toBe(
-        "GASsmaUnsupportedAttributeError: `@unique` is not supported.\n" +
+        "GASsmaUnsupportedAttributeError: `@db.VarChar` is not supported.\n" +
           "  - Staff.email\n" +
           "  - Staff.code\n" +
-          "GASsma cannot enforce uniqueness on a spreadsheet.\n" +
-          "Remove it, or check uniqueness in your code.\n" +
+          "GASsma cannot control how a spreadsheet stores a value, so the native type has no effect.\n" +
+          "Remove it.\n" +
           "\n" +
           "`@@index` on Staff (email) is not supported.\n" +
           "GASsma cannot create an index on a spreadsheet.\n" +

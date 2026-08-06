@@ -5,7 +5,7 @@ generator client {
 
 model User {
   id        Int      @id @default(autoincrement())
-  email     String
+  email     String   @unique
   name      String?
   age       Int?
   isActive  Boolean  @default(true)
@@ -32,7 +32,7 @@ model Post {
 model Profile {
   id     Int    @id @default(autoincrement())
   bio    String
-  userId Int
+  userId Int    @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

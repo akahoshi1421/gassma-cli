@@ -2,6 +2,7 @@ import { parsePrismaSchema } from "@loancrate/prisma-schema-parser";
 import { IgnoredRelationColumnError } from "../error/mainError";
 import { countModelsInAst } from "../generate/read/countModels";
 import { collectUnsupportedAttributes } from "../generate/read/assertNoUnsupportedAttributes";
+import { collectCompositeRelations } from "../generate/read/assertNoCompositeRelations";
 import { extractRelations } from "../generate/read/extractRelations";
 
 type ValidationError = {
@@ -11,7 +12,8 @@ type ValidationError = {
     | "missingOutput"
     | "noModels"
     | "ignoredRelationColumn"
-    | "unsupportedAttribute";
+    | "unsupportedAttribute"
+    | "compositeRelation";
   message: string;
 };
 
@@ -43,6 +45,17 @@ const collectUnsupportedAttributeErrors = (
     type: "unsupportedAttribute",
     message:
       `\`${violation.attribute}\` on ${violation.target} is not supported. ` +
+      violation.reason.split("\n").join(" "),
+  }));
+
+const collectCompositeRelationErrors = (
+  schemaText: string,
+): ValidationError[] =>
+  collectCompositeRelations(schemaText).map((violation) => ({
+    type: "compositeRelation",
+    message:
+      `\`@relation\` on ${violation.target} spans more than one column ` +
+      `(${violation.columns}), which is not supported yet. ` +
       violation.reason.split("\n").join(" "),
   }));
 
@@ -88,6 +101,7 @@ const validateSchema = (schemaText: string): ValidationResult => {
 
     errors.push(...collectIgnoredRelationColumnErrors(schemaText));
     errors.push(...collectUnsupportedAttributeErrors(schemaText));
+    errors.push(...collectCompositeRelationErrors(schemaText));
   } catch (e) {
     errors.push({
       type: "syntax",

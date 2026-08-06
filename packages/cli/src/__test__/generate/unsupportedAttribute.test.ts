@@ -34,39 +34,43 @@ describe("generate with unsupported attributes", () => {
     return schemaPath;
   };
 
-  it("should throw UnsupportedAttributeError instead of generating", () => {
+  it("should generate from a schema that marks a field @unique", () => {
     const schemaPath = writeSchema(`model Staff {
-  id    Int    @id
+  id    Int    @id @default(autoincrement())
   email String @unique
 }`);
 
-    expect(() => generate({ schema: schemaPath })).toThrow(
-      UnsupportedAttributeError,
-    );
-    expect(fs.existsSync(outDir)).toBe(false);
+    expect(() => generate({ schema: schemaPath })).not.toThrow();
+    expect(fs.existsSync(path.join(outDir, "schemaClient.js"))).toBe(true);
   });
 
-  it("should tell which model and field carries it", () => {
+  it("should generate from the one-to-one shape Prisma requires @unique for", () => {
     const schemaPath = writeSchema(`model Staff {
-  id    Int    @id
-  email String @unique
+  id      Int      @id @default(autoincrement())
+  profile Profile?
+}
+
+model Profile {
+  id      Int   @id @default(autoincrement())
+  staffId Int   @unique
+  staff   Staff @relation(fields: [staffId], references: [id])
 }`);
 
-    expect(() => generate({ schema: schemaPath })).toThrow(/Staff\.email/);
+    expect(() => generate({ schema: schemaPath })).not.toThrow();
+    expect(fs.existsSync(path.join(outDir, "schemaClient.js"))).toBe(true);
   });
 
-  it("should reject @@unique", () => {
+  it("should generate from a schema that declares @@unique", () => {
     const schemaPath = writeSchema(`model Staff {
-  id    Int    @id
-  email String
+  id        Int    @id @default(autoincrement())
+  firstName String
+  lastName  String
 
-  @@unique([email])
+  @@unique([firstName, lastName])
 }`);
 
-    expect(() => generate({ schema: schemaPath })).toThrow(
-      UnsupportedAttributeError,
-    );
-    expect(fs.existsSync(outDir)).toBe(false);
+    expect(() => generate({ schema: schemaPath })).not.toThrow();
+    expect(fs.existsSync(path.join(outDir, "schemaClient.js"))).toBe(true);
   });
 
   it("should reject @@id", () => {
