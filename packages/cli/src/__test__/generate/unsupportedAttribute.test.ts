@@ -10,13 +10,13 @@ const generatorBlock = (outDir: string) => `generator client {
   output   = "${outDir}"
 }`;
 
-describe("generate with @unique", () => {
+describe("generate with unsupported attributes", () => {
   let tmpDir: string;
   let schemaDir: string;
   let outDir: string;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "gassma-unique-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "gassma-unsupported-"));
     schemaDir = path.join(tmpDir, "gassma");
     outDir = path.join(tmpDir, "generated");
     fs.mkdirSync(schemaDir);
@@ -55,10 +55,74 @@ describe("generate with @unique", () => {
     expect(() => generate({ schema: schemaPath })).toThrow(/Staff\.email/);
   });
 
-  it("should generate when @unique is removed", () => {
+  it("should reject @@unique", () => {
     const schemaPath = writeSchema(`model Staff {
   id    Int    @id
   email String
+
+  @@unique([email])
+}`);
+
+    expect(() => generate({ schema: schemaPath })).toThrow(
+      UnsupportedAttributeError,
+    );
+    expect(fs.existsSync(outDir)).toBe(false);
+  });
+
+  it("should reject @@id", () => {
+    const schemaPath = writeSchema(`model Enrollment {
+  studentId Int
+  courseId  Int
+
+  @@id([studentId, courseId])
+}`);
+
+    expect(() => generate({ schema: schemaPath })).toThrow(
+      /Enrollment \(studentId, courseId\)/,
+    );
+    expect(fs.existsSync(outDir)).toBe(false);
+  });
+
+  it("should reject @@index", () => {
+    const schemaPath = writeSchema(`model Staff {
+  id   Int    @id
+  name String
+
+  @@index([name])
+}`);
+
+    expect(() => generate({ schema: schemaPath })).toThrow(/@@index/);
+    expect(fs.existsSync(outDir)).toBe(false);
+  });
+
+  it("should reject @@fulltext", () => {
+    const schemaPath = writeSchema(`model Staff {
+  id  Int    @id
+  bio String
+
+  @@fulltext([bio])
+}`);
+
+    expect(() => generate({ schema: schemaPath })).toThrow(/@@fulltext/);
+    expect(fs.existsSync(outDir)).toBe(false);
+  });
+
+  it("should reject a native type", () => {
+    const schemaPath = writeSchema(`model Staff {
+  id   Int    @id
+  name String @db.VarChar(255)
+}`);
+
+    expect(() => generate({ schema: schemaPath })).toThrow(/@db\.VarChar/);
+    expect(fs.existsSync(outDir)).toBe(false);
+  });
+
+  it("should generate when only supported attributes are used", () => {
+    const schemaPath = writeSchema(`model Staff {
+  id    Int    @id @default(autoincrement())
+  email String @map("Email Address")
+
+  @@map("staff sheet")
 }`);
 
     expect(() => generate({ schema: schemaPath })).not.toThrow();
