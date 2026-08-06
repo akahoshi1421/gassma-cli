@@ -15,9 +15,11 @@ const listMigrationDirNames = (migrationsDir: string): string[] => {
     .sort();
 };
 
-const findLatestMigrationContent = (
+type LatestMigration = { migrationPath: string; content: string };
+
+const findLatestMigration = (
   migrationsDir: string,
-): string | undefined => {
+): LatestMigration | undefined => {
   const dirNames = listMigrationDirNames(migrationsDir);
   if (dirNames.length === 0) return undefined;
 
@@ -25,8 +27,12 @@ const findLatestMigrationContent = (
   const migrationPath = path.join(migrationsDir, latest, "migration.js");
   if (!fs.existsSync(migrationPath)) return undefined;
 
-  return fs.readFileSync(migrationPath, "utf-8");
+  return { migrationPath, content: fs.readFileSync(migrationPath, "utf-8") };
 };
+
+const findLatestMigrationContent = (
+  migrationsDir: string,
+): string | undefined => findLatestMigration(migrationsDir)?.content;
 
 const writeMigrationTrail = (
   migrationsDir: string,
@@ -41,4 +47,5 @@ const writeMigrationTrail = (
   return migrationPath;
 };
 
-export { findLatestMigrationContent, writeMigrationTrail };
+export { findLatestMigration, findLatestMigrationContent, writeMigrationTrail };
+export type { LatestMigration };

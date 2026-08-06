@@ -7,7 +7,8 @@ import { format } from "./format/formatCommand";
 import { generate } from "./generate/generate";
 import { watchGenerate } from "./generate/watchGenerate";
 import { init } from "./init/initCommand";
-import { migrate } from "./migrate/migrateCommand";
+import { migrateDeploy } from "./migrate/migrateDeployCommand";
+import { migrateDev } from "./migrate/migrateDevCommand";
 import { studioCommand } from "./studio/studioCommand";
 import { validate } from "./validate/validateCommand";
 import { getVersion } from "./version/getVersion";
@@ -61,10 +62,17 @@ program
     }
   });
 
-program
+const migrateCommand = program
   .command("migrate")
+  .description("Record and generate spreadsheet migrations")
+  .action(() => {
+    migrateCommand.outputHelp();
+  });
+
+migrateCommand
+  .command("dev")
   .description(
-    "Generate a GAS function that syncs spreadsheet sheets with your schema",
+    "Record a migration from your schema and generate the GAS function",
   )
   .option("--name <name>", "Name for the new migration")
   .option(
@@ -73,18 +81,25 @@ program
   )
   .option("--schema <path>", "Path to a specific .prisma file to migrate from")
   .option("--config <path>", "Custom path to your GASsma config file")
-  .option(
-    "--accept-data-loss",
-    "Delete sheets and columns that are not in the schema",
-  )
-  .action((options) => {
-    migrate({
+  .action(async (options) => {
+    await migrateDev({
       name: options.name,
       output: options.output,
       schema: options.schema,
       config: options.config,
-      acceptDataLoss: options.acceptDataLoss,
     });
+  });
+
+migrateCommand
+  .command("deploy")
+  .description("Generate the GAS function from the latest recorded migration")
+  .option(
+    "--output <dir>",
+    "Directory to write gassma-migration.js (defaults to rootDir in .clasp.json)",
+  )
+  .option("--config <path>", "Custom path to your GASsma config file")
+  .action((options) => {
+    migrateDeploy({ output: options.output, config: options.config });
   });
 
 const db = program

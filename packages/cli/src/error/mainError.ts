@@ -68,6 +68,26 @@ class MigrateOutputDirError extends Error {
   }
 }
 
+class MigrateConfirmationRequiredError extends Error {
+  constructor() {
+    super(
+      "GASsmaMigrateConfirmationRequiredError: this migration deletes sheets or columns, " +
+        "which has to be confirmed in an interactive terminal.\n" +
+        'Run "gassma migrate dev" in a terminal to answer the confirmation, ' +
+        'or run "gassma migrate deploy" to generate the latest recorded migration as it is.',
+    );
+  }
+}
+
+class NoMigrationTrailError extends Error {
+  constructor(migrationsDir: string) {
+    super(
+      `GASsmaNoMigrationTrailError: no recorded migration was found in ${migrationsDir}.\n` +
+        'Run "gassma migrate dev" first to record one.',
+    );
+  }
+}
+
 class IgnoredRelationColumnError extends Error {
   readonly details: string[];
 
@@ -139,6 +159,8 @@ export {
   GassmaConfigEnvError,
   GassmaConfigLoadError,
   MigrateOutputDirError,
+  MigrateConfirmationRequiredError,
+  NoMigrationTrailError,
   IgnoredRelationColumnError,
   ThroughSheetConflictError,
   UnsupportedAttributeError,
