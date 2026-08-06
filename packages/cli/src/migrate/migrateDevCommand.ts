@@ -1,11 +1,13 @@
 import path from "path";
-import { confirmDataLoss } from "./dataLossConfirmation";
+import { MigrateConfirmationRequiredError } from "../error/mainError";
+import { decideDataLoss } from "./dataLossConfirmation";
 import type { DataLossIo } from "./dataLossConfirmation";
 import {
   STUB_FILE_NAME,
   prepareMigrationStub,
   writeMigrationStub,
 } from "./generateMigrationStub";
+import type { PreparedMigrationStub } from "./generateMigrationStub";
 import { buildMigrationDirName } from "./migrationDirName";
 import {
   findLatestMigrationContent,
@@ -13,24 +15,23 @@ import {
 } from "./migrationTrail";
 import { printNextSteps } from "./printNextSteps";
 
-type MigrateOptions = {
+type MigrateDevOptions = {
   name?: string;
   output?: string;
   schema?: string;
   config?: string;
-  acceptDataLoss?: boolean;
 };
 
-type MigrateDeps = {
+type MigrateDevDeps = {
   now: () => Date;
   input?: NodeJS.ReadableStream;
   output?: NodeJS.WritableStream;
   isTty?: boolean;
 };
 
-const defaultDeps: MigrateDeps = { now: () => new Date() };
+const defaultDeps: MigrateDevDeps = { now: () => new Date() };
 
-const resolveIo = (deps: MigrateDeps): DataLossIo => ({
+const resolveIo = (deps: MigrateDevDeps): DataLossIo => ({
   input: deps.input ?? process.stdin,
   output: deps.output ?? process.stdout,
   isTty:
@@ -42,7 +43,7 @@ const recordMigration = (
   migrationsDir: string,
   content: string,
   name: string | undefined,
-  deps: MigrateDeps,
+  deps: MigrateDevDeps,
 ): boolean => {
   if (findLatestMigrationContent(migrationsDir) === content) {
     console.log(
@@ -62,37 +63,48 @@ const buildHeadline = (recorded: boolean): string =>
     ? "✅ Migration generated"
     : `✅ Refreshed ${STUB_FILE_NAME} (no new migration recorded)`;
 
-async function migrate(
-  options?: MigrateOptions,
-  deps: MigrateDeps = defaultDeps,
+const keepRecordedDecision = (
+  prepared: PreparedMigrationStub,
+  recorded: string | undefined,
+  decided: boolean,
+): boolean => {
+  if (recorded === undefined) return decided;
+  if (recorded === prepared.render(true)) return true;
+  if (recorded === prepared.render(false)) return false;
+  return decided;
+};
+
+async function migrateDev(
+  options?: MigrateDevOptions,
+  deps: MigrateDevDeps = defaultDeps,
 ): Promise<void> {
   const prepared = prepareMigrationStub(options);
   const migrationsDir = path.join(prepared.baseDir, "migrations");
-  const approved = await confirmDataLoss(
-    {
-      acceptDataLoss: prepared.acceptDataLoss,
-      previousTrail: findLatestMigrationContent(migrationsDir),
-      sheetNames: prepared.sheetNames,
-    },
+  const recorded = findLatestMigrationContent(migrationsDir);
+  const outcome = await decideDataLoss(
+    { recorded, models: prepared.models },
     resolveIo(deps),
   );
 
-  if (!approved) {
+  if (!outcome.proceed) {
+    if (outcome.reason === "no-terminal")
+      throw new MigrateConfirmationRequiredError();
     console.log(
       `Aborted. ${STUB_FILE_NAME} and the migration were not written.`,
     );
     return;
   }
 
-  const stubPath = writeMigrationStub(prepared.outputDir, prepared.content);
-  const recorded = recordMigration(
-    migrationsDir,
-    prepared.content,
-    options?.name,
-    deps,
+  const acceptDataLoss = keepRecordedDecision(
+    prepared,
+    recorded,
+    outcome.acceptDataLoss,
   );
-  printNextSteps(stubPath, buildHeadline(recorded), prepared.acceptDataLoss);
+  const content = prepared.render(acceptDataLoss);
+  const stubPath = writeMigrationStub(prepared.outputDir, content);
+  const written = recordMigration(migrationsDir, content, options?.name, deps);
+  printNextSteps(stubPath, buildHeadline(written), acceptDataLoss);
 }
 
-export { migrate };
-export type { MigrateDeps, MigrateOptions };
+export { migrateDev };
+export type { MigrateDevDeps, MigrateDevOptions };

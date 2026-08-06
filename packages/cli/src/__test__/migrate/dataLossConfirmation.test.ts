@@ -1,18 +1,31 @@
 import { Readable, Writable } from "stream";
 import { describe, expect, it } from "vitest";
-import {
-  confirmDataLoss,
-  findDroppedSheets,
-} from "../../migrate/dataLossConfirmation";
+import { decideDataLoss } from "../../migrate/dataLossConfirmation";
 
-const trailWith = (names: string[]): string => `function gassmaMigrate() {
+const trailWith = (
+  models: { name: string; columns: string[] }[],
+): string => `function gassmaMigrate() {
   Gassma.migrateSheets({
     models: [
-${names.map((name) => `      { name: "${name}", columns: ["id"] }`).join(",\n")}
+${models
+  .map(
+    (model) =>
+      `      { name: "${model.name}", columns: [${model.columns
+        .map((column) => `"${column}"`)
+        .join(", ")}] }`,
+  )
+  .join(",\n")}
     ]
   });
 }
 `;
+
+const recordedUserAndMemo = trailWith([
+  { name: "User", columns: ["id", "age"] },
+  { name: "Memo", columns: ["id"] },
+]);
+
+const userOnly = [{ name: "User", columns: ["id", "age"] }];
 
 const createOutput = (): { stream: Writable; text: () => string } => {
   const chunks: string[] = [];
@@ -25,207 +38,159 @@ const createOutput = (): { stream: Writable; text: () => string } => {
   return { stream, text: () => chunks.join("") };
 };
 
-const answerWith = (answer: string): Readable => Readable.from([answer]);
-
-describe("findDroppedSheets", () => {
-  it("should find nothing when there is no recorded migration", () => {
-    expect(findDroppedSheets(undefined, ["User"])).toEqual([]);
-  });
-
-  it("should find the sheets that the schema no longer defines", () => {
-    expect(findDroppedSheets(trailWith(["User", "Memo"]), ["User"])).toEqual([
-      "Memo",
-    ]);
-  });
-
-  it("should keep the recorded order when several sheets are dropped", () => {
-    expect(
-      findDroppedSheets(trailWith(["Memo", "User", "OldLog"]), ["User"]),
-    ).toEqual(["Memo", "OldLog"]);
-  });
-
-  it("should find nothing when the schema only added sheets", () => {
-    expect(findDroppedSheets(trailWith(["User"]), ["User", "Post"])).toEqual(
-      [],
-    );
-  });
-
-  it("should find nothing when the recorded migration cannot be read", () => {
-    expect(findDroppedSheets("function gassmaMigrate( {", ["User"])).toEqual(
-      [],
-    );
-  });
+const io = (
+  answer: string,
+  output: Writable,
+  isTty: boolean,
+): { input: Readable; output: Writable; isTty: boolean } => ({
+  input: Readable.from(answer === "" ? [] : [answer]),
+  output,
+  isTty,
 });
 
-describe("confirmDataLoss", () => {
-  it("should not ask without acceptDataLoss", async () => {
+describe("decideDataLoss", () => {
+  it("should continue without asking when there is no recorded migration", async () => {
     const output = createOutput();
 
-    const approved = await confirmDataLoss(
-      {
-        acceptDataLoss: false,
-        previousTrail: trailWith(["User", "Memo"]),
-        sheetNames: ["User"],
-      },
-      { input: answerWith("n\n"), output: output.stream, isTty: true },
+    const outcome = await decideDataLoss(
+      { recorded: undefined, models: userOnly },
+      io("n\n", output.stream, true),
     );
 
-    expect(approved).toBe(true);
+    expect(outcome).toEqual({ proceed: true, acceptDataLoss: false });
     expect(output.text()).toBe("");
   });
 
-  it("should not ask when no sheet is dropped", async () => {
+  it("should continue without asking when nothing is dropped", async () => {
     const output = createOutput();
 
-    const approved = await confirmDataLoss(
-      {
-        acceptDataLoss: true,
-        previousTrail: trailWith(["User"]),
-        sheetNames: ["User", "Post"],
-      },
-      { input: answerWith("n\n"), output: output.stream, isTty: true },
+    const outcome = await decideDataLoss(
+      { recorded: trailWith(userOnly), models: userOnly },
+      io("n\n", output.stream, true),
     );
 
-    expect(approved).toBe(true);
+    expect(outcome).toEqual({ proceed: true, acceptDataLoss: false });
     expect(output.text()).toBe("");
   });
 
-  it("should not ask when there is no recorded migration", async () => {
+  it("should name every dropped sheet and column when asking", async () => {
     const output = createOutput();
 
-    const approved = await confirmDataLoss(
-      { acceptDataLoss: true, previousTrail: undefined, sheetNames: ["User"] },
-      { input: answerWith("n\n"), output: output.stream, isTty: true },
-    );
-
-    expect(approved).toBe(true);
-    expect(output.text()).toBe("");
-  });
-
-  it("should name every dropped sheet when asking", async () => {
-    const output = createOutput();
-
-    await confirmDataLoss(
+    await decideDataLoss(
       {
-        acceptDataLoss: true,
-        previousTrail: trailWith(["User", "Memo", "OldLog"]),
-        sheetNames: ["User"],
+        recorded: recordedUserAndMemo,
+        models: [{ name: "User", columns: ["id"] }],
       },
-      { input: answerWith("y\n"), output: output.stream, isTty: true },
+      io("y\n", output.stream, true),
     );
 
-    expect(output.text()).toContain("Memo");
-    expect(output.text()).toContain("OldLog");
-    expect(output.text()).not.toContain("User");
+    expect(output.text()).toContain('column "age" in sheet "User"');
+    expect(output.text()).toContain('sheet "Memo"');
   });
 
   it("should say that the list comes from the recorded migrations, not the spreadsheet", async () => {
     const output = createOutput();
 
-    await confirmDataLoss(
-      {
-        acceptDataLoss: true,
-        previousTrail: trailWith(["User", "Memo"]),
-        sheetNames: ["User"],
-      },
-      { input: answerWith("y\n"), output: output.stream, isTty: true },
+    await decideDataLoss(
+      { recorded: recordedUserAndMemo, models: userOnly },
+      io("y\n", output.stream, true),
     );
 
     expect(output.text()).toContain("gassma/migrations");
     expect(output.text()).toContain("db push");
   });
 
-  it("should accept a yes answer", async () => {
+  it("should accept the deletion when the answer is yes", async () => {
     const output = createOutput();
 
-    const approved = await confirmDataLoss(
-      {
-        acceptDataLoss: true,
-        previousTrail: trailWith(["User", "Memo"]),
-        sheetNames: ["User"],
-      },
-      { input: answerWith("y\n"), output: output.stream, isTty: true },
+    const outcome = await decideDataLoss(
+      { recorded: recordedUserAndMemo, models: userOnly },
+      io("y\n", output.stream, true),
     );
 
-    expect(approved).toBe(true);
+    expect(outcome).toEqual({ proceed: true, acceptDataLoss: true });
   });
 
   it("should accept an uppercase yes answer", async () => {
     const output = createOutput();
 
-    const approved = await confirmDataLoss(
-      {
-        acceptDataLoss: true,
-        previousTrail: trailWith(["User", "Memo"]),
-        sheetNames: ["User"],
-      },
-      { input: answerWith("YES\n"), output: output.stream, isTty: true },
+    const outcome = await decideDataLoss(
+      { recorded: recordedUserAndMemo, models: userOnly },
+      io("YES\n", output.stream, true),
     );
 
-    expect(approved).toBe(true);
+    expect(outcome).toEqual({ proceed: true, acceptDataLoss: true });
   });
 
-  it("should refuse a no answer", async () => {
+  it("should decline when the answer is no", async () => {
     const output = createOutput();
 
-    const approved = await confirmDataLoss(
-      {
-        acceptDataLoss: true,
-        previousTrail: trailWith(["User", "Memo"]),
-        sheetNames: ["User"],
-      },
-      { input: answerWith("n\n"), output: output.stream, isTty: true },
+    const outcome = await decideDataLoss(
+      { recorded: recordedUserAndMemo, models: userOnly },
+      io("n\n", output.stream, true),
     );
 
-    expect(approved).toBe(false);
+    expect(outcome).toEqual({ proceed: false, reason: "declined" });
   });
 
-  it("should refuse an empty answer", async () => {
+  it("should decline on an empty answer", async () => {
     const output = createOutput();
 
-    const approved = await confirmDataLoss(
-      {
-        acceptDataLoss: true,
-        previousTrail: trailWith(["User", "Memo"]),
-        sheetNames: ["User"],
-      },
-      { input: answerWith("\n"), output: output.stream, isTty: true },
+    const outcome = await decideDataLoss(
+      { recorded: recordedUserAndMemo, models: userOnly },
+      io("\n", output.stream, true),
     );
 
-    expect(approved).toBe(false);
+    expect(outcome).toEqual({ proceed: false, reason: "declined" });
   });
 
-  it("should refuse instead of hanging when stdin is closed", async () => {
+  it("should decline instead of hanging when stdin is closed", async () => {
     const output = createOutput();
 
-    const approved = await confirmDataLoss(
-      {
-        acceptDataLoss: true,
-        previousTrail: trailWith(["User", "Memo"]),
-        sheetNames: ["User"],
-      },
-      { input: Readable.from([]), output: output.stream, isTty: true },
+    const outcome = await decideDataLoss(
+      { recorded: recordedUserAndMemo, models: userOnly },
+      io("", output.stream, true),
     );
 
-    expect(approved).toBe(false);
+    expect(outcome).toEqual({ proceed: false, reason: "declined" });
   });
 
-  it("should warn and continue without an interactive terminal", async () => {
+  it("should stop without asking when there is no interactive terminal", async () => {
     const output = createOutput();
 
-    const approved = await confirmDataLoss(
-      {
-        acceptDataLoss: true,
-        previousTrail: trailWith(["User", "Memo"]),
-        sheetNames: ["User"],
-      },
-      { input: Readable.from([]), output: output.stream, isTty: false },
+    const outcome = await decideDataLoss(
+      { recorded: recordedUserAndMemo, models: userOnly },
+      io("y\n", output.stream, false),
     );
 
-    expect(approved).toBe(true);
-    expect(output.text()).toContain("Memo");
-    expect(output.text()).toContain("--accept-data-loss");
-    expect(output.text()).toContain("gassma/migrations");
+    expect(outcome).toEqual({ proceed: false, reason: "no-terminal" });
+    expect(output.text()).toContain('sheet "Memo"');
     expect(output.text()).not.toContain("(y/N)");
+  });
+
+  it("should warn and keep the deletion off when the recorded migration cannot be read", async () => {
+    const output = createOutput();
+
+    const outcome = await decideDataLoss(
+      { recorded: "function gassmaMigrate( {", models: userOnly },
+      io("y\n", output.stream, true),
+    );
+
+    expect(outcome).toEqual({ proceed: true, acceptDataLoss: false });
+    expect(output.text()).toContain("could not be read");
+    expect(output.text()).toContain("nothing will be deleted");
+    expect(output.text()).not.toContain("(y/N)");
+  });
+
+  it("should warn about an unreadable migration without an interactive terminal too", async () => {
+    const output = createOutput();
+
+    const outcome = await decideDataLoss(
+      { recorded: "function gassmaMigrate( {", models: userOnly },
+      io("", output.stream, false),
+    );
+
+    expect(outcome).toEqual({ proceed: true, acceptDataLoss: false });
+    expect(output.text()).toContain("could not be read");
   });
 });

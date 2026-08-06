@@ -11,6 +11,7 @@ import { mergeSchemaFiles } from "../generate/mergeSchemaFiles";
 import { extractDatasourceUrl } from "../generate/read/extractDatasourceUrl";
 import { readTemplate } from "../util/readTemplate";
 import { buildMigrateModels } from "./buildMigrateModels";
+import type { MigrateModelDefinition } from "./buildMigrateModels";
 import { patchMigrationScript } from "./patchMigrationScript";
 import type { MigrateSheetsDefinition } from "./patchMigrationScript";
 import { resolveOutputDir } from "./resolveOutputDir";
@@ -27,10 +28,9 @@ type MigrationStubOptions = {
 
 type PreparedMigrationStub = {
   outputDir: string;
-  content: string;
   baseDir: string;
-  acceptDataLoss: boolean;
-  sheetNames: string[];
+  models: MigrateModelDefinition[];
+  render: (acceptDataLoss: boolean) => string;
 };
 
 type MigrationStubResult = {
@@ -51,21 +51,14 @@ const resolveSpreadsheetId = (
 };
 
 const buildDefinition = (
-  schemaText: string,
-  configUrl: string | undefined,
-  schemaLocation: string,
+  models: MigrateModelDefinition[],
+  spreadsheetId: string | undefined,
   acceptDataLoss: boolean,
-): MigrateSheetsDefinition => {
-  const models = buildMigrateModels(schemaText);
-  if (models.length === 0) throw new NoModelsError(schemaLocation);
-
-  const spreadsheetId = resolveSpreadsheetId(schemaText, configUrl);
-  return {
-    ...(spreadsheetId === undefined ? {} : { spreadsheetId }),
-    ...(acceptDataLoss ? { acceptDataLoss: true } : {}),
-    models,
-  };
-};
+): MigrateSheetsDefinition => ({
+  ...(spreadsheetId === undefined ? {} : { spreadsheetId }),
+  ...(acceptDataLoss ? { acceptDataLoss: true } : {}),
+  models,
+});
 
 const writeMigrationStub = (outputDir: string, content: string): string => {
   fs.mkdirSync(outputDir, { recursive: true });
@@ -91,27 +84,26 @@ const prepareMigrationStub = (
   const schemaLocation = path.resolve(
     files.length === 1 ? files[0].filePath : baseDir,
   );
-  const acceptDataLoss = options?.acceptDataLoss === true;
-  const definition = buildDefinition(
+  const models = buildMigrateModels(schemaText);
+  if (models.length === 0) throw new NoModelsError(schemaLocation);
+  const spreadsheetId = resolveSpreadsheetId(
     schemaText,
     loaded?.config.datasource?.url,
-    schemaLocation,
-    acceptDataLoss,
   );
 
   const outputDir = resolveOutputDir(options?.output, process.cwd());
   const userSymbol = resolveUserSymbol(outputDir);
-  const content = patchMigrationScript(
-    readTemplate("gassma-migration.js.template"),
-    { userSymbol, definition },
-  );
+  const template = readTemplate("gassma-migration.js.template");
 
   return {
     outputDir,
-    content,
     baseDir,
-    acceptDataLoss,
-    sheetNames: definition.models.map((model) => model.name),
+    models,
+    render: (acceptDataLoss) =>
+      patchMigrationScript(template, {
+        userSymbol,
+        definition: buildDefinition(models, spreadsheetId, acceptDataLoss),
+      }),
   };
 };
 
@@ -119,11 +111,13 @@ const generateMigrationStub = (
   options?: MigrationStubOptions,
 ): MigrationStubResult => {
   const prepared = prepareMigrationStub(options);
+  const acceptDataLoss = options?.acceptDataLoss === true;
+  const content = prepared.render(acceptDataLoss);
   return {
-    stubPath: writeMigrationStub(prepared.outputDir, prepared.content),
-    content: prepared.content,
+    stubPath: writeMigrationStub(prepared.outputDir, content),
+    content,
     baseDir: prepared.baseDir,
-    acceptDataLoss: prepared.acceptDataLoss,
+    acceptDataLoss,
   };
 };
 

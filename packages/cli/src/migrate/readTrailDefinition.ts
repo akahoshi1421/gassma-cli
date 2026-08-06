@@ -2,6 +2,10 @@ import vm from "vm";
 
 const EXECUTION_TIMEOUT_MS = 1000;
 
+type TrailModel = { name: string; columns: string[] };
+
+type TrailDefinition = { acceptDataLoss: boolean; models: TrailModel[] };
+
 const SETUP = `
 globalThis.__gassmaCaptured = [];
 globalThis.__gassmaStub = {
@@ -37,30 +41,43 @@ const runTrail = (content: string): unknown => {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
-const toSheetNames = (definitions: unknown): string[] | undefined => {
+const isStringArray = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === "string");
+
+const toModel = (model: unknown): TrailModel | undefined => {
+  if (!isRecord(model)) return undefined;
+  if (typeof model.name !== "string") return undefined;
+  if (!isStringArray(model.columns)) return undefined;
+  return { name: model.name, columns: model.columns };
+};
+
+const toDefinition = (definitions: unknown): TrailDefinition | undefined => {
   if (!Array.isArray(definitions) || definitions.length === 0) return undefined;
 
-  const names: string[] = [];
+  const models: TrailModel[] = [];
+  let acceptDataLoss = false;
   const valid = definitions.every((definition) => {
     if (!isRecord(definition)) return false;
-    const models = definition.models;
-    if (!Array.isArray(models)) return false;
-    return models.every((model) => {
-      if (!isRecord(model) || typeof model.name !== "string") return false;
-      names.push(model.name);
+    if (definition.acceptDataLoss === true) acceptDataLoss = true;
+    if (!Array.isArray(definition.models)) return false;
+    return definition.models.every((entry) => {
+      const model = toModel(entry);
+      if (model === undefined) return false;
+      models.push(model);
       return true;
     });
   });
 
-  return valid ? names : undefined;
+  return valid ? { acceptDataLoss, models } : undefined;
 };
 
-const readTrailSheetNames = (content: string): string[] | undefined => {
+const readTrailDefinition = (content: string): TrailDefinition | undefined => {
   try {
-    return toSheetNames(runTrail(content));
+    return toDefinition(runTrail(content));
   } catch {
     return undefined;
   }
 };
 
-export { readTrailSheetNames };
+export { readTrailDefinition };
+export type { TrailDefinition, TrailModel };

@@ -1,5 +1,8 @@
 import readline from "readline";
-import { readTrailSheetNames } from "./readTrailSheetNames";
+import type { MigrateModelDefinition } from "./buildMigrateModels";
+import { findDrops } from "./findDrops";
+import type { Drop } from "./findDrops";
+import { readTrailDefinition } from "./readTrailDefinition";
 
 type DataLossIo = {
   input: NodeJS.ReadableStream;
@@ -8,33 +11,40 @@ type DataLossIo = {
 };
 
 type DataLossRequest = {
-  acceptDataLoss: boolean;
-  previousTrail: string | undefined;
-  sheetNames: string[];
+  recorded: string | undefined;
+  models: MigrateModelDefinition[];
 };
 
-const findDroppedSheets = (
-  previousTrail: string | undefined,
-  sheetNames: string[],
-): string[] => {
-  if (previousTrail === undefined) return [];
+type DataLossOutcome =
+  | { proceed: true; acceptDataLoss: boolean }
+  | { proceed: false; reason: "declined" | "no-terminal" };
 
-  const recorded = readTrailSheetNames(previousTrail);
-  if (recorded === undefined) return [];
-
-  const kept = new Set(sheetNames);
-  return recorded.filter((name) => !kept.has(name));
+const CONTINUE_WITHOUT_DELETION: DataLossOutcome = {
+  proceed: true,
+  acceptDataLoss: false,
 };
 
-const buildWarning = (dropped: string[]): string =>
+const describeDrop = (drop: Drop): string =>
+  drop.kind === "sheet"
+    ? `    • sheet "${drop.sheet}"`
+    : `    • column "${drop.column}" in sheet "${drop.sheet}"`;
+
+const buildDropReport = (drops: Drop[]): string =>
   [
-    "\n⚠️ The following sheets are recorded in gassma/migrations but are no longer in your schema:",
-    ...dropped.map((name) => `    • ${name}`),
-    '  Running "gassmaMigrate" will delete them together with every row they hold.',
+    "\n⚠️ The following are recorded in gassma/migrations but are no longer in your schema:",
+    ...drops.map(describeDrop),
+    "  Generating this migration deletes them together with every value they hold.",
     "  This is based on the recorded migrations, not on the spreadsheet itself:",
-    '  sheets changed by "gassma db push" or by hand are not reflected here.',
+    '  sheets and columns changed by "gassma db push" or by hand are not reflected here.',
     "",
   ].join("\n");
+
+const UNREADABLE_REPORT = [
+  "\n⚠️ The latest migration in gassma/migrations could not be read,",
+  "  so deleted sheets and columns could not be checked.",
+  "  This migration is generated without deletion: nothing will be deleted.",
+  "",
+].join("\n");
 
 const isYes = (answer: string): boolean =>
   ["y", "yes"].includes(answer.trim().toLowerCase());
@@ -51,23 +61,29 @@ const askYesNo = (io: DataLossIo): Promise<boolean> =>
     io.output.write("Continue? (y/N) ");
   });
 
-const confirmDataLoss = async (
+const decideDataLoss = async (
   request: DataLossRequest,
   io: DataLossIo,
-): Promise<boolean> => {
-  if (!request.acceptDataLoss) return true;
+): Promise<DataLossOutcome> => {
+  if (request.recorded === undefined) return CONTINUE_WITHOUT_DELETION;
 
-  const dropped = findDroppedSheets(request.previousTrail, request.sheetNames);
-  if (dropped.length === 0) return true;
+  const recorded = readTrailDefinition(request.recorded);
+  if (recorded === undefined) {
+    io.output.write(UNREADABLE_REPORT);
+    return CONTINUE_WITHOUT_DELETION;
+  }
 
-  io.output.write(buildWarning(dropped));
-  if (io.isTty) return askYesNo(io);
+  const drops = findDrops(recorded, request.models);
+  if (drops.length === 0) return CONTINUE_WITHOUT_DELETION;
 
-  io.output.write(
-    "No interactive terminal detected; continuing because --accept-data-loss was given.\n",
-  );
-  return true;
+  io.output.write(buildDropReport(drops));
+  if (!io.isTty) return { proceed: false, reason: "no-terminal" };
+
+  const approved = await askYesNo(io);
+  return approved
+    ? { proceed: true, acceptDataLoss: true }
+    : { proceed: false, reason: "declined" };
 };
 
-export { confirmDataLoss, findDroppedSheets };
-export type { DataLossIo, DataLossRequest };
+export { decideDataLoss };
+export type { DataLossIo, DataLossOutcome, DataLossRequest };

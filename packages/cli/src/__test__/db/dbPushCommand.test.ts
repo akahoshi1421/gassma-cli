@@ -3,7 +3,7 @@ import os from "os";
 import path from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { dbPush } from "../../db/dbPushCommand";
-import { migrate } from "../../migrate/migrateCommand";
+import { migrateDev } from "../../migrate/migrateDevCommand";
 
 const schemaWithDatasource = `
 datasource db {
@@ -73,7 +73,7 @@ describe("dbPush", () => {
   it("should write the same stub content as migrate", async () => {
     writeSchema(schemaWithDatasource);
 
-    await migrate({ output: "./migrate-out" }, fixedDeps);
+    await migrateDev({ output: "./migrate-out" }, fixedDeps);
     dbPush({ output: "./push-out" });
 
     expect(
@@ -195,7 +195,7 @@ describe("dbPush", () => {
     writeSchema(schemaWithDatasource);
 
     dbPush({ output: "./out" });
-    await migrate({ output: "./out" }, fixedDeps);
+    await migrateDev({ output: "./out" }, fixedDeps);
 
     expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
       "20260729040506",
