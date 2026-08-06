@@ -1,5 +1,11 @@
 import path from "path";
-import { STUB_FILE_NAME, generateMigrationStub } from "./generateMigrationStub";
+import { confirmDataLoss } from "./dataLossConfirmation";
+import type { DataLossIo } from "./dataLossConfirmation";
+import {
+  STUB_FILE_NAME,
+  prepareMigrationStub,
+  writeMigrationStub,
+} from "./generateMigrationStub";
 import { buildMigrationDirName } from "./migrationDirName";
 import {
   findLatestMigrationContent,
@@ -17,17 +23,27 @@ type MigrateOptions = {
 
 type MigrateDeps = {
   now: () => Date;
+  input?: NodeJS.ReadableStream;
+  output?: NodeJS.WritableStream;
+  isTty?: boolean;
 };
 
 const defaultDeps: MigrateDeps = { now: () => new Date() };
 
+const resolveIo = (deps: MigrateDeps): DataLossIo => ({
+  input: deps.input ?? process.stdin,
+  output: deps.output ?? process.stdout,
+  isTty:
+    deps.isTty ??
+    (process.stdin.isTTY === true && process.stdout.isTTY === true),
+});
+
 const recordMigration = (
-  baseDir: string,
+  migrationsDir: string,
   content: string,
   name: string | undefined,
   deps: MigrateDeps,
 ): boolean => {
-  const migrationsDir = path.join(baseDir, "migrations");
   if (findLatestMigrationContent(migrationsDir) === content) {
     console.log(
       "Already in sync, no schema change or pending migration was found.",
@@ -46,15 +62,36 @@ const buildHeadline = (recorded: boolean): string =>
     ? "✅ Migration generated"
     : `✅ Refreshed ${STUB_FILE_NAME} (no new migration recorded)`;
 
-function migrate(options?: MigrateOptions, deps: MigrateDeps = defaultDeps) {
-  const stub = generateMigrationStub(options);
+async function migrate(
+  options?: MigrateOptions,
+  deps: MigrateDeps = defaultDeps,
+): Promise<void> {
+  const prepared = prepareMigrationStub(options);
+  const migrationsDir = path.join(prepared.baseDir, "migrations");
+  const approved = await confirmDataLoss(
+    {
+      acceptDataLoss: prepared.acceptDataLoss,
+      previousTrail: findLatestMigrationContent(migrationsDir),
+      sheetNames: prepared.sheetNames,
+    },
+    resolveIo(deps),
+  );
+
+  if (!approved) {
+    console.log(
+      `Aborted. ${STUB_FILE_NAME} and the migration were not written.`,
+    );
+    return;
+  }
+
+  const stubPath = writeMigrationStub(prepared.outputDir, prepared.content);
   const recorded = recordMigration(
-    stub.baseDir,
-    stub.content,
+    migrationsDir,
+    prepared.content,
     options?.name,
     deps,
   );
-  printNextSteps(stub.stubPath, buildHeadline(recorded), stub.acceptDataLoss);
+  printNextSteps(stubPath, buildHeadline(recorded), prepared.acceptDataLoss);
 }
 
 export { migrate };

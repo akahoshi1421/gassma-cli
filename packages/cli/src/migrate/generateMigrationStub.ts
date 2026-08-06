@@ -25,6 +25,14 @@ type MigrationStubOptions = {
   acceptDataLoss?: boolean;
 };
 
+type PreparedMigrationStub = {
+  outputDir: string;
+  content: string;
+  baseDir: string;
+  acceptDataLoss: boolean;
+  sheetNames: string[];
+};
+
 type MigrationStubResult = {
   stubPath: string;
   content: string;
@@ -67,9 +75,9 @@ const writeMigrationStub = (outputDir: string, content: string): string => {
   return stubPath;
 };
 
-const generateMigrationStub = (
+const prepareMigrationStub = (
   options?: MigrationStubOptions,
-): MigrationStubResult => {
+): PreparedMigrationStub => {
   const allFiles = resolveSchemaFiles({
     schema: options?.schema,
     config: options?.config,
@@ -98,9 +106,35 @@ const generateMigrationStub = (
     { userSymbol, definition },
   );
 
-  const stubPath = writeMigrationStub(outputDir, content);
-  return { stubPath, content, baseDir, acceptDataLoss };
+  return {
+    outputDir,
+    content,
+    baseDir,
+    acceptDataLoss,
+    sheetNames: definition.models.map((model) => model.name),
+  };
 };
 
-export { STUB_FILE_NAME, generateMigrationStub };
-export type { MigrationStubOptions, MigrationStubResult };
+const generateMigrationStub = (
+  options?: MigrationStubOptions,
+): MigrationStubResult => {
+  const prepared = prepareMigrationStub(options);
+  return {
+    stubPath: writeMigrationStub(prepared.outputDir, prepared.content),
+    content: prepared.content,
+    baseDir: prepared.baseDir,
+    acceptDataLoss: prepared.acceptDataLoss,
+  };
+};
+
+export {
+  STUB_FILE_NAME,
+  generateMigrationStub,
+  prepareMigrationStub,
+  writeMigrationStub,
+};
+export type {
+  MigrationStubOptions,
+  MigrationStubResult,
+  PreparedMigrationStub,
+};

@@ -70,10 +70,10 @@ describe("dbPush", () => {
 `);
   });
 
-  it("should write the same stub content as migrate", () => {
+  it("should write the same stub content as migrate", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./migrate-out" }, fixedDeps);
+    await migrate({ output: "./migrate-out" }, fixedDeps);
     dbPush({ output: "./push-out" });
 
     expect(
@@ -191,11 +191,11 @@ describe("dbPush", () => {
     expect(logged).not.toContain("Migration generated");
   });
 
-  it("should keep migrate recording a trail after db push", () => {
+  it("should keep migrate recording a trail after db push", async () => {
     writeSchema(schemaWithDatasource);
 
     dbPush({ output: "./out" });
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
       "20260729040506",

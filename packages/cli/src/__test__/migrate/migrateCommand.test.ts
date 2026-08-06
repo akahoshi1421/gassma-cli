@@ -1,6 +1,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { Readable, Writable } from "stream";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GASSMA_LIBRARY } from "../../bootstrap/const/gassmaLibrary";
 import { ThroughSheetConflictError } from "../../error/mainError";
@@ -53,10 +54,10 @@ describe("migrate", () => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  it("should write gassma-migration.js into the --output directory", () => {
+  it("should write gassma-migration.js into the --output directory", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const content = fs.readFileSync(
       path.join("out", "gassma-migration.js"),
@@ -73,10 +74,10 @@ describe("migrate", () => {
 `);
   });
 
-  it("should include acceptDataLoss between spreadsheetId and models when requested", () => {
+  it("should include acceptDataLoss between spreadsheetId and models when requested", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+    await migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
 
     const content = fs.readFileSync(
       path.join("out", "gassma-migration.js"),
@@ -94,10 +95,10 @@ describe("migrate", () => {
 `);
   });
 
-  it("should include acceptDataLoss when no spreadsheetId is available", () => {
+  it("should include acceptDataLoss when no spreadsheetId is available", async () => {
     writeSchema(schemaWithoutDatasource);
 
-    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+    await migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
 
     const content = fs.readFileSync(
       path.join("out", "gassma-migration.js"),
@@ -107,25 +108,25 @@ describe("migrate", () => {
     expect(content).not.toContain("spreadsheetId");
   });
 
-  it("should resolve the output directory from rootDir in .clasp.json", () => {
+  it("should resolve the output directory from rootDir in .clasp.json", async () => {
     writeSchema(schemaWithDatasource);
     fs.writeFileSync(".clasp.json", JSON.stringify({ rootDir: "./dist" }));
 
-    migrate(undefined, fixedDeps);
+    await migrate(undefined, fixedDeps);
 
     expect(fs.existsSync(path.join("dist", "gassma-migration.js"))).toBe(true);
   });
 
-  it("should throw when no output directory can be resolved", () => {
+  it("should throw when no output directory can be resolved", async () => {
     writeSchema(schemaWithDatasource);
 
-    expect(() => migrate(undefined, fixedDeps)).toThrow("--output");
+    await expect(migrate(undefined, fixedDeps)).rejects.toThrow("--output");
   });
 
-  it("should omit spreadsheetId when no datasource url is available", () => {
+  it("should omit spreadsheetId when no datasource url is available", async () => {
     writeSchema(schemaWithoutDatasource);
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const content = fs.readFileSync(
       path.join("out", "gassma-migration.js"),
@@ -134,7 +135,7 @@ describe("migrate", () => {
     expect(content).not.toContain("spreadsheetId");
   });
 
-  it("should use the userSymbol from appsscript.json in the output directory", () => {
+  it("should use the userSymbol from appsscript.json in the output directory", async () => {
     writeSchema(schemaWithDatasource);
     fs.mkdirSync("out", { recursive: true });
     fs.writeFileSync(
@@ -152,7 +153,7 @@ describe("migrate", () => {
       }),
     );
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const content = fs.readFileSync(
       path.join("out", "gassma-migration.js"),
@@ -161,7 +162,7 @@ describe("migrate", () => {
     expect(content).toContain("MyGassma.migrateSheets(");
   });
 
-  it("should write distinct columns for self-referencing and normal through sheets", () => {
+  it("should write distinct columns for self-referencing and normal through sheets", async () => {
     writeSchema(`
 datasource db {
   provider = "gassma"
@@ -185,7 +186,7 @@ model Tag {
 }
 `);
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const content = fs.readFileSync(
       path.join("out", "gassma-migration.js"),
@@ -199,7 +200,7 @@ model Tag {
     );
   });
 
-  it("should fail when one through sheet is shared by two different model pairs", () => {
+  it("should fail when one through sheet is shared by two different model pairs", async () => {
     writeSchema(`
 datasource db {
   provider = "gassma"
@@ -227,13 +228,15 @@ model Group {
 }
 `);
 
-    expect(() => migrate({ output: "./out" }, fixedDeps)).toThrow(
+    await expect(migrate({ output: "./out" }, fixedDeps)).rejects.toThrow(
       ThroughSheetConflictError,
     );
-    expect(() => migrate({ output: "./out" }, fixedDeps)).toThrow(/_Links/);
+    await expect(migrate({ output: "./out" }, fixedDeps)).rejects.toThrow(
+      /_Links/,
+    );
   });
 
-  it("should write one through sheet per named relation while keeping unnamed names", () => {
+  it("should write one through sheet per named relation while keeping unnamed names", async () => {
     writeSchema(`
 datasource db {
   provider = "gassma"
@@ -259,7 +262,7 @@ model User {
 }
 `);
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const content = fs.readFileSync(
       path.join("out", "gassma-migration.js"),
@@ -276,7 +279,7 @@ model User {
     );
   });
 
-  it("should write only the named through sheet when a named list precedes an unnamed list", () => {
+  it("should write only the named through sheet when a named list precedes an unnamed list", async () => {
     writeSchema(`
 datasource db {
   provider = "gassma"
@@ -297,7 +300,7 @@ model Post {
 }
 `);
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const content = fs.readFileSync(
       path.join("out", "gassma-migration.js"),
@@ -316,10 +319,10 @@ model Post {
 `);
   });
 
-  it("should record the migration next to the schema with the timestamped name", () => {
+  it("should record the migration next to the schema with the timestamped name", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out", name: "init" }, fixedDeps);
+    await migrate({ output: "./out", name: "init" }, fixedDeps);
 
     const trailPath = path.join(
       "gassma",
@@ -332,10 +335,10 @@ model Post {
     );
   });
 
-  it("should record acceptDataLoss in the migration trail", () => {
+  it("should record acceptDataLoss in the migration trail", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+    await migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
 
     const trail = fs.readFileSync(
       path.join("gassma", "migrations", "20260729040506", "migration.js"),
@@ -347,34 +350,34 @@ model Post {
     expect(trail).toContain("acceptDataLoss: true,");
   });
 
-  it("should not record a second migration when run twice with acceptDataLoss", () => {
+  it("should not record a second migration when run twice with acceptDataLoss", async () => {
     writeSchema(schemaWithDatasource);
-    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+    await migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
 
     const laterDeps = {
       now: () => new Date(Date.UTC(2026, 6, 30, 0, 0, 0)),
     };
-    migrate({ output: "./out", acceptDataLoss: true }, laterDeps);
+    await migrate({ output: "./out", acceptDataLoss: true }, laterDeps);
 
     expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
       "20260729040506",
     ]);
   });
 
-  it("should name the migration directory with the timestamp only when --name is omitted", () => {
+  it("should name the migration directory with the timestamp only when --name is omitted", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
       "20260729040506",
     ]);
   });
 
-  it("should keep a name with path separators inside a single flat directory", () => {
+  it("should keep a name with path separators inside a single flat directory", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out", name: "evil/sub" }, fixedDeps);
+    await migrate({ output: "./out", name: "evil/sub" }, fixedDeps);
 
     expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
       "20260729040506_evil_sub",
@@ -383,17 +386,20 @@ model Post {
     const laterDeps = {
       now: () => new Date(Date.UTC(2026, 6, 30, 0, 0, 0)),
     };
-    migrate({ output: "./out" }, laterDeps);
+    await migrate({ output: "./out" }, laterDeps);
 
     expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
       "20260729040506_evil_sub",
     ]);
   });
 
-  it("should keep a traversal name inside the migrations directory", () => {
+  it("should keep a traversal name inside the migrations directory", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out", name: "../../../outside-trail" }, fixedDeps);
+    await migrate(
+      { output: "./out", name: "../../../outside-trail" },
+      fixedDeps,
+    );
 
     expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
       "20260729040506_outside_trail",
@@ -405,14 +411,14 @@ model Post {
     expect(fs.existsSync("outside-trail")).toBe(false);
   });
 
-  it("should not record a second migration when nothing changed", () => {
+  it("should not record a second migration when nothing changed", async () => {
     writeSchema(schemaWithDatasource);
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const laterDeps = {
       now: () => new Date(Date.UTC(2026, 6, 30, 0, 0, 0)),
     };
-    migrate({ output: "./out" }, laterDeps);
+    await migrate({ output: "./out" }, laterDeps);
 
     expect(fs.readdirSync(path.join("gassma", "migrations"))).toEqual([
       "20260729040506",
@@ -422,12 +428,12 @@ model Post {
     );
   });
 
-  it("should not claim a migration was generated when already in sync", () => {
+  it("should not claim a migration was generated when already in sync", async () => {
     writeSchema(schemaWithDatasource);
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
     vi.mocked(console.log).mockClear();
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const logged = vi
       .mocked(console.log)
@@ -439,19 +445,19 @@ model Post {
     expect(logged).toContain("gassmaMigrate");
   });
 
-  it("should rewrite gassma-migration.js even when already in sync", () => {
+  it("should rewrite gassma-migration.js even when already in sync", async () => {
     writeSchema(schemaWithDatasource);
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
     fs.rmSync(path.join("out", "gassma-migration.js"));
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     expect(fs.existsSync(path.join("out", "gassma-migration.js"))).toBe(true);
   });
 
-  it("should record a new migration when the schema changed", () => {
+  it("should record a new migration when the schema changed", async () => {
     writeSchema(schemaWithDatasource);
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     writeSchema(`${schemaWithDatasource}
 model Post {
@@ -461,7 +467,7 @@ model Post {
     const laterDeps = {
       now: () => new Date(Date.UTC(2026, 6, 30, 0, 0, 0)),
     };
-    migrate({ output: "./out" }, laterDeps);
+    await migrate({ output: "./out" }, laterDeps);
 
     expect(fs.readdirSync(path.join("gassma", "migrations")).sort()).toEqual([
       "20260729040506",
@@ -469,23 +475,23 @@ model Post {
     ]);
   });
 
-  it("should throw when the schema has no models", () => {
+  it("should throw when the schema has no models", async () => {
     fs.mkdirSync("gassma", { recursive: true });
     fs.writeFileSync(
       path.join("gassma", "schema.prisma"),
       'datasource db {\n  provider = "gassma"\n  url = ""\n}\n',
     );
 
-    expect(() => migrate({ output: "./out" }, fixedDeps)).toThrow(
+    await expect(migrate({ output: "./out" }, fixedDeps)).rejects.toThrow(
       "GASsmaNoModelsError",
     );
   });
 
-  it("should read the schema from the --schema option", () => {
+  it("should read the schema from the --schema option", async () => {
     fs.mkdirSync("custom", { recursive: true });
     fs.writeFileSync(path.join("custom", "app.prisma"), schemaWithDatasource);
 
-    migrate({ output: "./out", schema: "custom/app.prisma" }, fixedDeps);
+    await migrate({ output: "./out", schema: "custom/app.prisma" }, fixedDeps);
 
     expect(
       fs.existsSync(
@@ -494,10 +500,10 @@ model Post {
     ).toBe(true);
   });
 
-  it("should print next steps after generating", () => {
+  it("should print next steps after generating", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const logged = vi
       .mocked(console.log)
@@ -507,10 +513,10 @@ model Post {
     expect(logged).toContain("gassmaMigrate");
   });
 
-  it("should warn about deletions when acceptDataLoss is requested", () => {
+  it("should warn about deletions when acceptDataLoss is requested", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
+    await migrate({ output: "./out", acceptDataLoss: true }, fixedDeps);
 
     const logged = vi
       .mocked(console.log)
@@ -521,10 +527,10 @@ model Post {
     );
   });
 
-  it("should not warn about deletions without acceptDataLoss", () => {
+  it("should not warn about deletions without acceptDataLoss", async () => {
     writeSchema(schemaWithDatasource);
 
-    migrate({ output: "./out" }, fixedDeps);
+    await migrate({ output: "./out" }, fixedDeps);
 
     const logged = vi
       .mocked(console.log)
@@ -533,5 +539,219 @@ model Post {
     expect(logged).not.toContain(
       "will delete sheets and columns that are not in the schema",
     );
+  });
+
+  describe("drop confirmation", () => {
+    const schemaWithMemo = `${schemaWithDatasource}
+model Memo {
+  id Int @id
+}
+`;
+    const laterDeps = { now: () => new Date(Date.UTC(2026, 6, 30, 0, 0, 0)) };
+    const stubPath = path.join("out", "gassma-migration.js");
+    const migrationsDir = path.join("gassma", "migrations");
+
+    const answer = (text: string): Readable => Readable.from([text]);
+
+    const collectOutput = (): { stream: Writable; text: () => string } => {
+      const chunks: string[] = [];
+      const stream = new Writable({
+        write(chunk, _encoding, callback) {
+          chunks.push(String(chunk));
+          callback();
+        },
+      });
+      return { stream, text: () => chunks.join("") };
+    };
+
+    const recordMemoMigration = async (): Promise<void> => {
+      writeSchema(schemaWithMemo);
+      await migrate({ output: "./out" }, fixedDeps);
+      writeSchema(schemaWithDatasource);
+    };
+
+    it("should ask before dropping a sheet that the last migration recorded", async () => {
+      await recordMemoMigration();
+      const output = collectOutput();
+
+      await migrate(
+        { output: "./out", acceptDataLoss: true },
+        {
+          ...laterDeps,
+          input: answer("y\n"),
+          output: output.stream,
+          isTty: true,
+        },
+      );
+
+      expect(output.text()).toContain("Memo");
+      expect(output.text()).toContain("Continue? (y/N)");
+    });
+
+    it("should write nothing when the confirmation is refused", async () => {
+      await recordMemoMigration();
+      const before = fs.readFileSync(stubPath, "utf-8");
+      const output = collectOutput();
+
+      await migrate(
+        { output: "./out", acceptDataLoss: true },
+        {
+          ...laterDeps,
+          input: answer("n\n"),
+          output: output.stream,
+          isTty: true,
+        },
+      );
+
+      expect(fs.readFileSync(stubPath, "utf-8")).toBe(before);
+      expect(fs.readdirSync(migrationsDir)).toEqual(["20260729040506"]);
+    });
+
+    it("should say that nothing was written when the confirmation is refused", async () => {
+      await recordMemoMigration();
+      vi.mocked(console.log).mockClear();
+      const output = collectOutput();
+
+      await migrate(
+        { output: "./out", acceptDataLoss: true },
+        {
+          ...laterDeps,
+          input: answer("n\n"),
+          output: output.stream,
+          isTty: true,
+        },
+      );
+
+      const logged = vi
+        .mocked(console.log)
+        .mock.calls.map((call) => call.join(" "))
+        .join("\n");
+      expect(logged).toContain("Aborted");
+      expect(logged).not.toContain("Next steps");
+    });
+
+    it("should write the stub and the migration when the confirmation is accepted", async () => {
+      await recordMemoMigration();
+      const output = collectOutput();
+
+      await migrate(
+        { output: "./out", acceptDataLoss: true },
+        {
+          ...laterDeps,
+          input: answer("y\n"),
+          output: output.stream,
+          isTty: true,
+        },
+      );
+
+      expect(fs.readFileSync(stubPath, "utf-8")).not.toContain("Memo");
+      expect(fs.readdirSync(migrationsDir).sort()).toEqual([
+        "20260729040506",
+        "20260730000000",
+      ]);
+    });
+
+    it("should not ask without acceptDataLoss", async () => {
+      await recordMemoMigration();
+      const output = collectOutput();
+
+      await migrate(
+        { output: "./out" },
+        {
+          ...laterDeps,
+          input: answer("n\n"),
+          output: output.stream,
+          isTty: true,
+        },
+      );
+
+      expect(output.text()).toBe("");
+      expect(fs.readFileSync(stubPath, "utf-8")).not.toContain("Memo");
+    });
+
+    it("should not ask when no sheet is dropped", async () => {
+      writeSchema(schemaWithDatasource);
+      await migrate({ output: "./out" }, fixedDeps);
+      writeSchema(schemaWithMemo);
+      const output = collectOutput();
+
+      await migrate(
+        { output: "./out", acceptDataLoss: true },
+        {
+          ...laterDeps,
+          input: answer("n\n"),
+          output: output.stream,
+          isTty: true,
+        },
+      );
+
+      expect(output.text()).toBe("");
+      expect(fs.readFileSync(stubPath, "utf-8")).toContain("Memo");
+    });
+
+    it("should not ask on the first migration", async () => {
+      writeSchema(schemaWithDatasource);
+      const output = collectOutput();
+
+      await migrate(
+        { output: "./out", acceptDataLoss: true },
+        {
+          ...fixedDeps,
+          input: answer("n\n"),
+          output: output.stream,
+          isTty: true,
+        },
+      );
+
+      expect(output.text()).toBe("");
+      expect(fs.existsSync(stubPath)).toBe(true);
+    });
+
+    it("should warn and continue without an interactive terminal", async () => {
+      await recordMemoMigration();
+      const output = collectOutput();
+
+      await migrate(
+        { output: "./out", acceptDataLoss: true },
+        {
+          ...laterDeps,
+          input: answer("n\n"),
+          output: output.stream,
+          isTty: false,
+        },
+      );
+
+      expect(output.text()).toContain("Memo");
+      expect(output.text()).not.toContain("Continue? (y/N)");
+      expect(fs.readFileSync(stubPath, "utf-8")).not.toContain("Memo");
+      expect(fs.readdirSync(migrationsDir).sort()).toEqual([
+        "20260729040506",
+        "20260730000000",
+      ]);
+    });
+
+    it("should ask before the stub is written", async () => {
+      await recordMemoMigration();
+      vi.mocked(console.log).mockClear();
+      const output = collectOutput();
+
+      await migrate(
+        { output: "./out", acceptDataLoss: true },
+        {
+          ...laterDeps,
+          input: answer("n\n"),
+          output: output.stream,
+          isTty: true,
+        },
+      );
+
+      const logged = vi
+        .mocked(console.log)
+        .mock.calls.map((call) => call.join(" "))
+        .join("\n");
+      expect(output.text()).toContain("Continue? (y/N)");
+      expect(logged).not.toContain("Wrote");
+      expect(logged).not.toContain("Created");
+    });
   });
 });

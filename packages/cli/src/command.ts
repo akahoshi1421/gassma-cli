@@ -77,8 +77,8 @@ program
     "--accept-data-loss",
     "Delete sheets and columns that are not in the schema",
   )
-  .action((options) => {
-    migrate({
+  .action(async (options) => {
+    await migrate({
       name: options.name,
       output: options.output,
       schema: options.schema,

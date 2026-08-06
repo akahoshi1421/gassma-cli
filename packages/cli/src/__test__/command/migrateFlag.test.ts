@@ -97,4 +97,44 @@ describe("gassma migrate (e2e)", () => {
       expect(stub).toContain("acceptDataLoss: true,");
     },
   );
+
+  it(
+    "should not wait for an answer when stdin is not a terminal",
+    { timeout: 120_000 },
+    () => {
+      const schemaPath = path.join(tmpDir, "gassma", "schema.prisma");
+      fs.mkdirSync(path.join(tmpDir, "gassma"), { recursive: true });
+      fs.writeFileSync(
+        schemaPath,
+        "model User {\n  id Int @id\n}\n\nmodel Memo {\n  id Int @id\n}\n",
+      );
+      execFileSync(
+        process.execPath,
+        [tsxCli, commandTs, "migrate", "--output", "./dist"],
+        { cwd: tmpDir, stdio: "pipe" },
+      );
+      fs.writeFileSync(schemaPath, "model User {\n  id Int @id\n}\n");
+
+      const output = execFileSync(
+        process.execPath,
+        [
+          tsxCli,
+          commandTs,
+          "migrate",
+          "--output",
+          "./dist",
+          "--accept-data-loss",
+        ],
+        { cwd: tmpDir, stdio: "pipe", timeout: 60_000 },
+      ).toString();
+
+      expect(output).toContain("Memo");
+      expect(output).not.toContain("Continue? (y/N)");
+      const stub = fs.readFileSync(
+        path.join(tmpDir, "dist", "gassma-migration.js"),
+        "utf-8",
+      );
+      expect(stub).not.toContain("Memo");
+    },
+  );
 });
