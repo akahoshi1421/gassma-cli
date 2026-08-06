@@ -90,22 +90,43 @@ class ThroughSheetConflictError extends Error {
   }
 }
 
-const describeUniqueFields = (fields: string[]): string =>
-  fields.length === 1
-    ? `\`@unique\` on ${fields[0]} is not supported.`
-    : "`@unique` is not supported.\n" +
-      fields.map((field) => `  - ${field}`).join("\n");
+type UnsupportedAttributeViolation = {
+  attribute: string;
+  target: string;
+  reason: string;
+};
+
+const groupByAttribute = (
+  violations: UnsupportedAttributeViolation[],
+): UnsupportedAttributeViolation[][] => {
+  const groups = new Map<string, UnsupportedAttributeViolation[]>();
+  violations.forEach((violation) => {
+    const group = groups.get(violation.attribute);
+    if (group) group.push(violation);
+    else groups.set(violation.attribute, [violation]);
+  });
+  return [...groups.values()];
+};
+
+const describeGroup = (group: UnsupportedAttributeViolation[]): string => {
+  const { attribute, reason } = group[0];
+  const headline =
+    group.length === 1
+      ? `\`${attribute}\` on ${group[0].target} is not supported.`
+      : `\`${attribute}\` is not supported.\n` +
+        group.map((violation) => `  - ${violation.target}`).join("\n");
+  return `${headline}\n${reason}`;
+};
 
 class UnsupportedAttributeError extends Error {
-  readonly fields: string[];
+  readonly violations: UnsupportedAttributeViolation[];
 
-  constructor(fields: string[]) {
+  constructor(violations: UnsupportedAttributeViolation[]) {
     super(
-      `GASsmaUnsupportedAttributeError: ${describeUniqueFields(fields)}\n` +
-        "GASsma cannot enforce uniqueness on a spreadsheet.\n" +
-        "Remove it, or check uniqueness in your code.",
+      "GASsmaUnsupportedAttributeError: " +
+        groupByAttribute(violations).map(describeGroup).join("\n\n"),
     );
-    this.fields = fields;
+    this.violations = violations;
   }
 }
 
@@ -122,3 +143,4 @@ export {
   ThroughSheetConflictError,
   UnsupportedAttributeError,
 };
+export type { UnsupportedAttributeViolation };
