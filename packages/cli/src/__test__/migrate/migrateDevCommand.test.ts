@@ -732,6 +732,25 @@ model User {
       expect(readStub()).toContain("Memo");
     });
 
+    it("should not ask when a model no longer declares any column", async () => {
+      writeSchema(schemaWithMemo);
+      await migrateDev({ output: "./out" }, fixedDeps);
+      writeSchema(`${schemaWithDatasource}
+model Memo {
+}
+`);
+      const output = createOutput();
+
+      await migrateDev(
+        { output: "./out" },
+        answerDeps("y\n", { output: output.stream }),
+      );
+
+      expect(output.text()).toBe("");
+      expect(readStub()).toContain('{ name: "Memo", columns: [] }');
+      expect(readStub()).not.toContain("acceptDataLoss");
+    });
+
     it("should not ask on the first migration", async () => {
       writeSchema(schemaWithDatasource);
       const output = createOutput();

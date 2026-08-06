@@ -59,6 +59,34 @@ describe("findDrops", () => {
     ]);
   });
 
+  it("should find nothing when the schema declares a model without columns", () => {
+    const models = [
+      { name: "User", columns: [] },
+      { name: "Memo", columns: ["id", "body"] },
+    ];
+
+    expect(findDrops(recorded, models)).toEqual([]);
+  });
+
+  it("should find the sheet when a model without columns is removed from the schema", () => {
+    const models = [{ name: "Memo", columns: ["id", "body"] }];
+
+    expect(findDrops(recorded, models)).toEqual([
+      { kind: "sheet", sheet: "User" },
+    ]);
+  });
+
+  it("should keep finding the columns of other models beside one without columns", () => {
+    const models = [
+      { name: "User", columns: [] },
+      { name: "Memo", columns: ["id"] },
+    ];
+
+    expect(findDrops(recorded, models)).toEqual([
+      { kind: "column", sheet: "Memo", column: "body" },
+    ]);
+  });
+
   it("should find nothing when the schema renamed nothing but reordered columns", () => {
     const models = [
       { name: "Memo", columns: ["body", "id"] },
