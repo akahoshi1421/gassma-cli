@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readTemplate } from "../util/readTemplate";
+import { validateSchema } from "../validate/validate";
 
 const GITIGNORE = [
   ".clasp.json",
@@ -123,7 +124,7 @@ const SCHEMA = `generator client {
 const SCHEMA_WITH_MODEL = `${SCHEMA}
 model User {
   id    Int     @id @default(autoincrement())
-  email String  @unique
+  email String
   name  String
 }
 `;
@@ -187,6 +188,15 @@ describe("bundled templates", () => {
     expect(readTemplate("schema.with-model.prisma.template")).toBe(
       SCHEMA_WITH_MODEL,
     );
+  });
+
+  it("should ship a schema.with-model template a fresh project can generate from", () => {
+    const result = validateSchema(
+      readTemplate("schema.with-model.prisma.template"),
+    );
+
+    expect(result.errors).toEqual([]);
+    expect(result.valid).toBe(true);
   });
 
   it("should ship gassma.config.ts.template byte for byte", () => {

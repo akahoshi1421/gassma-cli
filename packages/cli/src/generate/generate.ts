@@ -17,6 +17,7 @@ import { extractMapSheets } from "./read/extractMapSheets";
 import { extractEnums } from "./read/extractEnums";
 import { extractDatasourceUrl } from "./read/extractDatasourceUrl";
 import { countModels } from "./read/countModels";
+import { assertNoUniqueAttributes } from "./read/assertNoUniqueAttributes";
 import { prismaReader } from "./read/prismaReader";
 import { NoModelsError } from "../error/mainError";
 import { resolveSchemaFiles } from "../config/resolveSchemaFiles";
@@ -87,6 +88,8 @@ function generateFromSchema(
   schemaName: string,
   datasourceUrl?: string,
 ) {
+  assertNoUniqueAttributes(schemaText);
+
   const outputPath = extractOutputPath(schemaText);
   if (!outputPath) {
     throw new Error(

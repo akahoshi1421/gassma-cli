@@ -50,7 +50,7 @@ model User {
 model Profile {
   id     Int  @id
   user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique
+  userId Int
 }
 `;
     const result = extractRelations(schema);
@@ -1056,7 +1056,7 @@ model User {
 
 model Post {
   id       Int    @id
-  authorId Int    @unique
+  authorId Int
   author   User   @relation(fields: [authorId], references: [id])
   pinnedBy User[] @relation("Pinned")
 }
@@ -1070,7 +1070,7 @@ model User {
 
 model Post {
   id       Int    @id
-  authorId Int    @unique
+  authorId Int
   author   User   @relation(fields: [authorId], references: [id])
   pinnedBy User[] @relation("Pinned")
 }

@@ -222,6 +222,26 @@ describe("getGassmaErrorClasses", () => {
     );
   });
 
+  it("should include lock error classes", () => {
+    expect(result).toContain(
+      "class GassmaTransactionLockRequiredError extends Error",
+    );
+    expect(result).toContain("class GassmaInvalidLockError extends Error");
+  });
+
+  it("should include autoincrement error classes", () => {
+    expect(result).toContain(
+      "class GassmaAutoincrementNotConfiguredError extends Error",
+    );
+    expect(result).toContain(
+      "constructor(sheetName: string, field: string, configuredFields: string[])",
+    );
+    expect(result).toContain(
+      "class GassmaAutoincrementInTransactionError extends Error",
+    );
+    expect(result).toContain("constructor(methodName: string)");
+  });
+
   it("should include relation errors from relationError.ts", () => {
     expect(result).toContain("class GassmaRelationNotFoundError extends Error");
     expect(result).toContain("class GassmaThroughRequiredError extends Error");

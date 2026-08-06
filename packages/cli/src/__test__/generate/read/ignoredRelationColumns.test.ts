@@ -52,7 +52,7 @@ model User {
 model Profile {
   id     Int  @id
   user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique @ignore
+  userId Int  @ignore
 }
 `;
     expect(() => extractRelations(schema)).toThrow(IgnoredRelationColumnError);

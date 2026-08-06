@@ -180,6 +180,13 @@ ${defaultsDecl}${updatedAtDecl}${ignoreDecl}${mapDecl}${ignoreSheetsDecl}${mapSh
 }
 
 exports.GassmaClient = GassmaClient;
+Object.defineProperty(exports, "Gassma", {
+  enumerable: true,
+  configurable: true,
+  get: function () {
+    return Gassma;
+  },
+});
 ${hasEnums ? "\n" + enumDecls : ""}`;
 };
 
