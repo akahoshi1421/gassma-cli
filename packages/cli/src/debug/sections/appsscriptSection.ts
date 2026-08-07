@@ -109,6 +109,19 @@ const buildUserSymbolLine = (userSymbol: string | undefined): string => {
   );
 };
 
+const buildVersionLine = (library: AppsscriptLibrary): string => {
+  const expected = GASSMA_LIBRARY.version;
+  const shown = library.version ?? "(not set)";
+  if (library.developmentMode === true) {
+    return `- version: ${shown} (ignored — developmentMode is true, so the library HEAD is used)`;
+  }
+  if (library.version === expected) return `- version: ${shown}`;
+  return (
+    `- version: ${shown} ` +
+    `(expected \`${expected}\` — this CLI targets library v${expected}; other versions can fail at runtime)`
+  );
+};
+
 const buildLibraryLines = (
   library: AppsscriptLibrary | undefined,
 ): string[] => {
@@ -118,7 +131,7 @@ const buildLibraryLines = (
   return [
     "Gassma library: found",
     buildUserSymbolLine(library.userSymbol),
-    `- version: ${library.version ?? "(not set)"}`,
+    buildVersionLine(library),
     `- developmentMode: ${
       library.developmentMode === undefined
         ? "(not set)"
