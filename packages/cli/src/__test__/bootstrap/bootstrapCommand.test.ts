@@ -8,19 +8,6 @@ import { BootstrapCancelledError } from "../../bootstrap/flow/prompts";
 import type { ExecCall } from "./flow/testHelpers";
 import { createFakePrompter, createScriptedExec } from "./flow/testHelpers";
 
-const listVersionsStdout = JSON.stringify([
-  { versionNumber: 7 },
-  { versionNumber: 6 },
-]);
-
-const createClaspExec = () =>
-  createScriptedExec((call) => {
-    if (call.args[0] === "list-versions") {
-      return { ok: true, exitCode: 0, stdout: listVersionsStdout, stderr: "" };
-    }
-    return undefined;
-  });
-
 describe("bootstrap", () => {
   let tmpDir: string;
   let originalCwd: string;
@@ -42,7 +29,7 @@ describe("bootstrap", () => {
     const error = vi
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
-    const { calls, exec } = createClaspExec();
+    const { calls, exec } = createScriptedExec();
 
     await bootstrap({}, { exec, isTty: false });
 
@@ -72,7 +59,7 @@ describe("bootstrap", () => {
   });
 
   it("should set up a full project with --yes", async () => {
-    const { calls, exec } = createClaspExec();
+    const { calls, exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -110,12 +97,11 @@ describe("bootstrap", () => {
     );
     expect(commands[0]).toBe("clasp --version");
     expect(commands.some((c) => c.includes("clasp create-script"))).toBe(true);
-    expect(commands.some((c) => c.includes("clasp list-versions"))).toBe(true);
     expect(commands.some((c) => c === "npm i")).toBe(true);
   });
 
   it("should default to the oxlint setup with --yes", async () => {
-    const { exec } = createClaspExec();
+    const { exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -142,7 +128,7 @@ describe("bootstrap", () => {
   });
 
   it("should write the eslint setup when it is selected", async () => {
-    const { exec } = createClaspExec();
+    const { exec } = createScriptedExec();
     const prompter = createFakePrompter({
       select: { "Linter and formatter setup?": "eslint" },
     });
@@ -164,7 +150,7 @@ describe("bootstrap", () => {
   });
 
   it("should write no linter files when none is selected", async () => {
-    const { exec } = createClaspExec();
+    const { exec } = createScriptedExec();
     const prompter = createFakePrompter({
       select: { "Linter and formatter setup?": "none" },
     });
@@ -187,7 +173,7 @@ describe("bootstrap", () => {
 
   it("should keep an existing .oxlintrc.json untouched", async () => {
     fs.writeFileSync(path.join(tmpDir, ".oxlintrc.json"), "my rules");
-    const { exec } = createClaspExec();
+    const { exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -200,8 +186,11 @@ describe("bootstrap", () => {
     );
   });
 
-  it("should write the manifest with the fetched library version", async () => {
-    const { exec } = createClaspExec();
+  it("should write the pinned library version without clasp or the network", async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, "fetch")
+      .mockRejectedValue(new Error("network is unavailable"));
+    const { calls, exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -212,72 +201,21 @@ describe("bootstrap", () => {
     const manifest = JSON.parse(
       fs.readFileSync(path.join(tmpDir, "dist", "appsscript.json"), "utf-8"),
     );
-    expect(manifest.dependencies.libraries[0]).toMatchObject({
-      userSymbol: "Gassma",
-      version: "7",
+    expect(manifest.dependencies.libraries[0]).toEqual({
+      userSymbol: GASSMA_LIBRARY.userSymbol,
+      libraryId: GASSMA_LIBRARY.scriptId,
+      version: GASSMA_LIBRARY.version,
       developmentMode: false,
     });
-    expect(manifest.runtimeVersion).toBe("V8");
-  });
-
-  it("should resolve the library version from GitHub when clasp list-versions fails", async () => {
-    const { exec } = createScriptedExec((call: ExecCall) => {
-      if (call.args[0] === "list-versions") {
-        return { ok: false, exitCode: 1, stdout: "", stderr: "boom" };
-      }
-      return undefined;
-    });
-    const prompter = createFakePrompter();
-
-    await bootstrap(
-      { yes: true, skipInstall: true, directory: "." },
-      {
-        exec,
-        prompter,
-        isTty: true,
-        fetchText: () =>
-          Promise.resolve(JSON.stringify({ name: "gassma", version: "9" })),
-      },
-    );
-
-    const manifest = JSON.parse(
-      fs.readFileSync(path.join(tmpDir, "dist", "appsscript.json"), "utf-8"),
-    );
-    expect(manifest.dependencies.libraries[0]).toMatchObject({ version: "9" });
-    expect(process.exitCode).toBeUndefined();
-  });
-
-  it("should continue without the library entry when clasp and GitHub both fail", async () => {
-    const { exec } = createScriptedExec((call: ExecCall) => {
-      if (call.args[0] === "list-versions") {
-        return { ok: false, exitCode: 1, stdout: "", stderr: "boom" };
-      }
-      return undefined;
-    });
-    const prompter = createFakePrompter();
-
-    await bootstrap(
-      { yes: true, skipInstall: true, directory: "." },
-      {
-        exec,
-        prompter,
-        isTty: true,
-        fetchText: () => Promise.reject(new Error("network down")),
-      },
-    );
-
-    const manifest = JSON.parse(
-      fs.readFileSync(path.join(tmpDir, "dist", "appsscript.json"), "utf-8"),
-    );
-    expect(manifest.dependencies.libraries).toEqual([]);
-    expect(manifest.timeZone).toBeTypeOf("string");
-    expect(manifest.runtimeVersion).toBe("V8");
-    expect(prompter.warns.join(" ")).toContain(GASSMA_LIBRARY.scriptId);
-    expect(process.exitCode).toBeUndefined();
+    expect(
+      calls.some((call: ExecCall) => call.args.includes("list-versions")),
+    ).toBe(false);
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(prompter.warns).toEqual([]);
   });
 
   it("should not run the install with --skip-install", async () => {
-    const { calls, exec } = createClaspExec();
+    const { calls, exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -292,7 +230,7 @@ describe("bootstrap", () => {
   });
 
   it("should not touch the file system or run commands with --dry-run", async () => {
-    const { calls, exec } = createClaspExec();
+    const { calls, exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -325,7 +263,7 @@ describe("bootstrap", () => {
       ...prompter,
       text: () => Promise.reject(new BootstrapCancelledError()),
     };
-    const { exec } = createClaspExec();
+    const { exec } = createScriptedExec();
 
     await bootstrap({}, { exec, prompter: cancellingPrompter, isTty: true });
 
@@ -354,7 +292,7 @@ describe("bootstrap", () => {
 
   it("should skip clasp create for an existing .clasp.json project", async () => {
     fs.writeFileSync(path.join(tmpDir, ".clasp.json"), "{}");
-    const { calls, exec } = createClaspExec();
+    const { calls, exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -371,7 +309,7 @@ describe("bootstrap", () => {
   });
 
   it("should create the given directory and bootstrap inside it", async () => {
-    const { calls, exec } = createClaspExec();
+    const { calls, exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -396,7 +334,7 @@ describe("bootstrap", () => {
   });
 
   it("should bootstrap into gassma-project when the directory is omitted with --yes", async () => {
-    const { exec } = createClaspExec();
+    const { exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -412,7 +350,7 @@ describe("bootstrap", () => {
   it("should stop when the target directory is not empty and the user declines", async () => {
     fs.mkdirSync(path.join(tmpDir, "my-app"));
     fs.writeFileSync(path.join(tmpDir, "my-app", "keep.txt"), "x");
-    const { calls, exec } = createClaspExec();
+    const { calls, exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap({ directory: "my-app" }, { exec, prompter, isTty: true });
@@ -428,7 +366,7 @@ describe("bootstrap", () => {
   it("should continue when the user accepts a non-empty directory", async () => {
     fs.mkdirSync(path.join(tmpDir, "my-app"));
     fs.writeFileSync(path.join(tmpDir, "my-app", "keep.txt"), "x");
-    const { exec } = createClaspExec();
+    const { exec } = createScriptedExec();
     const prompter = createFakePrompter({
       confirm: { 'Directory "my-app" is not empty. Continue?': true },
     });
@@ -447,7 +385,7 @@ describe("bootstrap", () => {
   it("should resume idempotently in a bootstrapped directory with --yes", async () => {
     fs.mkdirSync(path.join(tmpDir, "my-app"));
     fs.writeFileSync(path.join(tmpDir, "my-app", ".clasp.json"), "{}");
-    const { calls, exec } = createClaspExec();
+    const { calls, exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(
@@ -463,7 +401,7 @@ describe("bootstrap", () => {
   });
 
   it("should not create the directory with --dry-run", async () => {
-    const { exec } = createClaspExec();
+    const { exec } = createScriptedExec();
     const prompter = createFakePrompter();
 
     await bootstrap(

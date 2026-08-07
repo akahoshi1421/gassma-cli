@@ -23,7 +23,6 @@ const MANIFEST_PATH = "/project/dist/appsscript.json";
 const OPTIONS = {
   manifestPath: MANIFEST_PATH,
   timeZone: "Asia/Tokyo",
-  libraryVersion: "7",
 };
 
 describe("updateAppsscriptJson", () => {
@@ -41,9 +40,9 @@ describe("updateAppsscriptJson", () => {
     expect(written.timeZone).toBe("Asia/Tokyo");
     expect(written.dependencies.libraries).toEqual([
       {
-        userSymbol: "Gassma",
+        userSymbol: GASSMA_LIBRARY.userSymbol,
         libraryId: GASSMA_LIBRARY.scriptId,
-        version: "7",
+        version: GASSMA_LIBRARY.version,
         developmentMode: false,
       },
     ]);
@@ -68,18 +67,6 @@ describe("updateAppsscriptJson", () => {
 
     const written = JSON.parse(files.get(MANIFEST_PATH) ?? "{}");
     expect(written.timeZone).toBe("Asia/Tokyo");
-  });
-
-  it("should apply manifest defaults without a library entry for a null version", () => {
-    const { files, store } = createMemoryStore({});
-
-    updateAppsscriptJson({ store, ...OPTIONS, libraryVersion: null });
-
-    const written = JSON.parse(files.get(MANIFEST_PATH) ?? "{}");
-    expect(written.timeZone).toBe("Asia/Tokyo");
-    expect(written.exceptionLogging).toBe("STACKDRIVER");
-    expect(written.runtimeVersion).toBe("V8");
-    expect(written.dependencies.libraries).toEqual([]);
   });
 
   it("should write two-space indented JSON with a trailing newline", () => {

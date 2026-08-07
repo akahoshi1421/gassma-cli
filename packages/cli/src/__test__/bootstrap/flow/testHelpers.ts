@@ -116,7 +116,6 @@ const createTestDeps = (
     store: createMemoryStore().store,
     exec: () =>
       Promise.resolve({ ok: true, exitCode: 0, stdout: "", stderr: "" }),
-    fetchText: () => Promise.reject(new Error("fetch unavailable in tests")),
     plan: (action) => {
       planned.push(action);
     },

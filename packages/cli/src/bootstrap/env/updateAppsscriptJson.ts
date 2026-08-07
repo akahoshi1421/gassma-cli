@@ -5,7 +5,6 @@ type UpdateAppsscriptJsonOptions = {
   store: FileStore;
   manifestPath: string;
   timeZone: string;
-  libraryVersion: string | null;
 };
 
 const readManifest = (store: FileStore, manifestPath: string): unknown => {
@@ -21,7 +20,6 @@ const updateAppsscriptJson = (options: UpdateAppsscriptJsonOptions): void => {
   const manifest = readManifest(options.store, options.manifestPath);
   const updated = applyAppsscriptEdits(manifest, {
     timeZone: options.timeZone,
-    libraryVersion: options.libraryVersion,
   });
 
   options.store.write(

@@ -76,104 +76,54 @@ describe("claspCreateStep", () => {
 });
 
 describe("manifestStep", () => {
-  it("should fetch the latest library version and update the manifest", async () => {
-    const { calls, exec } = createScriptedExec((call) => {
-      if (call.args[0] === "list-versions") {
-        return {
-          ok: true,
-          exitCode: 0,
-          stdout: JSON.stringify([{ versionNumber: 9 }, { versionNumber: 8 }]),
-          stderr: "",
-        };
-      }
-      return undefined;
-    });
+  it("should write the pinned library version without running clasp", async () => {
+    const { calls, exec } = createScriptedExec(() => ({
+      ok: false,
+      exitCode: 1,
+      stdout: "",
+      stderr: "not logged in",
+    }));
     const { files, store } = createMemoryStore({});
     const deps = createTestDeps({ exec, store });
 
-    const ctx = await manifestStep.run(baseContext(), deps);
+    await manifestStep.run(baseContext(), deps);
 
-    expect(calls[0].args).toEqual([
-      "list-versions",
-      GASSMA_LIBRARY.scriptId,
-      "--json",
-    ]);
-    expect(ctx.libraryVersion).toBe("9");
-
+    expect(calls).toHaveLength(0);
     const manifest = JSON.parse(
       files.get("/project/dist/appsscript.json") ?? "{}",
     );
-    expect(manifest.dependencies.libraries[0]).toMatchObject({
-      userSymbol: "Gassma",
-      version: "9",
+    expect(manifest.dependencies.libraries[0]).toEqual({
+      userSymbol: GASSMA_LIBRARY.userSymbol,
+      libraryId: GASSMA_LIBRARY.scriptId,
+      version: GASSMA_LIBRARY.version,
+      developmentMode: false,
     });
-    expect(manifest.runtimeVersion).toBe("V8");
   });
 
-  it("should resolve the version from GitHub when clasp fails", async () => {
-    const { exec } = createScriptedExec(() => ({
-      ok: false,
-      exitCode: 1,
-      stdout: "",
-      stderr: "not logged in",
-    }));
-    const { files, store } = createMemoryStore({});
-    const deps = createTestDeps({
-      exec,
-      store,
-      fetchText: () =>
-        Promise.resolve(JSON.stringify({ name: "gassma", version: "7" })),
-    });
-
-    const ctx = await manifestStep.run(baseContext(), deps);
-
-    expect(ctx.libraryVersion).toBe("7");
-    const manifest = JSON.parse(
-      files.get("/project/dist/appsscript.json") ?? "{}",
-    );
-    expect(manifest.dependencies.libraries[0].version).toBe("7");
-  });
-
-  it("should skip the library entry and warn when clasp and GitHub both fail", async () => {
-    const { exec } = createScriptedExec(() => ({
-      ok: false,
-      exitCode: 1,
-      stdout: "",
-      stderr: "not logged in",
-    }));
-    const { files, store } = createMemoryStore({});
-    const prompter = createFakePrompter();
-    const deps = createTestDeps({
-      exec,
-      store,
-      prompter,
-      fetchText: () => Promise.reject(new Error("network down")),
-    });
-
-    const ctx = await manifestStep.run(baseContext(), deps);
-
-    expect(ctx.libraryVersion).toBeNull();
-    const manifest = JSON.parse(
-      files.get("/project/dist/appsscript.json") ?? "{}",
-    );
-    expect(manifest.dependencies.libraries).toEqual([]);
-    expect(manifest.timeZone).toBeTypeOf("string");
-    expect(manifest.exceptionLogging).toBe("STACKDRIVER");
-    expect(manifest.runtimeVersion).toBe("V8");
-
-    const warning = prompter.warns.join(" ");
-    expect(warning).toContain(GASSMA_LIBRARY.scriptId);
-    expect(warning).toContain("https://github.com/akahoshi1421/gassma");
-  });
-
-  it("should report an unresolved version display in dry-run mode", async () => {
+  it("should report the pinned version in dry-run mode", async () => {
     const prompter = createFakePrompter();
     const deps = createTestDeps({ prompter, dryRun: true });
 
     await manifestStep.run(baseContext(), deps);
 
     expect(prompter.warns).toEqual([]);
-    expect(prompter.infos.join(" ")).toContain("latest, resolved at run time");
+    expect(prompter.infos.join(" ")).toContain(
+      `Gassma library version ${GASSMA_LIBRARY.version}`,
+    );
+  });
+
+  it("should apply the manifest defaults for a fresh project", async () => {
+    const { files, store } = createMemoryStore({});
+    const deps = createTestDeps({ store });
+
+    await manifestStep.run(baseContext(), deps);
+
+    const manifest = JSON.parse(
+      files.get("/project/dist/appsscript.json") ?? "{}",
+    );
+    expect(manifest.timeZone).toBeTypeOf("string");
+    expect(manifest.exceptionLogging).toBe("STACKDRIVER");
+    expect(manifest.runtimeVersion).toBe("V8");
   });
 
   it("should preserve fields of an existing manifest pulled by clasp", async () => {
