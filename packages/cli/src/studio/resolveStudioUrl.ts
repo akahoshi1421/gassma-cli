@@ -15,11 +15,11 @@ const resolveStudioUrl = (options?: StudioUrlOptions): string => {
   const schemaText = mergeSchemaFiles(files.map((f) => f.filePath));
   const loaded = loadConfig(options?.config);
   const urlOrId =
-    extractDatasourceUrl(schemaText) ??
-    loaded?.config.datasource?.url ??
+    extractDatasourceUrl(schemaText) ||
+    loaded?.config.datasource?.url ||
     readClaspParentId(process.cwd());
 
-  if (urlOrId === undefined || urlOrId === null) {
+  if (!urlOrId || urlOrId.trim() === "") {
     throw new NoDatasourceUrlError();
   }
 
