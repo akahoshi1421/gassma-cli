@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { GASSMA_LIBRARY } from "../../bootstrap/const/gassmaLibrary";
 import type { DebugFs } from "../../debug/env/debugFs";
 import {
   buildAppsscriptLines,
@@ -10,6 +11,15 @@ const plain = createStyler(false);
 
 const GASSMA_LIBRARY_ID =
   "1ZVuWMUYs4hVKDCcP3nVw74AY48VqLm50wRceKIQLFKL0wf4Hyou-FIBH";
+
+const EXPECTED_VERSION = GASSMA_LIBRARY.version;
+
+const versionMismatchNote =
+  `(expected \`${EXPECTED_VERSION}\` — this CLI targets library ` +
+  `v${EXPECTED_VERSION}; other versions can fail at runtime)`;
+
+const developmentModeNote =
+  "(ignored — developmentMode is true, so the library HEAD is used)";
 
 const fakeFs = (files: Record<string, string>): DebugFs => ({
   exists: (filePath) => filePath in files,
@@ -184,7 +194,11 @@ describe("buildAppsscriptLines", () => {
         kind: "found",
         manifestPath: "/proj/dist/appsscript.json",
         runtimeVersion: "V8",
-        library: { userSymbol: "Gassma", version: "0", developmentMode: true },
+        library: {
+          userSymbol: "Gassma",
+          version: EXPECTED_VERSION,
+          developmentMode: false,
+        },
       },
       "/proj",
       plain,
@@ -196,9 +210,68 @@ describe("buildAppsscriptLines", () => {
       "runtimeVersion: V8",
       "Gassma library: found",
       "- userSymbol: Gassma",
-      "- version: 0",
-      "- developmentMode: true",
+      `- version: ${EXPECTED_VERSION}`,
+      "- developmentMode: false",
     ]);
+  });
+
+  it("should render a matching version plainly when developmentMode is absent", () => {
+    const lines = buildAppsscriptLines(
+      {
+        kind: "found",
+        manifestPath: "/proj/appsscript.json",
+        runtimeVersion: "V8",
+        library: { userSymbol: "Gassma", version: EXPECTED_VERSION },
+      },
+      "/proj",
+      plain,
+    );
+
+    expect(lines).toContain(`- version: ${EXPECTED_VERSION}`);
+  });
+
+  it("should flag a library version mismatch", () => {
+    const lines = buildAppsscriptLines(
+      {
+        kind: "found",
+        manifestPath: "/proj/appsscript.json",
+        runtimeVersion: "V8",
+        library: { userSymbol: "Gassma", version: "1", developmentMode: false },
+      },
+      "/proj",
+      plain,
+    );
+
+    expect(lines).toContain(`- version: 1 ${versionMismatchNote}`);
+  });
+
+  it("should not report a version mismatch when developmentMode is true", () => {
+    const lines = buildAppsscriptLines(
+      {
+        kind: "found",
+        manifestPath: "/proj/appsscript.json",
+        runtimeVersion: "V8",
+        library: { userSymbol: "Gassma", version: "1", developmentMode: true },
+      },
+      "/proj",
+      plain,
+    );
+    const unsetVersion = buildAppsscriptLines(
+      {
+        kind: "found",
+        manifestPath: "/proj/appsscript.json",
+        runtimeVersion: "V8",
+        library: { userSymbol: "Gassma", developmentMode: true },
+      },
+      "/proj",
+      plain,
+    );
+
+    expect(lines).toContain(`- version: 1 ${developmentModeNote}`);
+    expect(lines.join("\n")).not.toContain(`expected \`${EXPECTED_VERSION}\``);
+    expect(unsetVersion).toContain(
+      `- version: (not set) ${developmentModeNote}`,
+    );
   });
 
   it("should flag a userSymbol mismatch", () => {
@@ -259,7 +332,7 @@ describe("buildAppsscriptLines", () => {
       plain,
     );
 
-    expect(lines).toContain("- version: (not set)");
+    expect(lines).toContain(`- version: (not set) ${versionMismatchNote}`);
     expect(lines).toContain("- developmentMode: (not set)");
   });
 

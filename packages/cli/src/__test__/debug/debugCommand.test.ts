@@ -2,6 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { GASSMA_LIBRARY } from "../../bootstrap/const/gassmaLibrary";
 import { debugCommand } from "../../debug/debugCommand";
 import type { TimedExecFn } from "../../debug/env/execWithTimeout";
 import { getVersion } from "../../version/getVersion";
@@ -125,7 +126,10 @@ describe("debugCommand", () => {
     expect(output).toContain("-- appsscript.json --");
     expect(output).toContain(`Path: ${path.join("out", "appsscript.json")}`);
     expect(output).toContain("runtimeVersion: V8");
-    expect(output).toContain("- version: 12");
+    expect(output).toContain(
+      `- version: 12 (expected \`${GASSMA_LIBRARY.version}\` — this CLI targets ` +
+        `library v${GASSMA_LIBRARY.version}; other versions can fail at runtime)`,
+    );
     expect(output).toContain("-- Generated client --");
     expect(output).toContain("Output: generated");
     expect(output).toContain("schemaClient.js: found");
