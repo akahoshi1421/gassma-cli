@@ -21,29 +21,14 @@ const createMemoryStore = (initial: Record<string, string>) => {
 describe("createRealEnv", () => {
   it("should write through to the underlying store", () => {
     const { files, store } = createMemoryStore({});
-    const env = createRealEnv(
-      store,
-      () => Promise.resolve({ ok: true, exitCode: 0, stdout: "", stderr: "" }),
-      () => Promise.resolve("body"),
+    const env = createRealEnv(store, () =>
+      Promise.resolve({ ok: true, exitCode: 0, stdout: "", stderr: "" }),
     );
 
     env.store.write("/p/file.txt", "content");
 
     expect(files.get("/p/file.txt")).toBe("content");
     expect(env.plannedActions).toEqual([]);
-  });
-
-  it("should expose the given fetchText", async () => {
-    const { store } = createMemoryStore({});
-    const env = createRealEnv(
-      store,
-      () => Promise.resolve({ ok: true, exitCode: 0, stdout: "", stderr: "" }),
-      (url) => Promise.resolve(`fetched:${url}`),
-    );
-
-    await expect(env.fetchText("https://example.com")).resolves.toBe(
-      "fetched:https://example.com",
-    );
   });
 });
 
@@ -80,13 +65,6 @@ describe("createDryEnv", () => {
     expect(env.plannedActions).toEqual([
       'run clasp create-script --title "My App"',
     ]);
-  });
-
-  it("should reject fetchText without touching the network", async () => {
-    const { store } = createMemoryStore({});
-    const env = createDryEnv(store, "/project");
-
-    await expect(env.fetchText("https://example.com")).rejects.toThrow();
   });
 
   it("should collect manual plan entries", () => {

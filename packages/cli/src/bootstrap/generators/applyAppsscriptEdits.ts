@@ -3,7 +3,6 @@ import { isRecord } from "../util/isRecord";
 
 type AppsscriptEditOptions = {
   timeZone: string;
-  libraryVersion: string | null;
 };
 
 const hasGassmaLibrary = (libraries: unknown[]): boolean =>
@@ -12,11 +11,7 @@ const hasGassmaLibrary = (libraries: unknown[]): boolean =>
       isRecord(library) && library.libraryId === GASSMA_LIBRARY.scriptId,
   );
 
-const buildLibraries = (
-  libraries: unknown[],
-  libraryVersion: string | null,
-): unknown[] => {
-  if (libraryVersion === null) return libraries;
+const buildLibraries = (libraries: unknown[]): unknown[] => {
   if (hasGassmaLibrary(libraries)) return libraries;
 
   return [
@@ -24,7 +19,7 @@ const buildLibraries = (
     {
       userSymbol: GASSMA_LIBRARY.userSymbol,
       libraryId: GASSMA_LIBRARY.scriptId,
-      version: libraryVersion,
+      version: GASSMA_LIBRARY.version,
       developmentMode: false,
     },
   ];
@@ -45,7 +40,7 @@ const applyAppsscriptEdits = (
     timeZone: options.timeZone,
     dependencies: {
       ...dependencies,
-      libraries: buildLibraries(libraries, options.libraryVersion),
+      libraries: buildLibraries(libraries),
     },
     exceptionLogging:
       typeof base.exceptionLogging === "string"

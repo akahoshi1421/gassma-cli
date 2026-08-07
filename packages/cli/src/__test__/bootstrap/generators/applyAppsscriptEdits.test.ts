@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { GASSMA_LIBRARY } from "../../../bootstrap/const/gassmaLibrary";
 import { applyAppsscriptEdits } from "../../../bootstrap/generators/applyAppsscriptEdits";
 
-const EDIT_OPTIONS = { timeZone: "Asia/Tokyo", libraryVersion: "7" };
+const EDIT_OPTIONS = { timeZone: "Asia/Tokyo" };
 
 const freshManifest = () => ({
   timeZone: "America/New_York",
@@ -30,14 +30,14 @@ describe("applyAppsscriptEdits", () => {
     expect(result.timeZone).toBe("Asia/Tokyo");
   });
 
-  it("should add the Gassma library with a string version", () => {
+  it("should add the Gassma library pinned to the constant version", () => {
     const result = applyAppsscriptEdits(freshManifest(), EDIT_OPTIONS);
 
     expect(getLibraries(result)).toEqual([
       {
-        userSymbol: "Gassma",
+        userSymbol: GASSMA_LIBRARY.userSymbol,
         libraryId: GASSMA_LIBRARY.scriptId,
-        version: "7",
+        version: GASSMA_LIBRARY.version,
         developmentMode: false,
       },
     ]);
@@ -119,46 +119,5 @@ describe("applyAppsscriptEdits", () => {
     expect(result.exceptionLogging).toBe("STACKDRIVER");
     expect(result.runtimeVersion).toBe("V8");
     expect(getLibraries(result)).toHaveLength(1);
-  });
-
-  it("should not add a library entry when the version is unresolved", () => {
-    const result = applyAppsscriptEdits(freshManifest(), {
-      timeZone: "Asia/Tokyo",
-      libraryVersion: null,
-    });
-
-    expect(getLibraries(result)).toEqual([]);
-    expect(result.timeZone).toBe("Asia/Tokyo");
-    expect(result.exceptionLogging).toBe("STACKDRIVER");
-    expect(result.runtimeVersion).toBe("V8");
-  });
-
-  it("should keep an existing Gassma entry when the version is unresolved", () => {
-    const existing = {
-      userSymbol: "Gassma",
-      libraryId: GASSMA_LIBRARY.scriptId,
-      version: "5",
-    };
-    const manifest = { dependencies: { libraries: [existing] } };
-
-    const result = applyAppsscriptEdits(manifest, {
-      timeZone: "Asia/Tokyo",
-      libraryVersion: null,
-    });
-
-    expect(getLibraries(result)).toEqual([existing]);
-  });
-
-  it("should use the given library version for new entries", () => {
-    const result = applyAppsscriptEdits(
-      {},
-      {
-        timeZone: "Asia/Tokyo",
-        libraryVersion: "12",
-      },
-    );
-
-    const libraries = getLibraries(result);
-    expect(libraries[0]).toMatchObject({ version: "12" });
   });
 });

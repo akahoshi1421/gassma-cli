@@ -1,7 +1,6 @@
 import path from "path";
 import type { PackageManager } from "../env/detectPackageManager";
 import type { ExecFn } from "../env/execCommand";
-import type { FetchTextFn } from "../env/fetchLatestLibraryVersion";
 import type { FileStore } from "../env/fileStore";
 import type { BootstrapTemplates } from "../env/loadBootstrapTemplates";
 import type { DirectoryOps } from "../env/targetDirectory";
@@ -18,7 +17,6 @@ type BootstrapContext = {
   wantSample: boolean;
   wantInstall: boolean;
   packageManager: PackageManager;
-  libraryVersion: string | null;
   claspCreateSkipped: boolean;
 };
 
@@ -26,7 +24,6 @@ type BootstrapDeps = {
   prompter: Prompter;
   store: FileStore;
   exec: ExecFn;
-  fetchText: FetchTextFn;
   plan: (action: string) => void;
   plannedActions: readonly string[];
   dryRun: boolean;
@@ -63,7 +60,6 @@ const createInitialContext = (
   wantSample: true,
   wantInstall: true,
   packageManager: options.packageManager,
-  libraryVersion: null,
   claspCreateSkipped: false,
 });
 
