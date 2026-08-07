@@ -156,14 +156,12 @@ describe("resolveStudioUrl", () => {
     );
   });
 
-  it("should fall back to the clasp parentId when datasource.url in the config is blank", () => {
+  it("should throw NoDatasourceUrlError when datasource.url in the config is blank", () => {
     writeSchema(SCHEMA_WITHOUT_URL);
     writeConfig(`export default { datasource: { url: "   " } };`);
     writeClaspJson(JSON.stringify({ parentId: "claspId123" }));
 
-    expect(resolveStudioUrl()).toBe(
-      "https://docs.google.com/spreadsheets/d/claspId123/edit",
-    );
+    expect(() => resolveStudioUrl()).toThrow(NoDatasourceUrlError);
   });
 
   it("should fall back to the config datasource url when the schema datasource url is empty", () => {
@@ -184,13 +182,11 @@ describe("resolveStudioUrl", () => {
     );
   });
 
-  it("should fall back to the clasp parentId when the schema datasource url is blank", () => {
+  it("should throw NoDatasourceUrlError when the schema datasource url is blank", () => {
     writeSchema(schemaWithUrl("   "));
     writeClaspJson(JSON.stringify({ parentId: "claspId123" }));
 
-    expect(resolveStudioUrl()).toBe(
-      "https://docs.google.com/spreadsheets/d/claspId123/edit",
-    );
+    expect(() => resolveStudioUrl()).toThrow(NoDatasourceUrlError);
   });
 
   it("should skip empty schema and config urls before reaching the clasp parentId", () => {
