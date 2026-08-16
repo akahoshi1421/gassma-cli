@@ -94,6 +94,20 @@ describe("getGassmaCommonTypes", () => {
     );
   });
 
+  it("should generate GroupByPaginationCheck requiring orderBy for take and skip", () => {
+    expect(result).toContain(
+      'type GroupByPaginationCheck<T, D extends { orderBy?: unknown }> = "orderBy" extends keyof T',
+    );
+    expect(result).toContain('"take" extends keyof T');
+    expect(result).toContain('"skip" extends keyof T');
+    expect(result).toContain(
+      'Required<Pick<D, "orderBy">> & \'Error: If you provide "take", you also need to provide "orderBy"\'',
+    );
+    expect(result).toContain(
+      'Required<Pick<D, "orderBy">> & \'Error: If you provide "skip", you also need to provide "orderBy"\'',
+    );
+  });
+
   describe("strict mode", () => {
     const strictResult = getGassmaCommonTypes(true);
 

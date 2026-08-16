@@ -110,6 +110,13 @@ const getGassmaCommonTypes = (strict?: boolean) => {
       : Omit<Base, keyof ActiveComputed<C, QO>> & ActiveComputed<C, QO>;
 
   type Subset<T, U> = { [K in keyof T]: K extends keyof U ? T[K] : never };
+  type GroupByPaginationCheck<T, D extends { orderBy?: unknown }> = "orderBy" extends keyof T
+    ? unknown
+    : "take" extends keyof T
+      ? Required<Pick<D, "orderBy">> & 'Error: If you provide "take", you also need to provide "orderBy"'
+      : "skip" extends keyof T
+        ? Required<Pick<D, "orderBy">> & 'Error: If you provide "skip", you also need to provide "orderBy"'
+        : unknown;
   type ExactKeys<T, Shape> = Shape & { [K in Exclude<keyof T, keyof Shape>]?: never };
   type StrictGlobalOmit<O, Config> = Config & {
     [K in keyof O]?: K extends keyof Config
