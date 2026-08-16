@@ -124,6 +124,18 @@ describe("getGassmaCommonTypes", () => {
     );
   });
 
+  it("should generate IncludeSelectCheck rejecting select together with include", () => {
+    expect(result).toContain(
+      "type SelectAndInclude = { select: unknown; include: unknown };",
+    );
+    expect(result).toContain(
+      "type IncludeSelectCheck<T> = T extends SelectAndInclude",
+    );
+    expect(result).toContain(
+      '? \'Error: Please either choose "select" or "include"\'',
+    );
+  });
+
   describe("strict mode", () => {
     const strictResult = getGassmaCommonTypes(true);
 

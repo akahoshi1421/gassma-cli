@@ -126,6 +126,10 @@ const getGassmaCommonTypes = (strict?: boolean) => {
   type GroupByOrderByFieldCheck<T> = [GroupByStrayOrderFields<T>] extends [never]
     ? unknown
     : { [P in GroupByStrayOrderFields<T>]: \`Error: Field "\${P}" in "orderBy" needs to be provided in "by"\` }[GroupByStrayOrderFields<T>];
+  type SelectAndInclude = { select: unknown; include: unknown };
+  type IncludeSelectCheck<T> = T extends SelectAndInclude
+    ? 'Error: Please either choose "select" or "include"'
+    : unknown;
   type ExactKeys<T, Shape> = Shape & { [K in Exclude<keyof T, keyof Shape>]?: never };
   type StrictGlobalOmit<O, Config> = Config & {
     [K in keyof O]?: K extends keyof Config
