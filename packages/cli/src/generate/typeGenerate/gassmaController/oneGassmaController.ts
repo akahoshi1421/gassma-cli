@@ -58,7 +58,7 @@ ${docs.deleteManyNoArgs}  deleteMany(): DeleteManyReturn;
 ${docs.aggregate}  aggregate<T extends ${self}AggregateData>(aggregateData: T & Gassma.Subset<T, ${self}AggregateData>): ${self}AggregateResult<T>;
 ${docs.count}  count<T extends ${self}CountData>(countData: T & Gassma.Subset<T, ${self}CountData>): ${self}CountResult<T>;
 ${docs.countNoArgs}  count(): number;
-${docs.groupBy}  groupBy<T extends ${self}GroupByData>(groupByData: T & Gassma.Subset<T, ${self}GroupByData> & Gassma.GroupByPaginationCheck<T, ${self}GroupByData>): ${self}GroupByResult<T>[];
+${docs.groupBy}  groupBy<T extends ${self}GroupByData>(groupByData: T & Gassma.Subset<T, ${self}GroupByData> & Gassma.GroupByPaginationCheck<T, ${self}GroupByData> & Gassma.GroupByOrderByFieldCheck<T>): ${self}GroupByResult<T>[];
 ${docs.getAutoincrement}  $getAutoincrement(field: ${counterField}): number;
 ${docs.setAutoincrement}  $setAutoincrement(field: ${counterField}, next: number): void;
 ${docs.syncAutoincrement}  $syncAutoincrement(field: ${counterField}): number;

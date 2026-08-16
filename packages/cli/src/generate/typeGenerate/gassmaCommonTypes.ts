@@ -117,6 +117,15 @@ const getGassmaCommonTypes = (strict?: boolean) => {
       : "skip" extends keyof T
         ? Required<Pick<D, "orderBy">> & 'Error: If you provide "skip", you also need to provide "orderBy"'
         : unknown;
+  type GroupByOrderFields<O> = O extends readonly (infer E)[] ? GroupByOrderFields<E> : O extends object ? Exclude<keyof O, \`_\${string}\`> & string : never;
+  type GroupByByFields<B> = B extends readonly (infer E)[] ? GroupByByFields<E> : B;
+  type GroupByStrayOrderFields<T> = Exclude<
+    GroupByOrderFields<T extends { orderBy: infer O } ? O : never>,
+    GroupByByFields<T extends { by: infer B } ? B : never>
+  >;
+  type GroupByOrderByFieldCheck<T> = [GroupByStrayOrderFields<T>] extends [never]
+    ? unknown
+    : { [P in GroupByStrayOrderFields<T>]: \`Error: Field "\${P}" in "orderBy" needs to be provided in "by"\` }[GroupByStrayOrderFields<T>];
   type ExactKeys<T, Shape> = Shape & { [K in Exclude<keyof T, keyof Shape>]?: never };
   type StrictGlobalOmit<O, Config> = Config & {
     [K in keyof O]?: K extends keyof Config

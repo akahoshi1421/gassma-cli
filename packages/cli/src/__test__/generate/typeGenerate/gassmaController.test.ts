@@ -106,7 +106,7 @@ describe("getOneGassmaController", () => {
       `count<T extends GassmaUserCountData>(countData: ${sub("GassmaUserCountData")}): GassmaUserCountResult<T>`,
     );
     expect(result).toContain(
-      `groupBy<T extends GassmaUserGroupByData>(groupByData: ${sub("GassmaUserGroupByData")} & Gassma.GroupByPaginationCheck<T, GassmaUserGroupByData>): GassmaUserGroupByResult<T>[]`,
+      `groupBy<T extends GassmaUserGroupByData>(groupByData: ${sub("GassmaUserGroupByData")} & Gassma.GroupByPaginationCheck<T, GassmaUserGroupByData> & Gassma.GroupByOrderByFieldCheck<T>): GassmaUserGroupByResult<T>[]`,
     );
     expect(result).toContain(
       "createMany(createdData: GassmaUserCreateManyData): CreateManyReturn",

@@ -258,8 +258,9 @@ declare const client: GassmaClient;
   });
 }
 
-// groupBy: by に含まれないスカラー列は型では通る（実行時に本体が弾く）
+// groupBy: by に含まれないスカラー列ではソートできない（Prisma パリティ）
 {
+  // @ts-expect-error "age" は by に無い
   client.User.groupBy({ by: ["isActive"], orderBy: { age: "asc" } });
 }
 

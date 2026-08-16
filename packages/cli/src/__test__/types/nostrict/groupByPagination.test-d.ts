@@ -1,6 +1,6 @@
 import { GassmaClient } from "../__generated__/client";
 
-// strictNullChecks が off でも take / skip は orderBy を要求する
+// strictNullChecks が off でも groupBy の2つの制約が効く
 const client = new GassmaClient();
 
 {
@@ -14,12 +14,21 @@ const client = new GassmaClient();
 }
 
 {
+  // @ts-expect-error "age" は by に無い
+  client.User.groupBy({ by: ["isActive"], orderBy: { age: "asc" } });
+}
+
+{
   client.User.groupBy({
     by: ["isActive"],
     _count: { id: true },
     take: 10,
     orderBy: { isActive: "asc" },
   });
+  client.User.groupBy({
+    by: ["isActive"],
+    orderBy: { _count: { id: "desc" } },
+  });
   client.User.groupBy({ by: ["isActive"], _count: { id: true } });
-  client.User.findMany({ take: 10, skip: 5 });
+  client.User.findMany({ take: 10, skip: 5, orderBy: { age: "asc" } });
 }
