@@ -94,6 +94,36 @@ describe("getGassmaCommonTypes", () => {
     );
   });
 
+  it("should generate GroupByPaginationCheck requiring orderBy for take and skip", () => {
+    expect(result).toContain(
+      'type GroupByPaginationCheck<T, D extends { orderBy?: unknown }> = "orderBy" extends keyof T',
+    );
+    expect(result).toContain('"take" extends keyof T');
+    expect(result).toContain('"skip" extends keyof T');
+    expect(result).toContain(
+      'Required<Pick<D, "orderBy">> & \'Error: If you provide "take", you also need to provide "orderBy"\'',
+    );
+    expect(result).toContain(
+      'Required<Pick<D, "orderBy">> & \'Error: If you provide "skip", you also need to provide "orderBy"\'',
+    );
+  });
+
+  it("should generate GroupByOrderByFieldCheck requiring orderBy fields to be in by", () => {
+    expect(result).toContain(
+      "type GroupByOrderFields<O> = O extends readonly (infer E)[] ? GroupByOrderFields<E> : O extends object ? Exclude<keyof O, `_${string}`> & string : never;",
+    );
+    expect(result).toContain(
+      "type GroupByByFields<B> = B extends readonly (infer E)[] ? GroupByByFields<E> : B;",
+    );
+    expect(result).toContain("type GroupByStrayOrderFields<T> = Exclude<");
+    expect(result).toContain(
+      "type GroupByOrderByFieldCheck<T> = [GroupByStrayOrderFields<T>] extends [never]",
+    );
+    expect(result).toContain(
+      '`Error: Field "${P}" in "orderBy" needs to be provided in "by"`',
+    );
+  });
+
   describe("strict mode", () => {
     const strictResult = getGassmaCommonTypes(true);
 
