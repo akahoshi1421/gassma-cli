@@ -27,7 +27,7 @@ describe("getOneGassmaController no-arg overloads", () => {
 
   it("should keep the argument-taking signatures next to the no-arg overloads", () => {
     expect(result).toContain(
-      `findMany<T extends GassmaUserFindManyData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(findData: T & Gassma.Subset<T, GassmaUserFindManyData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>)`,
+      `findMany<T extends GassmaUserFindManyData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>>(findData: T & Gassma.Subset<T, GassmaUserFindManyData & Gassma.ComputedArgs<Gassma.At<CMap, "User">>> & Gassma.IncludeSelectCheck<T>)`,
     );
     expect(result).toContain(
       "count<T extends GassmaUserCountData>(countData: T & Gassma.Subset<T, GassmaUserCountData>): GassmaUserCountResult<T>;",

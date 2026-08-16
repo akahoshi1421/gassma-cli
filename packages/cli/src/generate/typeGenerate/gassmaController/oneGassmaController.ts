@@ -28,6 +28,9 @@ const getOneGassmaController = (
   const arg = (dataSuffix: string) => `T extends ${withComputed(dataSuffix)}`;
   const sub = (dataSuffix: string) =>
     `T & Gassma.Subset<T, ${withComputed(dataSuffix)}>`;
+  // select と include を両方受け付ける操作だけに衝突チェックを足す
+  const subExclusive = (dataSuffix: string) =>
+    `${sub(dataSuffix)} & Gassma.IncludeSelectCheck<T>`;
 
   return `
 ${docs.controllerClass}export declare class ${self}Controller<GO extends ${self}Omit = {}, O = {}, CMap = {}> {
@@ -40,19 +43,19 @@ ${docs.changeSettings}  changeSettings(
     endColumnValue: number | string
   ): void;
 ${docs.createMany}  createMany(createdData: ${self}CreateManyData): CreateManyReturn;
-${docs.createManyAndReturn}  createManyAndReturn<${arg("CreateManyAndReturnData")}>(createdData: ${sub("CreateManyAndReturnData")}): ${res}[];
-${docs.create}  create<${arg("CreateData")}>(createdData: ${sub("CreateData")}): ${res};
-${docs.findFirst}  findFirst<${arg("FindFirstData")}>(findData: ${sub("FindFirstData")}): ${res} | null;
+${docs.createManyAndReturn}  createManyAndReturn<${arg("CreateManyAndReturnData")}>(createdData: ${subExclusive("CreateManyAndReturnData")}): ${res}[];
+${docs.create}  create<${arg("CreateData")}>(createdData: ${subExclusive("CreateData")}): ${res};
+${docs.findFirst}  findFirst<${arg("FindFirstData")}>(findData: ${subExclusive("FindFirstData")}): ${res} | null;
 ${docs.findFirstNoArgs}  findFirst(): ${resNoArg} | null;
-${docs.findFirstOrThrow}  findFirstOrThrow<${arg("FindFirstData")}>(findData: ${sub("FindFirstData")}): ${res};
+${docs.findFirstOrThrow}  findFirstOrThrow<${arg("FindFirstData")}>(findData: ${subExclusive("FindFirstData")}): ${res};
 ${docs.findFirstOrThrowNoArgs}  findFirstOrThrow(): ${resNoArg};
-${docs.findMany}  findMany<${arg("FindManyData")}>(findData: ${sub("FindManyData")}): ${res}[];
+${docs.findMany}  findMany<${arg("FindManyData")}>(findData: ${subExclusive("FindManyData")}): ${res}[];
 ${docs.findManyNoArgs}  findMany(): ${resNoArg}[];
-${docs.update}  update<${arg("UpdateSingleData")}>(updateData: ${sub("UpdateSingleData")}): ${res} | null;
+${docs.update}  update<${arg("UpdateSingleData")}>(updateData: ${subExclusive("UpdateSingleData")}): ${res} | null;
 ${docs.updateMany}  updateMany(updateData: ${self}UpdateData): UpdateManyReturn;
-${docs.updateManyAndReturn}  updateManyAndReturn<${arg("UpdateManyAndReturnData")}>(updateData: ${sub("UpdateManyAndReturnData")}): ${res}[];
-${docs.upsert}  upsert<${arg("UpsertSingleData")}>(upsertData: ${sub("UpsertSingleData")}): ${res};
-${docs.deleteSingle}  delete<${arg("DeleteSingleData")}>(deleteData: ${sub("DeleteSingleData")}): ${res} | null;
+${docs.updateManyAndReturn}  updateManyAndReturn<${arg("UpdateManyAndReturnData")}>(updateData: ${subExclusive("UpdateManyAndReturnData")}): ${res}[];
+${docs.upsert}  upsert<${arg("UpsertSingleData")}>(upsertData: ${subExclusive("UpsertSingleData")}): ${res};
+${docs.deleteSingle}  delete<${arg("DeleteSingleData")}>(deleteData: ${subExclusive("DeleteSingleData")}): ${res} | null;
 ${docs.deleteMany}  deleteMany(deleteData: ${self}DeleteData): DeleteManyReturn;
 ${docs.deleteManyNoArgs}  deleteMany(): DeleteManyReturn;
 ${docs.aggregate}  aggregate<T extends ${self}AggregateData>(aggregateData: T & Gassma.Subset<T, ${self}AggregateData>): ${self}AggregateResult<T>;

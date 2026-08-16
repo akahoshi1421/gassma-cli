@@ -5,6 +5,8 @@ describe("getOneGassmaController", () => {
   const result = getOneGassmaController("", "User", ["id"]);
   const res = `GassmaUserFindResult<T["select"], T["include"], T["omit"], GO, O, CMap>`;
   const sub = (dataType: string) => `T & Gassma.Subset<T, ${dataType}>`;
+  const subExclusive = (dataType: string) =>
+    `${sub(dataType)} & Gassma.IncludeSelectCheck<T>`;
   const withComputed = (dataType: string) =>
     `${dataType} & Gassma.ComputedArgs<Gassma.At<CMap, "User">>`;
 
@@ -52,49 +54,82 @@ describe("getOneGassmaController", () => {
 
   it("should have generic delete method with model-specific type", () => {
     expect(result).toContain(
-      `delete<T extends ${withComputed("GassmaUserDeleteSingleData")}>(deleteData: ${sub(withComputed("GassmaUserDeleteSingleData"))}): ${res} | null`,
+      `delete<T extends ${withComputed("GassmaUserDeleteSingleData")}>(deleteData: ${subExclusive(withComputed("GassmaUserDeleteSingleData"))}): ${res} | null`,
     );
   });
 
   it("should have generic upsert method with model-specific type", () => {
     expect(result).toContain(
-      `upsert<T extends ${withComputed("GassmaUserUpsertSingleData")}>(upsertData: ${sub(withComputed("GassmaUserUpsertSingleData"))}): ${res}`,
+      `upsert<T extends ${withComputed("GassmaUserUpsertSingleData")}>(upsertData: ${subExclusive(withComputed("GassmaUserUpsertSingleData"))}): ${res}`,
     );
   });
 
   it("should include createManyAndReturn method with generic type", () => {
     expect(result).toContain(
-      `createManyAndReturn<T extends ${withComputed("GassmaUserCreateManyAndReturnData")}>(createdData: ${sub(withComputed("GassmaUserCreateManyAndReturnData"))}): ${res}[]`,
+      `createManyAndReturn<T extends ${withComputed("GassmaUserCreateManyAndReturnData")}>(createdData: ${subExclusive(withComputed("GassmaUserCreateManyAndReturnData"))}): ${res}[]`,
     );
   });
 
   it("should include updateManyAndReturn method with generic type", () => {
     expect(result).toContain(
-      `updateManyAndReturn<T extends ${withComputed("GassmaUserUpdateManyAndReturnData")}>(updateData: ${sub(withComputed("GassmaUserUpdateManyAndReturnData"))}): ${res}[]`,
+      `updateManyAndReturn<T extends ${withComputed("GassmaUserUpdateManyAndReturnData")}>(updateData: ${subExclusive(withComputed("GassmaUserUpdateManyAndReturnData"))}): ${res}[]`,
     );
   });
 
   it("should use FindFirstData for findFirst", () => {
     expect(result).toContain(
-      `findFirst<T extends ${withComputed("GassmaUserFindFirstData")}>(findData: ${sub(withComputed("GassmaUserFindFirstData"))}): ${res} | null`,
+      `findFirst<T extends ${withComputed("GassmaUserFindFirstData")}>(findData: ${subExclusive(withComputed("GassmaUserFindFirstData"))}): ${res} | null`,
     );
   });
 
   it("should use FindFirstData for findFirstOrThrow", () => {
     expect(result).toContain(
-      `findFirstOrThrow<T extends ${withComputed("GassmaUserFindFirstData")}>(findData: ${sub(withComputed("GassmaUserFindFirstData"))}): ${res}`,
+      `findFirstOrThrow<T extends ${withComputed("GassmaUserFindFirstData")}>(findData: ${subExclusive(withComputed("GassmaUserFindFirstData"))}): ${res}`,
     );
   });
 
   it("should have generic create method with FindResult return", () => {
     expect(result).toContain(
-      `create<T extends ${withComputed("GassmaUserCreateData")}>(createdData: ${sub(withComputed("GassmaUserCreateData"))}): ${res}`,
+      `create<T extends ${withComputed("GassmaUserCreateData")}>(createdData: ${subExclusive(withComputed("GassmaUserCreateData"))}): ${res}`,
     );
   });
 
   it("should have generic update method with model-specific type", () => {
     expect(result).toContain(
-      `update<T extends ${withComputed("GassmaUserUpdateSingleData")}>(updateData: ${sub(withComputed("GassmaUserUpdateSingleData"))}): ${res} | null`,
+      `update<T extends ${withComputed("GassmaUserUpdateSingleData")}>(updateData: ${subExclusive(withComputed("GassmaUserUpdateSingleData"))}): ${res} | null`,
+    );
+  });
+
+  it("should guard every select/include-taking operation against the conflict", () => {
+    const guarded = [
+      ["createManyAndReturn", "GassmaUserCreateManyAndReturnData"],
+      ["create", "GassmaUserCreateData"],
+      ["findFirst", "GassmaUserFindFirstData"],
+      ["findFirstOrThrow", "GassmaUserFindFirstData"],
+      ["findMany", "GassmaUserFindManyData"],
+      ["update", "GassmaUserUpdateSingleData"],
+      ["updateManyAndReturn", "GassmaUserUpdateManyAndReturnData"],
+      ["upsert", "GassmaUserUpsertSingleData"],
+      ["delete", "GassmaUserDeleteSingleData"],
+    ];
+
+    guarded.forEach(([method, dataType]) => {
+      expect(result).toContain(
+        `${method}<T extends ${withComputed(dataType)}>(`,
+      );
+      expect(result).toContain(subExclusive(withComputed(dataType)));
+    });
+  });
+
+  it("should not guard operations that never take both select and include", () => {
+    expect(result).toContain(
+      `aggregate<T extends GassmaUserAggregateData>(aggregateData: ${sub("GassmaUserAggregateData")}):`,
+    );
+    expect(result).toContain(
+      `count<T extends GassmaUserCountData>(countData: ${sub("GassmaUserCountData")}):`,
+    );
+    expect(result).not.toContain(
+      "GassmaUserGroupByData> & Gassma.IncludeSelectCheck<T>",
     );
   });
 
