@@ -3,6 +3,6 @@ import { GASSMA_LIBRARY } from "../../../bootstrap/const/gassmaLibrary";
 
 describe("GASSMA_LIBRARY", () => {
   it("should pin the library version this CLI is paired with", () => {
-    expect(GASSMA_LIBRARY.version).toBe("9");
+    expect(GASSMA_LIBRARY.version).toBe("10");
   });
 });
