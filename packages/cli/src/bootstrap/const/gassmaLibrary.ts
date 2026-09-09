@@ -7,7 +7,7 @@ type GassmaLibrary = {
 const GASSMA_LIBRARY: GassmaLibrary = {
   scriptId: "1ZVuWMUYs4hVKDCcP3nVw74AY48VqLm50wRceKIQLFKL0wf4Hyou-FIBH",
   userSymbol: "Gassma",
-  version: "9",
+  version: "10",
 };
 
 export { GASSMA_LIBRARY };
